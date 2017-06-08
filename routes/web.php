@@ -11,10 +11,7 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
+Route::get('/', 'HomeController@index')->name('home')->middleware('auth');
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
@@ -26,5 +23,3 @@ Route::group(['prefix' => 'opportunity', 'middleware' => 'auth'], function () {
 });
 
 Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');

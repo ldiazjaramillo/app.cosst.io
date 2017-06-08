@@ -47,7 +47,7 @@
                         <input type="radio" name="decision_maker" id="decision_maker1" value="1" required="required" @if(old('decision_maker') == 1) checked @endif>Yes
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="decision_maker" id="decision_maker0" value="0" required="required" @if(old('decision_maker') == 0) checked @endif>No
+                        <input type="radio" name="decision_maker" id="decision_maker0" value="0" required="required" @if(old('decision_maker') === 0) checked @endif>No
                     </label>
                     @if ($errors->has('decision_maker'))
                         <span class="help-block">
@@ -84,9 +84,9 @@
                 </div>
                 <div class="form-group{{ $errors->has('company_state') ? ' has-error' : '' }}">
                     <label class="control-label">Company State:</label>
-                    <select name="company_state" id="company_state" required="required" class="form-control">
+                    <select name="company_state" id="company_state" required="required" class="form-control select2">
                         <option value="">Select</option>
-                    @foreach($states as $index=>$value)
+                    @foreach(config('app.us_states') as $index=>$value)
                         <option value="{{ $index }}" @if(old('company_state') == $index) selected @endif>{{ $value }}</option>
                     @endforeach
                     </select>
@@ -98,10 +98,10 @@
                 </div>
                 <div class="form-group{{ $errors->has('company_states') ? ' has-error' : '' }}">
                     <label class="control-label">States you have employees:</label>
-                    <select multiple name="company_states[]" id="company_states" required="required" class="form-control">
+                    <select multiple name="company_states[]" id="company_states" required="required" class="form-control select2">
                         <option value="">Select</option>
                     @php if(old('company_states')) $company_states_arr = old('company_states'); else $company_states_arr = []; @endphp
-                    @foreach($states as $index=>$value)
+                    @foreach(config('app.us_states') as $index=>$value)
                         <option value="{{ $index }}" @if( in_array( $index, $company_states_arr ) ) selected @endif>{{ $value }}</option>
                     @endforeach
                     </select>
@@ -111,9 +111,15 @@
                         </span>
                     @endif
                 </div>
+
                 <div class="form-group{{ $errors->has('external_account') ? ' has-error' : '' }}">
-                    <label class="control-label">Do you have a an external account/bookeeper:</label>
-                    <input name="external_account" type="text" required="required" class="form-control" value="{{ old('external_account') }}" />
+                    <label class="control-label">Do you have a an external account/bookeeper?</label>
+                    <label class="radio-inline">
+                        <input type="radio" name="external_account" id="external_account1" value="1" required="required" @if(old('external_account') == 1) checked @endif>Yes
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="external_account" id="external_account0" value="0" required="required" @if(old('external_account') === 0) checked @endif>No
+                    </label>
                     @if ($errors->has('external_account'))
                         <span class="help-block">
                             <strong>{{ $errors->first('external_account') }}</strong>
@@ -122,7 +128,12 @@
                 </div>
                 <div class="form-group{{ $errors->has('employees_number') ? ' has-error' : '' }}">
                     <label class="control-label">How many employees does the client have?</label>
-                    <input name="employees_number" type="number" required="required" class="form-control" min=1 step=1 value="{{ old('employees_number') }}" />
+                    <select name="employees_number" required="required" class="form-control">
+                        <option value="">Select</option>
+                    @foreach($number_options as $index=>$value)
+                        <option value="{{ $index }}" @if(old('employees_number') == $index) selected @endif>{{ $value }}</option>
+                    @endforeach
+                    </select>
                     @if ($errors->has('employees_number'))
                         <span class="help-block">
                             <strong>{{ $errors->first('employees_number') }}</strong>
@@ -140,80 +151,80 @@
                 <div class="form-group">
                     <label class="control-label">Do you require Certified payroll?</label>
                     <label class="radio-inline">
-                        <input type="radio" name="certified_payroll" id="certified_payroll1" value="1"/>Yes
+                        <input type="radio" name="certified_payroll" id="certified_payroll1" value="1" @if(old('certified_payroll') == 1) checked @endif/>Yes
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="certified_payroll" id="certified_payroll0" value="0"/>No
+                        <input type="radio" name="certified_payroll" id="certified_payroll0" value="0" @if(old('certified_payroll') === 0) checked @endif/>No
                     </label>
                 </div>
 
                 <div class="form-group">
                     <label class="control-label">Do you require Job costing?</label>
                     <label class="radio-inline">
-                        <input type="radio" name="job_costing" id="job_costing1" value="1"/>Yes
+                        <input type="radio" name="job_costing" id="job_costing1" value="1" @if(old('job_costing') == 1) checked @endif />Yes
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="job_costing" id="job_costing0" value="0"/>No
+                        <input type="radio" name="job_costing" id="job_costing0" value="0" @if(old('job_costing') === 0) checked @endif />No
                     </label>
                 </div>
 
                 <div class="form-group">
                     <label class="control-label">Do you require paper checks?</label>
                     <label class="radio-inline">
-                        <input type="radio" name="paper_checks" id="paper_checks1" value="1"/>Yes
+                        <input type="radio" name="paper_checks" id="paper_checks1" value="1" @if(old('paper_checks') == 1) checked @endif />Yes
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="paper_checks" id="paper_checks0" value="0"/>No
+                        <input type="radio" name="paper_checks" id="paper_checks0" value="0" @if(old('paper_checks') === 0) checked @endif />No
                     </label>
                 </div>
 
                 <div class="form-group">
                     <label class="control-label">Do you require Schedule H filing (househould, nannies)?</label>
                     <label class="radio-inline">
-                        <input type="radio" name="schedule_filing" id="schedule_filing1" value="1"/>Yes
+                        <input type="radio" name="schedule_filing" id="schedule_filing1" value="1" @if(old('schedule_filing') == 1) checked @endif />Yes
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="schedule_filing" id="schedule_filing0" value="0"/>No
+                        <input type="radio" name="schedule_filing" id="schedule_filing0" value="0" @if(old('schedule_filing') === 0) checked @endif />No
                     </label>
                 </div>
 
                 <div class="form-group">
                     <label class="control-label">Do you require a 943 filing? (farms)</label>
                     <label class="radio-inline">
-                        <input type="radio" name="farms_filing" id="farms_filing1" value="1"/>Yes
+                        <input type="radio" name="farms_filing" id="farms_filing1" value="1" @if(old('farms_filing') == 1) checked @endif />Yes
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="farms_filing" id="farms_filing0" value="0"/>No
+                        <input type="radio" name="farms_filing" id="farms_filing0" value="0" @if(old('farms_filing') === 0) checked @endif />No
                     </label>
                 </div>
 
                 <div class="form-group">
                     <label class="control-label">Do you require international?</label>
                     <label class="radio-inline">
-                        <input type="radio" name="require_international" id="require_international1" value="1"/>Yes
+                        <input type="radio" name="require_international" id="require_international1" value="1" @if(old('require_international') == 1) checked @endif />Yes
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="require_international" id="require_international0" value="0"/>No
+                        <input type="radio" name="require_international" id="require_international0" value="0" @if(old('require_international') === 0) checked @endif />No
                     </label>
                 </div>
 
                 <div class="form-group">
                     <label class="control-label">Do you require FICA tip credit tracking?</label>
                     <label class="radio-inline">
-                        <input type="radio" name="require_fica" id="require_fica1" value="1"/>Yes
+                        <input type="radio" name="require_fica" id="require_fica1" value="1" @if(old('require_fica') == 1) checked @endif />Yes
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="require_fica" id="require_fica0" value="0"/>No
+                        <input type="radio" name="require_fica" id="require_fica0" value="0" @if(old('require_fica') === 0) checked @endif />No
                     </label>
                 </div>
 
                 <div class="form-group">
                     <label class="control-label">Do you require garnishment payment remits?</label>
                     <label class="radio-inline">
-                        <input type="radio" name="require_garnishment" id="require_garnishment1" value="1"/>Yes
+                        <input type="radio" name="require_garnishment" id="require_garnishment1" value="1" @if(old('require_garnishment') == 1) checked @endif />Yes
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="require_garnishment" id="require_garnishment0" value="0"/>No
+                        <input type="radio" name="require_garnishment" id="require_garnishment0" value="0" @if(old('require_garnishment') === 0) checked @endif />No
                     </label>
                 </div>
                 
@@ -233,10 +244,10 @@
                 <div class="form-group">
                     <label class="control-label">Do you offer company-sponsored health benefits?</label>
                     <label class="radio-inline">
-                        <input type="radio" name="health_benefits" id="health_benefits1" value="1"/>Yes
+                        <input type="radio" name="health_benefits" id="health_benefits1" value="1" @if(old('health_benefits') == 1) checked @endif />Yes
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="health_benefits" id="health_benefits0" value="0"/>No
+                        <input type="radio" name="health_benefits" id="health_benefits0" value="0" @if(old('health_benefits') === 0) checked @endif />No
                     </label>
                 </div>
 
@@ -248,10 +259,10 @@
                 <div class="form-group">
                     <label class="control-label">Would you like to consider Gusto?</label>
                     <label class="radio-inline">
-                        <input type="radio" name="consider" id="consider1" value="1"/>Yes
+                        <input type="radio" name="consider" id="consider1" value="1" @if(old('consider') == 1) checked @endif />Yes
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="consider" id="consider0" value="0"/>No
+                        <input type="radio" name="consider" id="consider0" value="0" @if(old('consider') === 0) checked @endif />No
                     </label>
                 </div>
                 <button class="btn btn-success btn-lg pull-right" type="submit">Finish!</button>
@@ -264,7 +275,7 @@
 @section('bottom_script')
 <script>
 $(document).ready(function () {
-
+    $('.select2').select2();
     var navListItems = $('div.setup-panel div a'),
             allWells = $('.setup-content'),
             allNextBtn = $('.nextBtn');

@@ -8,8 +8,8 @@ class OpportunitiesController extends Controller
 {
     
     public function create(){
-        $states = ['NY'=>'NY', 'FL'=>'FL'];
-        return view('opportunities.create', compact('states'));
+        $number_options = ['1-2'=>'1-2 Employees', '3-9'=>'3-9 Employees', '10+'=>'10+ Employees'];
+        return view('opportunities.create', compact('number_options'));
     }
 
     public function store(Request $request){
@@ -31,19 +31,26 @@ class OpportunitiesController extends Controller
         }
         $opportunity = \App\Opportunity::create($request->all());
 
-        $this->getRedirectPage($opportunity->employees_number);
+        $this->getRedirectPage($opportunity->employees_number, $opportunity->company_state);
     }
 
-    private function getRedirectPage($employees_number, $states=true){
-        if($employees_number < 3){
+    private function stateHasCover($state){
+        $covered_states = ["WA", "CO","CA","FL","TX","OH","MA","NY","NJ","IL","PA","GA",];
+
+        return in_array($state, $covered_states);
+    }
+
+    private function getRedirectPage($employees_number, $state){
+        $is_covered = $this->stateHasCover($state);
+        if( $employees_number == '1-2' ){
             dd("Sales Proccess A (Sbiz OB)");
-        }else if($employees_number >= 3 && $employees_number <= 9 && $states){
+        }else if( $employees_number == '3-9' && !$is_covered ){
             dd("Sales Process A (Sbiz OB)");
-        }else if($employees_number >= 3 && $employees_number <= 9 && !$states){
+        }else if($employees_number == '3-9' && $is_covered){
             dd("Sales Process B (MM FS)");
-        }else if($employees_number >= 10 && !$states){
+        }else if($employees_number == '10+' && !$is_covered){
             dd("Sales Process B (MMPR)");
-        }else if($employees_number >= 10 && $states){
+        }else if($employees_number == '10+' && $is_covered){
             dd("Sales Process B (MM FS)");
         }
     }

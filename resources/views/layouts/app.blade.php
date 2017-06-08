@@ -14,6 +14,8 @@
     <!-- Latest compiled and minified CSS -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/step_form.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/select2-bootstrap.min.css') }}" rel="stylesheet">
     <style>
     div#container {
         background-color: #fff;
@@ -37,7 +39,7 @@
 
                     <!-- Branding Image -->
                     <a class="navbar-brand" href="{{ url('/') }}">
-                        {{ config('app.name', 'Laravel') }}
+                        <img src="{{ asset('images/cosst_dark_small.png') }}" alt="COSST" class="img-responsive" width="100px">
                     </a>
                 </div>
 
@@ -80,15 +82,17 @@
                 </div>
             </div>
         </nav>
-
+        
         <div class="container" id="container">
             @yield('content')
         </div>
+        
         
     </div>
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>
+    <script src="{{ asset('js/select2.min.js') }}"></script>
     @yield('bottom_script')
 </body>
 </html>
