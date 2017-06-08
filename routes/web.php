@@ -20,6 +20,11 @@ Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
 });
 
+Route::group(['prefix' => 'opportunity', 'middleware' => 'auth'], function () {
+    Route::get('create', 'OpportunitiesController@create')->name('opportunity.create');
+    Route::post('create', 'OpportunitiesController@store')->name('opportunity.store');
+});
+
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');

@@ -11,7 +11,15 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Styles -->
+    <!-- Latest compiled and minified CSS -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/step_form.css') }}" rel="stylesheet">
+    <style>
+    div#container {
+        background-color: #fff;
+        padding: 40px 20px;
+    }
+    </style>
 </head>
 <body>
     <div id="app">
@@ -36,7 +44,9 @@
                 <div class="collapse navbar-collapse" id="app-navbar-collapse">
                     <!-- Left Side Of Navbar -->
                     <ul class="nav navbar-nav">
-                        &nbsp;
+                    @if (Auth::user())
+                        <li><a href="{{ route('opportunity.create') }}">New Opportunity</a></li>
+                    @endif
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -71,10 +81,14 @@
             </div>
         </nav>
 
-        @yield('content')
+        <div class="container" id="container">
+            @yield('content')
+        </div>
+        
     </div>
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>
+    @yield('bottom_script')
 </body>
 </html>
