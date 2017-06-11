@@ -46,9 +46,7 @@
                 <div class="collapse navbar-collapse" id="app-navbar-collapse">
                     <!-- Left Side Of Navbar -->
                     <ul class="nav navbar-nav">
-                    @if (Auth::user())
-                        <li><a href="{{ route('opportunity.create') }}">New Opportunity</a></li>
-                    @endif
+
                     </ul>
 
                     <!-- Right Side Of Navbar -->
