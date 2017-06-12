@@ -19,13 +19,14 @@
 </div>
 <form role="form" method="POST" action="{{ route('opportunity.store') }}">
     {{ csrf_field() }}
+    <input name="client_id" type="hidden" required="required" class="form-control" value="@if($new_lead) {{$new_lead->email}} @endif" />
     <div class="row setup-content" id="step-1">
         <div class="col-xs-12">
             <div class="col-md-12">
                 <h3> Step 1</h3>
                 <div class="form-group{{ $errors->has('company_name') ? ' has-error' : '' }}">
                     <label class="control-label">Client Business Name:</label>
-                    <input name="company_name" maxlength="100" type="text" required="required" class="form-control" placeholder="Business Name" value="{{ old('company_name') }}"/>
+                    <input name="company_name" maxlength="100" type="text" required="required" class="form-control" placeholder="Business Name" value="@if($new_lead) {{$new_lead->company_name}} @else {{old('company_name')}} @endif"/>
                     @if ($errors->has('company_name'))
                         <span class="help-block">
                             <strong>{{ $errors->first('company_name') }}</strong>
@@ -34,7 +35,7 @@
                 </div>
                 <div class="form-group{{ $errors->has('contact_name') ? ' has-error' : '' }}">
                     <label class="control-label">Client Contact Name:</label>
-                    <input name="contact_name" maxlength="100" type="text" required="required" class="form-control" placeholder="First, Last" value="{{ old('contact_name') }}"/>
+                    <input name="contact_name" maxlength="100" type="text" required="required" class="form-control" placeholder="First, Last" value="@if($new_lead) {{$new_lead->full_name}} @else {{old('contact_name')}} @endif"/>
                     @if ($errors->has('contact_name'))
                         <span class="help-block">
                             <strong>{{ $errors->first('contact_name') }}</strong>
@@ -57,7 +58,7 @@
                 </div>
                 <div class="form-group{{ $errors->has('contact_phone') ? ' has-error' : '' }}">
                     <label class="control-label">Client Contact Phone:</label>
-                    <input name="contact_phone" maxlength="20" type="text" required="required" class="form-control" value="{{ old('contact_phone') }}" />
+                    <input name="contact_phone" maxlength="20" type="text" required="required" class="form-control" value="@if($new_lead) {{$new_lead->phone}} @else {{old('contact_phone')}} @endif" />
                     @if ($errors->has('contact_phone'))
                         <span class="help-block">
                             <strong>{{ $errors->first('contact_phone') }}</strong>
@@ -66,19 +67,10 @@
                 </div>
                 <div class="form-group{{ $errors->has('contact_email') ? ' has-error' : '' }}">
                     <label class="control-label">Client Contact Email:</label>
-                    <input name="contact_email" type="email" required="required" class="form-control" value="{{ old('contact_email') }}" />
+                    <input name="contact_email" type="email" required="required" class="form-control" value="@if($new_lead) {{$new_lead->email}} @else {{ old('contact_email') }} @endif" />
                     @if ($errors->has('contact_email'))
                         <span class="help-block">
                             <strong>{{ $errors->first('contact_email') }}</strong>
-                        </span>
-                    @endif
-                </div>
-                <div class="form-group{{ $errors->has('client_id') ? ' has-error' : '' }}">
-                    <label class="control-label">Client Unique ID:</label>
-                    <input name="client_id" type="text" required="required" class="form-control" value="{{ old('client_id') }}" />
-                    @if ($errors->has('client_id'))
-                        <span class="help-block">
-                            <strong>{{ $errors->first('client_id') }}</strong>
                         </span>
                     @endif
                 </div>
@@ -87,7 +79,7 @@
                     <select name="company_state" id="company_state" required="required" class="form-control select2">
                         <option value="">Select</option>
                     @foreach(config('app.us_states') as $index=>$value)
-                        <option value="{{ $index }}" @if(old('company_state') == $index) selected @endif>{{ $value }}</option>
+                        <option value="{{ $index }}" @if($new_lead) @if($new_lead->lead_state == $value) selected @endif @endif>{{ $value }}</option>
                     @endforeach
                     </select>
                     @if ($errors->has('company_state'))
@@ -130,8 +122,15 @@
                     <label class="control-label">How many employees does the client have?</label>
                     <select name="employees_number" required="required" class="form-control">
                         <option value="">Select</option>
+                    @php 
+                    if($new_lead){ 
+                        if($new_lead->employees < 3) $employees = '1-2';
+                        else if($new_lead->employees >= 3 && $new_lead->employees <=9 ) $employees = '3-9';
+                        else $employees = '10+';
+                    } 
+                    @endphp
                     @foreach($number_options as $index=>$value)
-                        <option value="{{ $index }}" @if(old('employees_number') == $index) selected @endif>{{ $value }}</option>
+                        <option value="{{ $index }}" @if(isset($employees)) @if($employees == $index) selected @endif @endif>{{ $value }}</option>
                     @endforeach
                     </select>
                     @if ($errors->has('employees_number'))

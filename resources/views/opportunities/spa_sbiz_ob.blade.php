@@ -30,15 +30,8 @@
     </div>
 </div>
 <div class="text-right">
-<a href="/opportunity/notify" class="btn btn-default">Continue</a>
+<a href="/opportunity/notify/{{ $opportunity->cliend_id }}" class="btn btn-default">Continue</a>
 </div>
 <div>&nbsp;</div>
-<iframe id="myFrame" src="https://gusto.com/invite/company?utm_source=vitalfew&utm_campaign=chivan" width="100%" height="500px" frameborder="0"></iframe>
-@endsection
-
-@section('bottom_script')
-<script>
-$(document).ready(function() {
-})
-</script>
+<iframe id="myFrame" src="https://go.gusto.com/3pls.html?utm_source=vitalfew&utm_campaign={{ \Auth::user()->username }}" width="100%" height="500px" frameborder="0"></iframe>
 @endsection

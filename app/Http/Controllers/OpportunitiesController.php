@@ -10,9 +10,11 @@ use GuzzleHttp\Client;
 class OpportunitiesController extends Controller
 {
     
-    public function create(){
+    public function create(Request $request){
+        if($request->has('new_id')) $new_lead = \App\Lead::where('zoom_id', $request->get('new_id'))->first();
+        else $new_lead = collect();
         $number_options = ['1-2'=>'1-2 Employees', '3-9'=>'3-9 Employees', '10+'=>'10+ Employees'];
-        return view('opportunities.create', compact('number_options'));
+        return view('opportunities.create', compact('number_options', 'new_lead'));
     }
 
     public function store(Request $request){
@@ -22,7 +24,7 @@ class OpportunitiesController extends Controller
             'decision_maker'=>'required',
             'contact_phone'=>'required',
             'contact_email'=>'required|email',
-            'client_id'=>'required|unique:opportunities,client_id',
+            //'client_id'=>'required|unique:opportunities,client_id',
             'company_state'=>'required',
             'company_states'=>'required',
             'external_account'=>'required',
@@ -88,6 +90,7 @@ class OpportunitiesController extends Controller
     }
 
     public function notify($client_id){
+        foreach(Storage::disk('google')->files() as $file) Storage::disk('google')->delete($file);
         $opportunity = \App\Opportunity::where('client_id', $client_id)->first();
         $name = 'Opportunities';
         $extension = 'xls';
@@ -102,9 +105,8 @@ class OpportunitiesController extends Controller
         $storage_path = storage_path("exports/$filename");
         //dd(Storage::disk('google')->exists("0B8d-d_nnDKn8V0hlbDAtZlEtQ0U"));
         //dd(Storage::disk('google')->files());
-        Storage::disk('google')->delete('*');
         //if(Storage::disk('google')->exists("0B8d-d_nnDKn8V0hlbDAtZlEtQ0U")) Storage::disk('google')->append($filename, 'Appended Text,asdas,asdas,asdasd,adsda');
-        //else Storage::disk('google')->put($filename, file_get_contents($storage_path));
+        Storage::disk('google')->put($filename, file_get_contents($storage_path));
 
         try{
             $client = new Client(['base_uri' => 'https://hooks.slack.com/services/']);
