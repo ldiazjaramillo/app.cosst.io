@@ -12,7 +12,8 @@ class OpportunitiesController extends Controller
     
     public function create(Request $request){
         if($request->has('new_id')) $new_lead = \App\Lead::where('zoom_id', $request->get('new_id'))->first();
-        else $new_lead = collect();
+        else if($request->has('existing_id')) $new_lead = \App\Lead::where('zoom_id', $request->get('existing_id'))->first();
+        else $new_lead = false;
         $number_options = ['1-2'=>'1-2 Employees', '3-9'=>'3-9 Employees', '10+'=>'10+ Employees'];
         return view('opportunities.create', compact('number_options', 'new_lead'));
     }
