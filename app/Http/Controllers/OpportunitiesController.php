@@ -68,26 +68,41 @@ class OpportunitiesController extends Controller
         return view('opportunities.spa_sbiz_ob', compact('opportunity'));
     }
 
+    public function updateManager($agent){
+        //dd($agent);
+        if($agent->agent_id == 4) $agent->agent_id = 0;
+        else $agent->agent_id = $agent->agent_id + 1;
+        $agent->save();
+    }
+
     public function spb_mmfs($client_id){
         $opportunity = \App\Opportunity::where('client_id', $client_id)->first();
-        $mmfs_agents = [
+        $mmfs = \App\MMFS::all()->first();
+        $mmfs_id = $mmfs->agent_id;
+        $agents = [
             0=>['name'=>'Brandon Boyle', 'email'=>'brandon.boyle@gusto.com', 'calendar'=>'calendly.com/brandon_gusto'],
             1=>['name'=>'Michael Reddish', 'email'=>'michael.reddish@gusto.com', 'calendar'=>'calendly.com/michael-reddish'],
             2=>['name'=>'Chad Benoit', 'email'=>'chad@gusto.com', 'calendar'=>'calendly.com/chad_zp'],
             3=>['name'=>'Johnny Wells', 'email'=>'johnny.wells@gusto.com', 'calendar'=>'calendly.com/johnnywells'],
             4=>['name'=>'Kabir Chopra', 'email'=>'kabir.chopra@gusto.com', 'calendar'=>'calendly.com/kabirchopra'],
         ];
-        return view('opportunities.spb', compact('opportunity', 'agents'));
+        $agent = $agents[$mmfs_id];
+        $this->updateManager($mmfs);
+        return view('opportunities.spb', compact('opportunity', 'agent'));
     }
 
     public function spb_mmpr($client_id){
         $opportunity = \App\Opportunity::where('client_id', $client_id)->first();
-        $mmfs_agents = [
+        $mmpr = \App\MMPR::all()->first();
+        $mmpr_id = $mmpr->agent_id;
+        $agents = [
             0=>['name'=>'Yekta Tehrani', 'email'=>'yekta.tehrani@gusto.com', 'calendar'=>'calendly.com/yekta-tehrani'],
             1=>['name'=>'Matt Worden', 'email'=>'matt.worden@gusto.com', 'calendar'=>'calendly.com/matt-worden'],
             2=>['name'=>'Matthew Baker', 'email'=>'matthew.baker@gusto.com', 'calendar'=>'calendly.com/matthewbaker'],
         ];
-        return view('opportunities.spb', compact('opportunity', 'agents'));
+        $agent = $agents[$mmpr_id];
+        $this->updateManager($mmfs);
+        return view('opportunities.spb', compact('opportunity', 'agent'));
     }
 
     public function notify($client_id){
