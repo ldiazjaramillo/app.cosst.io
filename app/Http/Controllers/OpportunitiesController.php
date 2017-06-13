@@ -160,15 +160,16 @@ class OpportunitiesController extends Controller
         //if(Storage::disk('google')->exists("0B8d-d_nnDKn8V0hlbDAtZlEtQ0U")) Storage::disk('google')->append($filename, 'Appended Text,asdas,asdas,asdasd,adsda');
         foreach(Storage::disk('google')->files() as $file) Storage::disk('google')->delete($file);
         Storage::disk('google')->put($filename, file_get_contents($storage_path));
+        if(!$opportunity->type_id) $opportunity->type_id = 0;
         $channels = [
-            0 => '#gusto',
-            1 => '#vitalfew_sbiz_pass',
-            2 => '#vitalfew_mmfs_pass',
-            3 => '#vitalfew_mmpr_pass'
+            0 => ['channel'=>'#gusto', 'url'=>'https://hooks.slack.com/services/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'],
+            1 => ['channel'=>'#vitalfew_sbiz_pass', 'url'=>'https://hooks.slack.com/services/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'],
+            2 => ['channel'=>'#vitalfew_mmfs_pass', 'url'=>'https://hooks.slack.com/services/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'],
+            3 => ['channel'=>'#vitalfew_mmpr_pass', 'url'=>'https://hooks.slack.com/services/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']
         ];
         try{
             $client = new Client(['base_uri' => 'https://hooks.slack.com/services/']);
-            $url = 'https://hooks.slack.com/services/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';
+            $url = $channels[$opportunity->type_id]['url'];
             //$url = env('SLACK_URL', false);
             $company = $opportunity->company_name;
             $message = "A new lead has completed the process and is ready for follow up: The lead is $company, the Lead ID is $client_id";
@@ -180,9 +181,7 @@ class OpportunitiesController extends Controller
                 'exceptions' => false,
                 'verify' => false,
                 'json' => [
-                    'text' => $message,
-                    'channel' => $channels[0],
-                    'username' => '@cosst.io'
+                    'text' => $message
                 ]
             ]);
 
