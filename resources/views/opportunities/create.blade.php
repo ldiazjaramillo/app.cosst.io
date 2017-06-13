@@ -153,7 +153,7 @@
                         <input type="radio" name="certified_payroll" id="certified_payroll1" value="1" @if(old('certified_payroll') == 1) checked @endif/>Yes
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="certified_payroll" id="certified_payroll0" value="0" @if(old('certified_payroll') === 0) checked @endif/>No
+                        <input type="radio" name="certified_payroll" id="certified_payroll0" value="0" checked/>No
                     </label>
                 </div>
 
@@ -163,7 +163,7 @@
                         <input type="radio" name="job_costing" id="job_costing1" value="1" @if(old('job_costing') == 1) checked @endif />Yes
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="job_costing" id="job_costing0" value="0" @if(old('job_costing') === 0) checked @endif />No
+                        <input type="radio" name="job_costing" id="job_costing0" value="0" checked />No
                     </label>
                 </div>
 
@@ -173,7 +173,7 @@
                         <input type="radio" name="paper_checks" id="paper_checks1" value="1" @if(old('paper_checks') == 1) checked @endif />Yes
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="paper_checks" id="paper_checks0" value="0" @if(old('paper_checks') === 0) checked @endif />No
+                        <input type="radio" name="paper_checks" id="paper_checks0" value="0" checked />No
                     </label>
                 </div>
 
@@ -183,7 +183,7 @@
                         <input type="radio" name="schedule_filing" id="schedule_filing1" value="1" @if(old('schedule_filing') == 1) checked @endif />Yes
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="schedule_filing" id="schedule_filing0" value="0" @if(old('schedule_filing') === 0) checked @endif />No
+                        <input type="radio" name="schedule_filing" id="schedule_filing0" value="0" checked />No
                     </label>
                 </div>
 
@@ -193,7 +193,7 @@
                         <input type="radio" name="farms_filing" id="farms_filing1" value="1" @if(old('farms_filing') == 1) checked @endif />Yes
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="farms_filing" id="farms_filing0" value="0" @if(old('farms_filing') === 0) checked @endif />No
+                        <input type="radio" name="farms_filing" id="farms_filing0" value="0" checked />No
                     </label>
                 </div>
 
@@ -203,7 +203,7 @@
                         <input type="radio" name="require_international" id="require_international1" value="1" @if(old('require_international') == 1) checked @endif />Yes
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="require_international" id="require_international0" value="0" @if(old('require_international') === 0) checked @endif />No
+                        <input type="radio" name="require_international" id="require_international0" value="0" checked />No
                     </label>
                 </div>
 
@@ -213,7 +213,7 @@
                         <input type="radio" name="require_fica" id="require_fica1" value="1" @if(old('require_fica') == 1) checked @endif />Yes
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="require_fica" id="require_fica0" value="0" @if(old('require_fica') === 0) checked @endif />No
+                        <input type="radio" name="require_fica" id="require_fica0" value="0" checked />No
                     </label>
                 </div>
 
@@ -223,7 +223,7 @@
                         <input type="radio" name="require_garnishment" id="require_garnishment1" value="1" @if(old('require_garnishment') == 1) checked @endif />Yes
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="require_garnishment" id="require_garnishment0" value="0" @if(old('require_garnishment') === 0) checked @endif />No
+                        <input type="radio" name="require_garnishment" id="require_garnishment0" value="0" checked />No
                     </label>
                 </div>
                 

@@ -8,11 +8,17 @@
 <!-- Calendly inline widget end -->
 <div class="row">
     <div class="col-md-4">
-        Full Name: 
+        Full Name: {{ $opportunity->contact_name }}
         <div class="input-group">
-            <input type="text" class="form-control" value="{{ $opportunity->contact_name }}" id="contact_name" readonly/>
+            <input type="text" class="form-control" value="{{ explode(' ', trim($opportunity->contact_name))[0] }}" id="first_name" readonly/>
             <span class="input-group-btn">
-                <button class="btn btn-default clipboard" type="button" data-clipboard-target="#contact_name">Copy</button>
+                <button class="btn btn-default clipboard" type="button" data-clipboard-target="#first_name">Copy</button>
+            </span>
+        </div><!-- /input-group -->
+        <div class="input-group">
+            <input type="text" class="form-control" value="{{ explode(' ', trim($opportunity->contact_name))[1] }}" id="last_name" readonly/>
+            <span class="input-group-btn">
+                <button class="btn btn-default clipboard" type="button" data-clipboard-target="#last_name">Copy</button>
             </span>
         </div><!-- /input-group -->
     </div>
