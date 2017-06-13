@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use Storage;
 use Excel;
 use GuzzleHttp\Client;
-
+use Cache;
+use \Carbon\Carbon;
 class OpportunitiesController extends Controller
 {
     
@@ -182,5 +183,16 @@ class OpportunitiesController extends Controller
             return false;
         }
          return view('opportunities.notify');
+    }
+
+    public function getExistingLeads(Request $request){
+        $query = $request->get('q');
+        $existing_opportunities = \App\Lead::select(
+        \DB::raw("CONCAT(first_name,' ',last_name, ' (', company_name ,' ) | ', zoom_id) AS name"), 'zoom_id AS id')
+        ->whereIn('type', [2, 3])
+        ->where('status', 2);
+        //->pluck('name', 'zoom_id');
+        $existing_opportunities = $existing_opportunities->get();
+        return response()->json(['items'=>$existing_opportunities]);
     }
 }

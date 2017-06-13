@@ -34,6 +34,7 @@ Route::group(['prefix' => 'opportunity', 'middleware' => 'auth'], function () {
     Route::get('spb_mmfs/{client_id}', 'OpportunitiesController@spb_mmfs')->name('spb_mmfs');
     Route::get('spb_mmpr/{client_id}', 'OpportunitiesController@spb_mmpr')->name('spb_mmpr');
     Route::get('notify/{client_id}', 'OpportunitiesController@notify')->name('opportunity.notify');
+    Route::get('get/existing/leads', 'OpportunitiesController@getExistingLeads')->name('get.existing.leads');
 });
 
 Auth::routes();
