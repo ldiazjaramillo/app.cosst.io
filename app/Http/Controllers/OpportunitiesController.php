@@ -86,9 +86,16 @@ class OpportunitiesController extends Controller
         return view('opportunities.spa_sbiz', compact('opportunity'));
     }
 
-    public function updateManager($agent){
+    public function updateManagerMMFS($agent){
         //dd($agent);
         if($agent->agent_id == 4) $agent->agent_id = 0;
+        else $agent->agent_id = $agent->agent_id + 1;
+        $agent->save();
+    }
+
+    public function updateManagerMMPR($agent){
+        //dd($agent);
+        if($agent->agent_id == 2) $agent->agent_id = 0;
         else $agent->agent_id = $agent->agent_id + 1;
         $agent->save();
     }
@@ -105,7 +112,7 @@ class OpportunitiesController extends Controller
             4=>['name'=>'Kabir Chopra', 'email'=>'kabir.chopra@gusto.com', 'calendar'=>'calendly.com/kabirchopra'],
         ];
         $agent = $agents[$mmfs_id];
-        $this->updateManager($mmfs);
+        $this->updateManagerMMFS($mmfs);
         return view('opportunities.spb', compact('opportunity', 'agent'));
     }
 
@@ -119,7 +126,7 @@ class OpportunitiesController extends Controller
             2=>['name'=>'Matthew Baker', 'email'=>'matthew.baker@gusto.com', 'calendar'=>'calendly.com/matthewbaker'],
         ];
         $agent = $agents[$mmpr_id];
-        $this->updateManager($mmpr);
+        $this->updateManagerMMPR($mmpr);
         return view('opportunities.spb', compact('opportunity', 'agent'));
     }
 
@@ -154,14 +161,16 @@ class OpportunitiesController extends Controller
         //if(Storage::disk('google')->exists("0B8d-d_nnDKn8V0hlbDAtZlEtQ0U")) Storage::disk('google')->append($filename, 'Appended Text,asdas,asdas,asdasd,adsda');
         foreach(Storage::disk('google')->files() as $file) Storage::disk('google')->delete($file);
         Storage::disk('google')->put($filename, file_get_contents($storage_path));
+        if(!$opportunity->type_id) $opportunity->type_id = 0;
         $channels = [
-            1 => '#vitalfew_sbiz_pass',
-            2 => '#vitalfew_mmfs_pass',
-            3 => '#vitalfew_mmpr_pass'
+            0 => ['channel'=>'#gusto', 'url'=>'https://hooks.slack.com/services/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'],
+            1 => ['channel'=>'#vitalfew_sbiz_pass', 'url'=>'https://hooks.slack.com/services/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'],
+            2 => ['channel'=>'#vitalfew_mmfs_pass', 'url'=>'https://hooks.slack.com/services/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'],
+            3 => ['channel'=>'#vitalfew_mmpr_pass', 'url'=>'https://hooks.slack.com/services/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']
         ];
         try{
             $client = new Client(['base_uri' => 'https://hooks.slack.com/services/']);
-            $url = 'https://hooks.slack.com/services/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';
+            $url = $channels[$opportunity->type_id]['url'];
             //$url = env('SLACK_URL', false);
             $company = $opportunity->company_name;
             $message = "A new lead has completed the process and is ready for follow up: The lead is $company, the Lead ID is $client_id";
@@ -173,16 +182,14 @@ class OpportunitiesController extends Controller
                 'exceptions' => false,
                 'verify' => false,
                 'json' => [
-                    'text' => $message,
-                    'channel' => $channels[$opportunity->type_id],
-                    'username' => '@cosst.io'
+                    'text' => $message
                 ]
             ]);
 
         }catch (\Exception $e){
             return false;
         }
-         return view('opportunities.notify');
+        return view('opportunities.notify');
     }
 
     public function getExistingLeads(Request $request){

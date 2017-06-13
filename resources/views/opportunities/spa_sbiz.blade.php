@@ -1,11 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-
-<!-- Calendly inline widget begin 
-<div class="calendly-inline-widget" data-url="https://calendly.com/misterdiaz" style="min-width:320px;height:580px;"></div>
-<script type="text/javascript" src="https://calendly.com/assets/external/widget.js"></script>
-<!-- Calendly inline widget end -->
+    
 <div class="row">
     <div class="col-md-4">
         Full Name: {{ $opportunity->contact_name }}
@@ -83,7 +79,7 @@
 <script>
 $(document).ready(function(){
     $("#btn_spa").on('click', function(e){
-        if(confirm('Did you send gusto form?')) return;
+        if(confirm('Did you sent gusto form?')) return;
         else e.preventDefault();
     });
 });
