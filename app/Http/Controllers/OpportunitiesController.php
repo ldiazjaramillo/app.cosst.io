@@ -85,9 +85,16 @@ class OpportunitiesController extends Controller
         return view('opportunities.spa_sbiz', compact('opportunity'));
     }
 
-    public function updateManager($agent){
+    public function updateManagerMMFS($agent){
         //dd($agent);
         if($agent->agent_id == 4) $agent->agent_id = 0;
+        else $agent->agent_id = $agent->agent_id + 1;
+        $agent->save();
+    }
+
+    public function updateManagerMMPR($agent){
+        //dd($agent);
+        if($agent->agent_id == 2) $agent->agent_id = 0;
         else $agent->agent_id = $agent->agent_id + 1;
         $agent->save();
     }
@@ -118,7 +125,7 @@ class OpportunitiesController extends Controller
             2=>['name'=>'Matthew Baker', 'email'=>'matthew.baker@gusto.com', 'calendar'=>'calendly.com/matthewbaker'],
         ];
         $agent = $agents[$mmpr_id];
-        $this->updateManager($mmpr);
+        $this->updateManagerMMPR($mmpr);
         return view('opportunities.spb', compact('opportunity', 'agent'));
     }
 
@@ -154,6 +161,7 @@ class OpportunitiesController extends Controller
         foreach(Storage::disk('google')->files() as $file) Storage::disk('google')->delete($file);
         Storage::disk('google')->put($filename, file_get_contents($storage_path));
         $channels = [
+            0 => '#gusto',
             1 => '#vitalfew_sbiz_pass',
             2 => '#vitalfew_mmfs_pass',
             3 => '#vitalfew_mmpr_pass'
@@ -173,7 +181,7 @@ class OpportunitiesController extends Controller
                 'verify' => false,
                 'json' => [
                     'text' => $message,
-                    'channel' => $channels[$opportunity->type_id],
+                    'channel' => $channels[0],
                     'username' => '@cosst.io'
                 ]
             ]);
@@ -181,6 +189,6 @@ class OpportunitiesController extends Controller
         }catch (\Exception $e){
             return false;
         }
-         return view('opportunities.notify');
+        return view('opportunities.notify');
     }
 }
