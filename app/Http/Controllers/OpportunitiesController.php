@@ -35,6 +35,8 @@ class OpportunitiesController extends Controller
         if($request->has('company_states')){
             $request['company_states'] = implode($request->get('company_states'), ',');
         }
+        $request['user_id'] = \Auth::user()->id;
+        $request['type_id'] = $this->getOpportunityType($request->get('employees_number'), $request->get('company_state'), $request->get('client_id'));
         $opportunity = \App\Opportunity::create($request->all());
 
         $url = $this->getRedirectPage($opportunity->employees_number, $opportunity->company_state, $opportunity->client_id);
@@ -48,12 +50,27 @@ class OpportunitiesController extends Controller
         return in_array($state, $covered_states);
     }
 
+    private function getOpportunityType($employees_number, $state, $client_id){
+        $is_covered = $this->stateHasCover($state);
+        if( $employees_number == '1-2' ){
+            return 1;
+        }else if( $employees_number == '3-9' && !$is_covered ){
+            return 1;
+        }else if($employees_number == '3-9' && $is_covered){
+            return 2;
+        }else if($employees_number == '10+' && !$is_covered){
+            return 3;
+        }else if($employees_number == '10+' && $is_covered){
+            return 2;
+        }
+    }
+
     private function getRedirectPage($employees_number, $state, $client_id){
         $is_covered = $this->stateHasCover($state);
         if( $employees_number == '1-2' ){
-            return "opportunity/spa_sbiz_ob/$client_id";
+            return "opportunity/spa_sbiz/$client_id";
         }else if( $employees_number == '3-9' && !$is_covered ){
-            return "opportunity/spa_sbiz_ob/$client_id";
+            return "opportunity/spa_sbiz/$client_id";
         }else if($employees_number == '3-9' && $is_covered){
             return "opportunity/spb_mmfs/$client_id";
         }else if($employees_number == '10+' && !$is_covered){
@@ -63,9 +80,9 @@ class OpportunitiesController extends Controller
         }
     }
 
-    public function spa_sbiz_ob($client_id){
+    public function spa_sbiz($client_id){
         $opportunity = \App\Opportunity::where('client_id', $client_id)->first();
-        return view('opportunities.spa_sbiz_ob', compact('opportunity'));
+        return view('opportunities.spa_sbiz', compact('opportunity'));
     }
 
     public function updateManager($agent){
@@ -101,29 +118,46 @@ class OpportunitiesController extends Controller
             2=>['name'=>'Matthew Baker', 'email'=>'matthew.baker@gusto.com', 'calendar'=>'calendly.com/matthewbaker'],
         ];
         $agent = $agents[$mmpr_id];
-        $this->updateManager($mmfs);
+        $this->updateManager($mmpr);
         return view('opportunities.spb', compact('opportunity', 'agent'));
     }
 
     public function notify($client_id){
-        foreach(Storage::disk('google')->files() as $file) Storage::disk('google')->delete($file);
         $opportunity = \App\Opportunity::where('client_id', $client_id)->first();
+        if(!$opportunity) return abort('405');
         $name = 'Opportunities';
         $extension = 'xls';
         $filename = $name.".".$extension;
         Excel::create($name, function($excel) {
             $opportunities = \App\Opportunity::all();
-            // Set sheets
-            $excel->sheet('Sheetname', function($sheet) use($opportunities) {
-                $sheet->fromModel($opportunities);
+            $sbiz = $opportunities->where('type_id', 1);
+            // SBIZ sheet
+            $excel->sheet('SBIZ', function($sheet) use($sbiz) {
+                $sheet->fromModel($sbiz);
             });
+            $mmfs = $opportunities->where('type_id', 2);
+            // MMFS sheet
+            $excel->sheet('MMFS', function($sheet) use($mmfs) {
+                $sheet->fromModel($mmfs);
+            });
+            $mmpr = $opportunities->where('type_id', 3);
+            // MMPR sheet
+            $excel->sheet('MMPR', function($sheet) use($mmpr) {
+                $sheet->fromModel($mmpr);
+            });
+
         })->store($extension);
         $storage_path = storage_path("exports/$filename");
         //dd(Storage::disk('google')->exists("0B8d-d_nnDKn8V0hlbDAtZlEtQ0U"));
         //dd(Storage::disk('google')->files());
         //if(Storage::disk('google')->exists("0B8d-d_nnDKn8V0hlbDAtZlEtQ0U")) Storage::disk('google')->append($filename, 'Appended Text,asdas,asdas,asdasd,adsda');
+        foreach(Storage::disk('google')->files() as $file) Storage::disk('google')->delete($file);
         Storage::disk('google')->put($filename, file_get_contents($storage_path));
-
+        $channels = [
+            1 => '#vitalfew_sbiz_pass',
+            2 => '#vitalfew_mmfs_pass',
+            3 => '#vitalfew_mmpr_pass'
+        ];
         try{
             $client = new Client(['base_uri' => 'https://hooks.slack.com/services/']);
             $url = 'https://hooks.slack.com/services/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';
@@ -139,14 +173,14 @@ class OpportunitiesController extends Controller
                 'verify' => false,
                 'json' => [
                     'text' => $message,
-                    'channel' => '#gusto',
-                    'username' => '@bot'
+                    'channel' => $channels[$opportunity->type_id],
+                    'username' => '@cosst.io'
                 ]
             ]);
 
         }catch (\Exception $e){
             return false;
         }
-         return response()->json(['status' => 'Success']);
+         return view('opportunities.notify');
     }
 }

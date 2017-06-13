@@ -28,8 +28,9 @@
 <a href="/opportunity/notify/{{ $opportunity->client_id }}" class="btn btn-default">Continue</a>
 </div>
 <div>&nbsp;</div>
-<!-- Calendly inline widget begin  --> 
-<div class="calendly-inline-widget" data-url="https://{{ $agent['calendar'] }}" style="min-width:320px;height:580px;"></div>
+<!-- Calendly inline widget begin 
+<div class="calendly-inline-widget" data-url="https://{{ $agent['calendar'] }}" style="min-width:320px;height:580px;"></div> --> 
+<div class="calendly-inline-widget" data-url="https://calendly.com/misterdiaz" style="min-width:320px;height:580px;"></div>
 <script type="text/javascript" src="https://calendly.com/assets/external/widget.js"></script>
 <!-- Calendly inline widget end -->
 @endsection

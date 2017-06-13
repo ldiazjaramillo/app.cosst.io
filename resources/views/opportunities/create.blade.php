@@ -19,7 +19,7 @@
 </div>
 <form role="form" method="POST" action="{{ route('opportunity.store') }}">
     {{ csrf_field() }}
-    <input name="client_id" type="hidden" required="required" class="form-control" value="@if($new_lead) {{$new_lead->email}} @endif" />
+    <input name="client_id" type="hidden" required="required" class="form-control" value="@if($new_lead) {{$new_lead->zoom_id}} @endif" />
     <div class="row setup-content" id="step-1">
         <div class="col-xs-12">
             <div class="col-md-12">

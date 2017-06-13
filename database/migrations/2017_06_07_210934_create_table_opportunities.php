@@ -42,6 +42,8 @@ class CreateTableOpportunities extends Migration
             $table->boolean('health_benefits')->nullable();//Do you offer company-sponsored health benefits?
             $table->string('health_broker')->nullable();//If yes who is your broker?
             $table->boolean('consider')->nullable();//Yes/No: would you like to consider Gusto?
+            $table->integer('user_id')->nullable();
+            $table->integer('type_id')->nullable();//1 = spa_sbiz, 2 = spb_mmfs, 3 = spb_mmpr
             $table->timestamps();
         });
     }
