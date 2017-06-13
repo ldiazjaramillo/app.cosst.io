@@ -111,7 +111,7 @@ class OpportunitiesController extends Controller
             4=>['name'=>'Kabir Chopra', 'email'=>'kabir.chopra@gusto.com', 'calendar'=>'calendly.com/kabirchopra'],
         ];
         $agent = $agents[$mmfs_id];
-        $this->updateManager($mmfs);
+        $this->updateManagerMMFS($mmfs);
         return view('opportunities.spb', compact('opportunity', 'agent'));
     }
 
