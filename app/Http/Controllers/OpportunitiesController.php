@@ -153,7 +153,7 @@ class OpportunitiesController extends Controller
                 $sheet->fromModel($mmpr);
             });
 
-        })->store($extension);
+        })->store($extension, '/tmp/');
         $storage_path = storage_path("exports/$filename");
         //dd(Storage::disk('google')->exists("0B8d-d_nnDKn8V0hlbDAtZlEtQ0U"));
         //dd(Storage::disk('google')->files());
@@ -170,6 +170,7 @@ class OpportunitiesController extends Controller
         try{
             $client = new Client(['base_uri' => 'https://hooks.slack.com/services/']);
             $url = $channels[$opportunity->type_id]['url'];
+            $url = $channels[0]['url'];
             //$url = env('SLACK_URL', false);
             $company = $opportunity->company_name;
             $message = "A new lead has completed the process and is ready for follow up: The lead is $company, the Lead ID is $client_id";
@@ -181,7 +182,7 @@ class OpportunitiesController extends Controller
                 'exceptions' => false,
                 'verify' => false,
                 'json' => [
-                    'text' => $message
+                    'text' => $message." This is a TEST"
                 ]
             ]);
 

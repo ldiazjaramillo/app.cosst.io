@@ -14,6 +14,33 @@
 Route::get('test', function() {
     Storage::disk('google')->put('test.txt', 'Hello World');
 });
+
+Route::get('test/excel', function(){
+    $name = 'Opportunities';
+    $extension = 'xls';
+    $filename = $name.".".$extension;
+    $result = Excel::create($name, function($excel) {
+        $opportunities = \App\Opportunity::all();
+        $sbiz = $opportunities->where('type_id', 1);
+        // SBIZ sheet
+        $excel->sheet('SBIZ', function($sheet) use($sbiz) {
+            $sheet->fromModel($sbiz);
+        });
+        $mmfs = $opportunities->where('type_id', 2);
+        // MMFS sheet
+        $excel->sheet('MMFS', function($sheet) use($mmfs) {
+            $sheet->fromModel($mmfs);
+        });
+        $mmpr = $opportunities->where('type_id', 3);
+        // MMPR sheet
+        $excel->sheet('MMPR', function($sheet) use($mmpr) {
+            $sheet->fromModel($mmpr);
+        });
+
+    })->store($extension, '/tmp/', true);
+    dd(file_get_contents("/tmp/$filename"));
+});
+
 Route::get('test/delete', function() {
     //$files = Storage::disk('google')->files();
     foreach(Storage::disk('google')->files() as $file) Storage::disk('google')->delete($file);
