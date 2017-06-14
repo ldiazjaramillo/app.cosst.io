@@ -195,9 +195,13 @@ class OpportunitiesController extends Controller
     public function getExistingLeads(Request $request){
         $query = $request->get('q');
         $existing_opportunities = \App\Lead::select(
-        \DB::raw("CONCAT(first_name,' ',last_name, ' (', company_name ,' ) | ', zoom_id) AS name"), 'zoom_id AS id')
+        \DB::raw("CONCAT(first_name,' ',last_name, ' (', company_name ,' ) | ', zoom_id) AS text"), 'zoom_id AS id')
         ->whereIn('type', [2, 3])
-        ->where('status', 2);
+        ->where('status', 2)
+        ->orWhere('first_name', 'like', "%$query%")
+        ->orWhere('last_name', 'like', "%$query%")
+        ->orWhere('company_name', 'like', "%$query%")
+        ->orWhere('zoom_id', 'like', "%$query%");
         //->pluck('name', 'zoom_id');
         $existing_opportunities = $existing_opportunities->get();
         return response()->json(['items'=>$existing_opportunities]);
