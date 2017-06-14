@@ -170,10 +170,11 @@ class OpportunitiesController extends Controller
         try{
             $client = new Client(['base_uri' => 'https://hooks.slack.com/services/']);
             $url = $channels[$opportunity->type_id]['url'];
-            $url = $channels[0]['url'];
+            //$url = $channels[0]['url'];
             //$url = env('SLACK_URL', false);
             $company = $opportunity->company_name;
             $message = "A new lead has completed the process and is ready for follow up: The lead is $company, the Lead ID is $client_id";
+            //$message .= " THIS IS A TEST. PLEASE IGNORE THIS!";
 
             $response = $client->request('POST', $url, [
                 'connect_timeout' => 1.5,
@@ -182,7 +183,7 @@ class OpportunitiesController extends Controller
                 'exceptions' => false,
                 'verify' => false,
                 'json' => [
-                    'text' => $message." This is a TEST"
+                    'text' => $message
                 ]
             ]);
 

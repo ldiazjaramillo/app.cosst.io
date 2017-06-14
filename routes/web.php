@@ -38,7 +38,7 @@ Route::get('test/excel', function(){
         });
 
     })->store($extension, '/tmp/', true);
-    dd(file_get_contents("/tmp/$filename"));
+    dd($result);
 });
 
 Route::get('test/delete', function() {
