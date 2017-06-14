@@ -154,13 +154,17 @@ class OpportunitiesController extends Controller
             });
 
         })->store($extension, '/tmp/');
-        $storage_path = storage_path("exports/$filename");
+        $storage_path = "/tmp/$filename";
         //dd(Storage::disk('google')->exists("0B8d-d_nnDKn8V0hlbDAtZlEtQ0U"));
         //dd(Storage::disk('google')->files());
         //if(Storage::disk('google')->exists("0B8d-d_nnDKn8V0hlbDAtZlEtQ0U")) Storage::disk('google')->append($filename, 'Appended Text,asdas,asdas,asdasd,adsda');
         foreach(Storage::disk('google')->files() as $file) Storage::disk('google')->delete($file);
         Storage::disk('google')->put($filename, file_get_contents($storage_path));
-        if(!$opportunity->type_id) $opportunity->type_id = 0;
+        //return view('opportunities.notify');
+        if(env('APP_ENV') == "local") $opportunity->type_id = 0;
+        if(env('APP_ENV') == "local") return view('opportunities.notify'); 
+        if(!$opportunity->type_id) $opportunity->type_id = 0;        
+
         $channels = [
             0 => ['channel'=>'#gusto', 'url'=>'https://hooks.slack.com/services/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'],
             1 => ['channel'=>'#vitalfew_sbiz_pass', 'url'=>'https://hooks.slack.com/services/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'],
@@ -174,7 +178,7 @@ class OpportunitiesController extends Controller
             //$url = env('SLACK_URL', false);
             $company = $opportunity->company_name;
             $message = "A new lead has completed the process and is ready for follow up: The lead is $company, the Lead ID is $client_id";
-            //$message .= " THIS IS A TEST. PLEASE IGNORE THIS!";
+            if(env('APP_ENV') == "local") $message .= " THIS IS A TEST. PLEASE IGNORE THIS!";
 
             $response = $client->request('POST', $url, [
                 'connect_timeout' => 1.5,
