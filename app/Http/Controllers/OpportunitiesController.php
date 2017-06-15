@@ -39,7 +39,7 @@ class OpportunitiesController extends Controller
         $request['type_id'] = $this->getOpportunityType($request->get('employees_number'), $request->get('company_state'), $request->get('client_id'));
         $opportunity = \App\Opportunity::create($request->all());
 
-        $url = $this->getRedirectPage($opportunity->employees_number, $opportunity->company_state, $opportunity->client_id);
+        $url = $this->getRedirectPage($opportunity->employees_number, $opportunity->company_state, $opportunity->id);
 
         return redirect($url);
     }
@@ -81,7 +81,7 @@ class OpportunitiesController extends Controller
     }
 
     public function spa_sbiz($client_id){
-        $opportunity = \App\Opportunity::where('client_id', $client_id)->first();
+        $opportunity = \App\Opportunity::find($client_id);
         return view('opportunities.spa_sbiz', compact('opportunity'));
     }
 
@@ -100,7 +100,7 @@ class OpportunitiesController extends Controller
     }
 
     public function spb_mmfs($client_id){
-        $opportunity = \App\Opportunity::where('client_id', $client_id)->first();
+        $opportunity = \App\Opportunity::find($client_id);
         $mmfs = \App\MMFS::all()->first();
         $mmfs_id = $mmfs->agent_id;
         $agents = [
@@ -116,7 +116,7 @@ class OpportunitiesController extends Controller
     }
 
     public function spb_mmpr($client_id){
-        $opportunity = \App\Opportunity::where('client_id', $client_id)->first();
+        $opportunity = \App\Opportunity::find($client_id);
         $mmpr = \App\MMPR::all()->first();
         $mmpr_id = $mmpr->agent_id;
         $agents = [
@@ -129,8 +129,8 @@ class OpportunitiesController extends Controller
         return view('opportunities.spb', compact('opportunity', 'agent'));
     }
 
-    public function notify($client_id){
-        $opportunity = \App\Opportunity::where('client_id', $client_id)->first();
+    public function notify($id){
+        $opportunity = \App\Opportunity::find($id);
         if(!$opportunity) return abort('405');
         $name = 'Opportunities';
         $extension = 'xls';
@@ -195,5 +195,10 @@ class OpportunitiesController extends Controller
             return false;
         }
         return view('opportunities.notify');
+    }
+
+    public function summary(){
+        $opportunities = \App\Opportunity::all();
+        return view('opportunities.summary', compact('opportunities'));
     }
 }

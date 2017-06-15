@@ -63,4 +63,6 @@ Route::group(['prefix' => 'opportunity', 'middleware' => 'auth'], function () {
     Route::get('notify/{client_id}', 'OpportunitiesController@notify')->name('opportunity.notify');
 });
 
+Route::get('summary', 'OpportunitiesController@summary')->name('summary')->middleware('auth');
+
 Auth::routes();

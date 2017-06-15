@@ -69,7 +69,7 @@
 <div>&nbsp;</div>
 <div class="text-right">
     <a href="./{{ $opportunity->client_id }}" class="btn btn-primary">Change Agent</a>
-    <a href="/opportunity/notify/{{ $opportunity->client_id }}" class="btn btn-default" id="btn_spb">Continue</a>
+    <a href="/opportunity/notify/{{ $opportunity->id }}" class="btn btn-default" id="btn_spb">Continue</a>
 </div>
 <div>&nbsp;</div>
 <!-- Calendly inline widget begin -->

@@ -69,17 +69,18 @@
 </div>
 <div>&nbsp;</div>
 <div class="text-right">
-<a href="/opportunity/notify/{{ $opportunity->client_id }}" class="btn btn-default" id="btn_spa">Continue</a>
+<a href="/opportunity/notify/{{ $opportunity->id }}" class="btn btn-default" id="btn_spa">Continue</a>
 </div>
 <div>&nbsp;</div>
-<iframe id="myFrame" src="https://go.gusto.com/3pls.html?utm_source=vitalfew&utm_campaign={{ \Auth::user()->username }}" width="100%" height="500px" frameborder="0"></iframe>
+<div class="calendly-inline-widget" data-url="https://calendly.com/small-business/gusto-chat-15-min/{{ date('m-d-Y') }}" style="min-width:320px;height:580px;"></div>
+<script type="text/javascript" src="https://calendly.com/assets/external/widget.js"></script>
 @endsection
 
 @section('bottom_script')
 <script>
 $(document).ready(function(){
     $("#btn_spa").on('click', function(e){
-        if(confirm('Did you sent gusto form?')) return;
+        if(confirm('Did you complete calendly form?')) return;
         else e.preventDefault();
     });
 });

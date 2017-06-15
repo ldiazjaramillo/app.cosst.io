@@ -20,6 +20,7 @@ class CreateLeadsTable extends Migration
         //LOAD DATA LOCAL INFILE "/var/lib/mysql-files/smbhr.csv" into table leads FIELDS TERMINATED BY ',' ENCLOSED BY '"' (zoom_id, last_name, first_name, position, phone, email, lead_city, lead_state, lead_zip, country, company_name, company_url, company_zip, company_country, revenue, revenue_range, employees, employees_range);
         //LOAD DATA LOCAL INFILE "/var/lib/mysql-files/gusto_june14.csv" into table leads FIELDS TERMINATED BY ',' ENCLOSED BY '"' (zoom_id, last_name, first_name, position, phone, email, lead_city, lead_state, lead_zip, country, company_name, company_url, revenue, employees);
         //LOAD DATA LOCAL INFILE "/var/lib/mysql-files/gusto_amelia.csv" into table leads FIELDS TERMINATED BY ',' ENCLOSED BY '"' (zoom_id, last_name, first_name, position, phone, email, lead_city, lead_state, lead_zip, zoom_company_id, company_name, company_url, revenue, revenue_range, employees);
+        //LOAD DATA LOCAL INFILE "/var/lib/mysql-files/gusto_ceo5to20.csv" into table leads FIELDS TERMINATED BY ',' ENCLOSED BY '"' (zoom_id, last_name, first_name, position, phone, email, lead_city, lead_state, lead_zip, company_name, company_url, revenue, employees);
          Schema::create('leads', function (Blueprint $table) {
             $table->increments('id');
             $table->string('zoom_id')->nullable();

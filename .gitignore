@@ -13,3 +13,4 @@ public/vendor/*
 .vscode
 /storage/exports/*
 storage/exports/*
+bower_components/
