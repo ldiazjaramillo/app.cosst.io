@@ -132,6 +132,7 @@ class OpportunitiesController extends Controller
     public function notify($id){
         $opportunity = \App\Opportunity::find($id);
         if(!$opportunity) return abort('405');
+        $client_id = $opportunity->client_id;
         $name = 'Opportunities';
         $extension = 'xls';
         $filename = $name.".".$extension;
@@ -162,9 +163,9 @@ class OpportunitiesController extends Controller
         Storage::disk('google')->put($filename, file_get_contents($storage_path));
         //return view('opportunities.notify');
         if(env('APP_ENV') == "local") $opportunity->type_id = 0;
-        if(env('APP_ENV') == "local") return view('opportunities.notify'); 
+        //if(env('APP_ENV') == "local") return view('opportunities.notify'); 
         if(!$opportunity->type_id) $opportunity->type_id = 0;        
-
+        //dd($opportunity);
         $channels = [
             0 => ['channel'=>'#gusto', 'url'=>'https://hooks.slack.com/services/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'],
             1 => ['channel'=>'#vitalfew_sbiz_pass', 'url'=>'https://hooks.slack.com/services/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'],
@@ -192,7 +193,7 @@ class OpportunitiesController extends Controller
             ]);
 
         }catch (\Exception $e){
-            return false;
+            return view('opportunities.notify', compact('message'));
         }
         return view('opportunities.notify');
     }
