@@ -26,7 +26,8 @@ class HomeController extends Controller
     {
         $new_opportunities = \App\Lead::select(
         \DB::raw("CONCAT(first_name,' ',last_name, ' (', company_name ,' ) | ', zoom_id) AS name"), 'zoom_id')
-        ->where(['type'=>1, 'status'=>1])
+        ->where('type', 1)
+        ->where('status', 1)
         ->pluck('name', 'zoom_id');
 
         if (!Cache::has('existing_opportunities')) {
