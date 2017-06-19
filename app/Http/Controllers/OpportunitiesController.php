@@ -83,7 +83,24 @@ class OpportunitiesController extends Controller
 
     public function spa_sbiz($client_id){
         $opportunity = \App\Opportunity::find($client_id);
-        return view('opportunities.spa_sbiz', compact('opportunity'));
+        $sbiz = \App\SBIZ::all()->first();
+        $agent_id = $sbiz_id = $sbiz->agent_id;
+        $agents = [
+            0 =>['name'=>'Joey B', 'email'=>'joey.brown@gusto.com', 'calendar'=>'calendly.com/joey-brown'],
+            1 =>['name'=>'Candace S', 'email'=>'candace.sake@gusto.com', 'calendar'=>'calendly.com/candace-sake'],
+            2 =>['name'=>'Rene E', 'email'=>'rene.etter-garrette@gusto.com', 'calendar'=>'calendly.com/rene-gusto'],
+            3 =>['name'=>'Donny T', 'email'=>'donny.tachis@gusto.com', 'calendar'=>'calendly.com/donny-tachis'],
+        ];
+        $agent = $agents[$sbiz_id];
+        $this->updateManagerSBIZ($sbiz);
+        return view('opportunities.spa_sbiz', compact('opportunity', 'agent', 'agents', 'agent_id'));
+    }
+
+    public function updateManagerSBIZ($agent){
+        //dd($agent);
+        if($agent->agent_id == 3) $agent->agent_id = 0;
+        else $agent->agent_id = $agent->agent_id + 1;
+        $agent->save();
     }
 
     public function updateManagerMMFS($agent){
@@ -132,6 +149,12 @@ class OpportunitiesController extends Controller
 
     public function notify2(Request $request, $id){
         $agents = [
+            1 => [
+                0 =>['name'=>'Joey B', 'email'=>'joey.brown@gusto.com', 'calendar'=>'calendly.com/joey-brown'],
+                1 =>['name'=>'Candace S', 'email'=>'candace.sake@gusto.com', 'calendar'=>'calendly.com/candace-sake'],
+                2 =>['name'=>'Rene E', 'email'=>'rene.etter-garrette@gusto.com', 'calendar'=>'calendly.com/rene-gusto'],
+                3 =>['name'=>'Donny T', 'email'=>'donny.tachis@gusto.com', 'calendar'=>'calendly.com/donny-tachis'],
+            ],
             2 => [
                 0=>['name'=>'Brandon Boyle', 'email'=>'brandon.boyle@gusto.com', 'calendar'=>'calendly.com/brandon_gusto'],
                 1=>['name'=>'Michael Reddish', 'email'=>'michael.reddish@gusto.com', 'calendar'=>'calendly.com/michael-reddish'],
@@ -179,7 +202,7 @@ class OpportunitiesController extends Controller
             $meeting_duration = (1800); // half hour
             $meetingstamp = $data['start_date'];
             $dtstart = date( 'Ymd\THis\Z', ($data['start_date']) );
-            //dd($dtstart);
+            dd($dtstart);
             $dtend =  date('Ymd\THis\Z', ($data['end_date']) );
             $todaystamp = date('Ymd\THis\Z');
             $uid = date('Ymd').'T'.date('His').'-'.rand().'@gusto.com';
@@ -230,9 +253,7 @@ class OpportunitiesController extends Controller
             
             $message->attach($filename, array('mime' => "text/calendar"));
         });
-        //$this->sendInvite();
         return $this->notify($opportunity->id);
-        //return view('opportunities.notify');
     }
 
     public function notify($id){
@@ -269,7 +290,7 @@ class OpportunitiesController extends Controller
         Storage::disk('google')->put($filename, file_get_contents($storage_path));
         //return view('opportunities.notify');
         if(env('APP_ENV') == "local") $opportunity->type_id = 0;
-        //if(env('APP_ENV') == "local") return view('opportunities.notify'); 
+        if(env('APP_ENV') == "local") return view('opportunities.notify'); 
         if(!$opportunity->type_id) $opportunity->type_id = 0;        
         //dd($opportunity);
         $channels = [
