@@ -43,7 +43,7 @@
                         <td>{{ $opportunity->company_state }}</td>
                         <td>{{ $opportunity->employees_number }}</td>
                         <td>{{ $opportunity->created_at }}</td>
-                        <td><a href="/opportunities/view/{{$opportunity->id}}" class="btn btn-default">View</a></td>
+                        <td><a href="/opportunity/view/{{$opportunity->id}}" class="btn btn-default">View</a></td>
                     </tr>
                 @endforeach
                 </tbody>
@@ -79,7 +79,7 @@
                         <td>{{ $opportunity->company_state }}</td>
                         <td>{{ $opportunity->employees_number }}</td>
                         <td>{{ $opportunity->created_at }}</td>
-                        <td><a href="/opportunities/view/{{$opportunity->id}}" class="btn btn-default">View</a></td>
+                        <td><a href="/opportunity/view/{{$opportunity->id}}" class="btn btn-default">View</a></td>
                     </tr>
                 @endforeach
                 </tbody>
@@ -115,7 +115,7 @@
                         <td>{{ $opportunity->company_state }}</td>
                         <td>{{ $opportunity->employees_number }}</td>
                         <td>{{ $opportunity->created_at }}</td>
-                        <td><a href="/opportunities/view/{{$opportunity->id}}" class="btn btn-default">View</a></td>
+                        <td><a href="/opportunity/view/{{$opportunity->id}}" class="btn btn-default">View</a></td>
                     </tr>
                 @endforeach
                 </tbody>
@@ -151,7 +151,7 @@
                         <td>{{ $opportunity->company_state }}</td>
                         <td>{{ $opportunity->employees_number }}</td>
                         <td>{{ $opportunity->created_at }}</td>
-                        <td><a href="/opportunities/view/{{$opportunity->id}}" class="btn btn-default">View</a></td>
+                        <td><a href="/opportunity/view/{{$opportunity->id}}" class="btn btn-default">View</a></td>
                     </tr>
                 @endforeach
                 </tbody>
