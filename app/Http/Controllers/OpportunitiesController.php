@@ -12,8 +12,8 @@ class OpportunitiesController extends Controller
 {
     
     public function create(Request $request){
-        if($request->has('new_id')) $new_lead = \App\Lead::where('zoom_id', $request->get('new_id'))->first();
-        else if($request->has('existing_id')) $new_lead = \App\Lead::where('zoom_id', $request->get('existing_id'))->first();
+        if($request->has('new_id')) $new_lead = \App\Lead::find($request->get('new_id'));
+        else if($request->has('existing_id')) $new_lead = \App\Lead::find($request->get('existing_id'));
         else $new_lead = false;
         $number_options = ['1-2'=>'1-2 Employees', '3-9'=>'3-9 Employees', '10+'=>'10+ Employees'];
         return view('opportunities.create', compact('number_options', 'new_lead'));
@@ -32,6 +32,7 @@ class OpportunitiesController extends Controller
             'external_account'=>'required',
             'employees_number'=>'required',
         ]);
+        //dd($request->all());
         if($request->has('company_states')){
             $request['company_states'] = implode($request->get('company_states'), ',');
         }
@@ -333,12 +334,12 @@ class OpportunitiesController extends Controller
     }
 
     public function getNewLeads(Request $request){
-        $query = strtoupper($request->get('q'));
+        $query = $request->get('q');
         $new_opportunities = \DB::select("
-            SELECT CONCAT(first_name,' ',last_name, ' (', company_name ,' ) | ', zoom_id) AS text, zoom_id AS id
+            SELECT CONCAT(COALESCE(`first_name`, ''),' ', COALESCE(`last_name`, ''), ' (', COALESCE(`company_name`, '') ,' ) | ', COALESCE(`zoom_id`, '') ) AS text, id
             FROM leads
-            WHERE type=1 and status = 1 and (UPPER(first_name) like '%$query%' OR UPPER(last_name) LIKE '%$query%' OR UPPER(company_name) LIKE '%$query%'
-            OR UPPER(zoom_id) LIKE '%$query%' OR UPPER(email) LIKE '%$query%')
+            WHERE type=1 and status = 1 and (first_name like '%$query%' OR last_name LIKE '%$query%' OR company_name LIKE '%$query%'
+            OR zoom_id LIKE '%$query%' OR email LIKE '%$query%')
         ");
         //dd($new_opportunities);
         //$new_opportunities = $new_opportunities->get();
@@ -348,7 +349,7 @@ class OpportunitiesController extends Controller
     public function getExistingLeads(Request $request){
         $query = $request->get('q');
         $existing_opportunities = \DB::select("
-            SELECT CONCAT(first_name,' ',last_name, ' (', company_name ,' ) | ', zoom_id) AS text, zoom_id AS id
+            SELECT CONCAT(COALESCE(`first_name`, ''),' ', COALESCE(`last_name`, ''), ' (', COALESCE(`company_name`, '') ,' ) | ', COALESCE(`zoom_id`, '') ) AS text, id
             FROM leads
             WHERE type IN (2,3) and status = 2 and (first_name like '%$query%' OR last_name LIKE '%$query%' OR company_name LIKE '%$query%'
             OR zoom_id LIKE '%$query%' OR email LIKE '%$query%')
