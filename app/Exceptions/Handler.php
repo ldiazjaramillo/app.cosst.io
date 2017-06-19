@@ -38,8 +38,10 @@ class Handler extends ExceptionHandler
             //dd($exception->getTrace());
             // emails.exception is the template of your email
             // it will have access to the $error that we are passing below
-            Mail::send('emails.exception', ['error' => $exception->getMessage(), 'trace'=> $exception->getTrace()], function ($m) {
-                $m->to('luis@vitalfew.io', 'Luis Diaz')->subject('Error on gusto.cosst.io');
+            \Mail::send('emails.exception', [ 'error' => $exception->getMessage(), 'traces'=> $exception->getTrace() ], function ($m) {
+                $m->from("no-reply@cosst.io");
+                $m->to('luis@vitalfew.io');
+                $m->subject('Error on gusto.cosst.io');
             });
         }
 

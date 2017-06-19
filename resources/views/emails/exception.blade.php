@@ -1,7 +1,10 @@
 <h2>Error message from: {{ \Auth::user()->email }} ({{ \Auth::user()->name }})</h2>
 <h3>Error Message: {{ $error }}</h3>
 <ol>
-@foreach($trace as $value)
-<li>@if(isset($value["file"]))File: {{ $value["file"] }} on line {{ $value["line"] }}.@endif Function: {{ $value["function"] }}.@if(isset($value["class"])) Class: {{ $value["class"] }} {{ $value["type"] }}.@endif</li>
+@foreach($traces as $trace)
+<li>
+@if(isset($trace["file"]) )File: {{ $trace["file"] }} on line {{ $trace["line"] }}.@endif 
+@if( isset($trace["class"]) ) Class: {{ $trace["class"] }} {{ $trace["type"] }}@endif @if( isset($trace["function"]) ) {{ $trace["function"] }}.@endif
+</li>
 @endforeach
 </ol>
