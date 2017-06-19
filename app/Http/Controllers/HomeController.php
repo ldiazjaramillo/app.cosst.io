@@ -24,24 +24,6 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $new_opportunities = \App\Lead::select(
-        \DB::raw("CONCAT(first_name,' ',last_name, ' (', company_name ,' ) | ', zoom_id) AS name"), 'zoom_id')
-        ->where('type', 1)
-        ->where('status', 1)
-        ->pluck('name', 'zoom_id');
-
-        if (!Cache::has('existing_opportunities')) {
-            $expiresAt = Carbon::now()->addMinutes(180);
-            $existing_opportunities = \App\Lead::select(
-            \DB::raw("CONCAT(first_name,' ',last_name, ' (', company_name ,' ) | ', zoom_id) AS name"), 'zoom_id')
-            ->whereIn('type', [2, 3])
-            ->where('status', 2)
-            ->pluck('name', 'zoom_id');
-            Cache::put('existing_opportunities', $existing_opportunities, $expiresAt);
-        }else{
-            $existing_opportunities = Cache::get('existing_opportunities');
-        }
-
-        return view('home', compact('new_opportunities', 'existing_opportunities'));
+        return view('home');
     }
 }

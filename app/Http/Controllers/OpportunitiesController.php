@@ -174,6 +174,7 @@ class OpportunitiesController extends Controller
             //'comment'=>'required',
         ]);
         $Date = \Carbon\Carbon::parse($request->get('date'));
+        //$Date = \Carbon\Carbon::parse($request->get('date'), 'PST');
         $opportunity = \App\Opportunity::find($id);
         $opportunity->agent_id = $request->get('agent_id');
         $opportunity->date = $Date->toDateTimeString();
@@ -202,7 +203,7 @@ class OpportunitiesController extends Controller
             $meeting_duration = (1800); // half hour
             $meetingstamp = $data['start_date'];
             $dtstart = date( 'Ymd\THis\Z', ($data['start_date']) );
-            dd($dtstart);
+            //dd($dtstart);
             $dtend =  date('Ymd\THis\Z', ($data['end_date']) );
             $todaystamp = date('Ymd\THis\Z');
             $uid = date('Ymd').'T'.date('His').'-'.rand().'@gusto.com';
@@ -247,7 +248,7 @@ class OpportunitiesController extends Controller
                 $message->to(['luis@vitalfew.io']);
             }else{
                 $message->to([ $current_agent['email'], $data['client_email'] ]);
-                $message->bcc('ethan@mygusto.com', 'Ethan');
+                $message->cc('ethan@mygusto.com', 'Ethan');
                 $message->bcc("$username@mygusto.com", \Auth::user()->name);
             }
             
@@ -283,9 +284,6 @@ class OpportunitiesController extends Controller
 
         })->store($extension, '/tmp/');
         $storage_path = "/tmp/$filename";
-        //dd(Storage::disk('google')->exists("0B8d-d_nnDKn8V0hlbDAtZlEtQ0U"));
-        //dd(Storage::disk('google')->files());
-        //if(Storage::disk('google')->exists("0B8d-d_nnDKn8V0hlbDAtZlEtQ0U")) Storage::disk('google')->append($filename, 'Appended Text,asdas,asdas,asdasd,adsda');
         foreach(Storage::disk('google')->files() as $file) Storage::disk('google')->delete($file);
         Storage::disk('google')->put($filename, file_get_contents($storage_path));
         //return view('opportunities.notify');
@@ -333,5 +331,31 @@ class OpportunitiesController extends Controller
     public function view($id){
         $opportunity = \App\Opportunity::find($id);
         return view('opportunities.view', compact('opportunity'));
+    }
+
+    public function getNewLeads(Request $request){
+        $query = $request->get('q');
+        $new_opportunities = \DB::select("
+            SELECT CONCAT(first_name,' ',last_name, ' (', company_name ,' ) | ', zoom_id) AS text, zoom_id AS id
+            FROM leads
+            WHERE type=1 and status = 1 and (first_name like '%$query%' OR last_name LIKE '%$query%' OR company_name LIKE '%$query%'
+            OR zoom_id LIKE '%$query%')
+        ");
+        //dd($new_opportunities);
+        //$new_opportunities = $new_opportunities->get();
+        return response()->json(['items'=>$new_opportunities]);
+    }
+
+    public function getExistingLeads(Request $request){
+        $query = $request->get('q');
+        $existing_opportunities = \DB::select("
+            SELECT CONCAT(first_name,' ',last_name, ' (', company_name ,' ) | ', zoom_id) AS text, zoom_id AS id
+            FROM leads
+            WHERE type IN (2,3) and status = 2 and (first_name like '%$query%' OR last_name LIKE '%$query%' OR company_name LIKE '%$query%'
+            OR zoom_id LIKE '%$query%')
+        ");
+        //dd($existing_opportunities);
+        //$existing_opportunities = $existing_opportunities->get();
+        return response()->json(['items'=>$existing_opportunities]);
     }
 }

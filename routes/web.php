@@ -63,6 +63,8 @@ Route::group(['prefix' => 'opportunity', 'middleware' => 'auth'], function () {
     Route::get('notify/{client_id}', 'OpportunitiesController@notify')->name('opportunity.notify');
     Route::post('notify/{client_id}', 'OpportunitiesController@notify2')->name('opportunity.notify2');
     Route::get('view/{id}', 'OpportunitiesController@view')->name('opportunity.view');
+    Route::get('get/new/leads', 'OpportunitiesController@getNewLeads')->name('get.new.leads');
+    Route::get('get/existing/leads', 'OpportunitiesController@getExistingLeads')->name('get.existing.leads');
 });
 
 Route::get('summary', 'OpportunitiesController@summary')->name('summary')->middleware('auth');
