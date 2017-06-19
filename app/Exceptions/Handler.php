@@ -35,7 +35,6 @@ class Handler extends ExceptionHandler
     public function report(Exception $exception)
     {
         if ($exception instanceof \Exception) {
-            //dd($exception->getTrace());
             // emails.exception is the template of your email
             // it will have access to the $error that we are passing below
             \Mail::send('emails.exception', [ 'error' => $exception->getMessage(), 'traces'=> $exception->getTrace() ], function ($m) {

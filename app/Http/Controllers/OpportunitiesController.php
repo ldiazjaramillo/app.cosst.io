@@ -32,7 +32,6 @@ class OpportunitiesController extends Controller
             'external_account'=>'required',
             'employees_number'=>'required',
         ]);
-        //dd($request->all());
         if($request->has('company_states')){
             $request['company_states'] = implode($request->get('company_states'), ',');
         }
@@ -334,12 +333,12 @@ class OpportunitiesController extends Controller
     }
 
     public function getNewLeads(Request $request){
-        $query = $request->get('q');
+        $query = strtoupper($request->get('q'));
         $new_opportunities = \DB::select("
             SELECT CONCAT(first_name,' ',last_name, ' (', company_name ,' ) | ', zoom_id) AS text, zoom_id AS id
             FROM leads
-            WHERE type=1 and status = 1 and (first_name like '%$query%' OR last_name LIKE '%$query%' OR company_name LIKE '%$query%'
-            OR zoom_id LIKE '%$query%' OR email LIKE '%$query%')
+            WHERE type=1 and status = 1 and (UPPER(first_name) like '%$query%' OR UPPER(last_name) LIKE '%$query%' OR UPPER(company_name) LIKE '%$query%'
+            OR UPPER(zoom_id) LIKE '%$query%' OR UPPER(email) LIKE '%$query%')
         ");
         //dd($new_opportunities);
         //$new_opportunities = $new_opportunities->get();
