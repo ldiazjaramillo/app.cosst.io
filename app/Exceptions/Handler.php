@@ -5,6 +5,8 @@ namespace App\Exceptions;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use GuzzleHttp\Client;
+use Mail;
 
 class Handler extends ExceptionHandler
 {
@@ -16,10 +18,10 @@ class Handler extends ExceptionHandler
     protected $dontReport = [
         \Illuminate\Auth\AuthenticationException::class,
         \Illuminate\Auth\Access\AuthorizationException::class,
-        \Symfony\Component\HttpKernel\Exception\HttpException::class,
-        \Illuminate\Database\Eloquent\ModelNotFoundException::class,
+        //\Symfony\Component\HttpKernel\Exception\HttpException::class,
+        //\Illuminate\Database\Eloquent\ModelNotFoundException::class,
         \Illuminate\Session\TokenMismatchException::class,
-        \Illuminate\Validation\ValidationException::class,
+        //\Illuminate\Validation\ValidationException::class,
     ];
 
     /**
@@ -32,6 +34,15 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $exception)
     {
+        if ($exception instanceof \Exception) {
+            //dd($exception->getTrace());
+            // emails.exception is the template of your email
+            // it will have access to the $error that we are passing below
+            Mail::send('emails.exception', ['error' => $exception->getMessage(), 'trace'=> $exception->getTrace()], function ($m) {
+                $m->to('luis@vitalfew.io', 'Luis Diaz')->subject('Error on gusto.cosst.io');
+            });
+        }
+
         parent::report($exception);
     }
 

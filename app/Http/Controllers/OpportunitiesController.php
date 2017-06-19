@@ -217,14 +217,15 @@ class OpportunitiesController extends Controller
             $mail = implode("\r\n", $mail);
             header("text/calendar");
             file_put_contents($filename, $mail);
-
+            $username = \Auth::user()->username;
             $message->subject("Invitation");
-            $message->from('invites@gusto.cosst.io');
+            $message->from("$username@mygusto.com");
             if(env('APP_ENV') == "local"){
-                $message->to(['ldiazjaramillo@gmail.com']);
+                $message->to(['luis@vitalfew.io']);
             }else{
                 $message->to([ $current_agent['email'], $data['client_email'] ]);
-                $message->bbc('ethan@mygusto.com', 'Ethan');
+                $message->bcc('ethan@mygusto.com', 'Ethan');
+                $message->bcc("$username@mygusto.com", \Auth::user()->name);
             }
             
             $message->attach($filename, array('mime' => "text/calendar"));
