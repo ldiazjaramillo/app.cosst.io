@@ -81,7 +81,8 @@
  <div class="row">
     <div class='col-sm-4'>
         <div class="form-group">
-            <select name="agent_id" class="form-control">
+            <input type="hidden" name="agent_id" value="{{ $agent_id }}">
+            <select name="agent_id2" class="form-control" disabled>
             @foreach($agents as $index => $value)
                 <option value="{{ $index }}"@if($index == $agent_id) selected @endif>{{ $value['name'] }}</option>
             @endforeach
@@ -105,12 +106,15 @@
     </div>
 </div>
 <div class="text-right">
- <!--   <a href="./{{ $opportunity->id }}" class="btn btn-primary">Change Agent</a> -->
+    <a href="./{{ $opportunity->id }}" class="btn btn-primary">Change Agent</a>
     <button class="btn btn-default">Continue</button>
 </div>
 </form>
 <div>&nbsp;</div>
-
+<!-- Calendly inline widget begin -->
+<div class="calendly-inline-widget" data-url="https://{{ $agent['calendar'] }}" style="min-width:320px;height:580px;"></div>
+<script type="text/javascript" src="https://calendly.com/assets/external/widget.js"></script>
+<!-- Calendly inline widget end -->
 @endsection
 
 @section('bottom_script')
