@@ -3,6 +3,7 @@
 @section('content')
 @php 
 $options = [0=>'No', 1=>'Yes'];
+$status = [1=>'No Appoinment', 2=>'Appoinment Scheduled'];
 $agents = [
             1 => [
                 0 =>['name'=>'Joey B', 'email'=>'joey.brown@gusto.com', 'calendar'=>'calendly.com/joey-brown'],
@@ -25,6 +26,7 @@ $agents = [
         ];
 @endphp
 <h2>{{ $opportunity->contact_name }} at {{ $opportunity->company_name }}</h2>
+<h3>Status: {{ $status[$opportunity->status] }}</h3>
 <ul>
     <li><strong>Client ID: </strong>{{ $opportunity->client_id }}</li>
     <li><strong>Is decision maker: </strong></strong>{{ $options[$opportunity->decision_maker] }}</li>
@@ -32,9 +34,11 @@ $agents = [
     <li><strong>Email: </strong>{{ $opportunity->contact_email }}</li>
     <li><strong>Company State: </strong>{{ $opportunity->company_state }}</li>
     <li><strong>Employees: </strong>{{ $opportunity->employees_number }}</li>
+    @if(isset($agents[$opportunity->type_id][$opportunity->agent_id]['name']))
     <li><strong>Gusto Agent: </strong>{{ $agents[$opportunity->type_id][$opportunity->agent_id]['name'] }}</li>
+    @endif
     @if($opportunity->date)
-    <li><strong>Invitation Date: </strong>{{ $opportunity->date }}</li>
+    <li><strong>Invitation Date: </strong>{{ \Carbon\Carbon::parse($opportunity->date)->format('Y-m-d') }}</li>
     @endif
 </ul>
 <a href="/summary" class="btn btn-default">Go back</a>

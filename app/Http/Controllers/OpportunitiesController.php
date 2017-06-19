@@ -324,7 +324,7 @@ class OpportunitiesController extends Controller
     }
 
     public function summary(){
-        $opportunities = \App\Opportunity::all()->sortByDesc('created_at');
+        $opportunities = \App\Opportunity::where('status', 2)->get()->sortByDesc('created_at');
         return view('opportunities.summary', compact('opportunities'));
     }
 
