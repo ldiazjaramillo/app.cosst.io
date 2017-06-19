@@ -339,7 +339,7 @@ class OpportunitiesController extends Controller
             SELECT CONCAT(first_name,' ',last_name, ' (', company_name ,' ) | ', zoom_id) AS text, zoom_id AS id
             FROM leads
             WHERE type=1 and status = 1 and (first_name like '%$query%' OR last_name LIKE '%$query%' OR company_name LIKE '%$query%'
-            OR zoom_id LIKE '%$query%')
+            OR zoom_id LIKE '%$query%' OR email LIKE '%$query%')
         ");
         //dd($new_opportunities);
         //$new_opportunities = $new_opportunities->get();
@@ -352,7 +352,7 @@ class OpportunitiesController extends Controller
             SELECT CONCAT(first_name,' ',last_name, ' (', company_name ,' ) | ', zoom_id) AS text, zoom_id AS id
             FROM leads
             WHERE type IN (2,3) and status = 2 and (first_name like '%$query%' OR last_name LIKE '%$query%' OR company_name LIKE '%$query%'
-            OR zoom_id LIKE '%$query%')
+            OR zoom_id LIKE '%$query%' OR email LIKE '%$query%')
         ");
         //dd($existing_opportunities);
         //$existing_opportunities = $existing_opportunities->get();

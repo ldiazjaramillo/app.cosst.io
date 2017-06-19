@@ -32,9 +32,7 @@ $agents = [
     <li><strong>Email: </strong>{{ $opportunity->contact_email }}</li>
     <li><strong>Company State: </strong>{{ $opportunity->company_state }}</li>
     <li><strong>Employees: </strong>{{ $opportunity->employees_number }}</li>
-    @if($opportunity->type_id != 1)
     <li><strong>Gusto Agent: </strong>{{ $agents[$opportunity->type_id][$opportunity->agent_id]['name'] }}</li>
-    @endif
     @if($opportunity->date)
     <li><strong>Invitation Date: </strong>{{ $opportunity->date }}</li>
     @endif
