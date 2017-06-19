@@ -6,7 +6,7 @@
 <h2>Also, Google sheet file has been update it. Take a look at it, <a href="https://drive.google.com/drive/folders/{{ ENV('GOOGLE_DRIVE_FOLDER_ID') }}" target="_blank">Here</a></h2>
 <div>&nbsp;</div>
 @if(isset($message))
-<h2>Sending message to slack failed. You could refresg this page to try again.</h2>
+<h2>Sending message to slack failed. You could refresh this page to try again.</h2>
 <h3>{{ $message }}</h3>
 @endif
 <div class="col-md-12 text-center">

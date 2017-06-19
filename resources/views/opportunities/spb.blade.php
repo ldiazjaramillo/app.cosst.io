@@ -67,15 +67,50 @@
     </div>
 </div>
 <div>&nbsp;</div>
-<div class="text-right">
-    <a href="./{{ $opportunity->id }}" class="btn btn-primary">Change Agent</a>
-    <a href="/opportunity/notify/{{ $opportunity->id }}" class="btn btn-default" id="btn_spb">Continue</a>
+@if (count($errors) > 0)
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+<form method="post" action="{{ route('opportunity.notify', [ $opportunity->id ]) }}">
+{{ csrf_field() }}
+ <div class="row">
+    <div class='col-sm-4'>
+        <div class="form-group">
+            <select name="agent_id" class="form-control">
+            @foreach($agents as $index => $value)
+                <option value="{{ $index }}"@if($index == $agent_id) selected @endif>{{ $value['name'] }}</option>
+            @endforeach
+            </select>
+        </div>
+    </div>
+    <div class='col-sm-4'>
+        <div class="form-group">
+            <div class='input-group date' id='date'>
+                <input type='text' class="form-control" name="date" />
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class='col-sm-4'>
+        <div class="form-group">
+            <textarea class="form-control" name="comment"></textarea>
+        </div>
+    </div>
 </div>
+<div class="text-right">
+ <!--   <a href="./{{ $opportunity->id }}" class="btn btn-primary">Change Agent</a> -->
+    <button class="btn btn-default">Continue</button>
+</div>
+</form>
 <div>&nbsp;</div>
-<!-- Calendly inline widget begin -->
-<div class="calendly-inline-widget" data-url="https://{{ $agent['calendar'] }}" style="min-width:320px;height:580px;"></div>
-<script type="text/javascript" src="https://calendly.com/assets/external/widget.js"></script>
-<!-- Calendly inline widget end -->
+
 @endsection
 
 @section('bottom_script')
@@ -84,6 +119,13 @@ $(document).ready(function(){
     $("#btn_spb").on('click', function(e){
         if(confirm('Did you sent calendly form?')) return;
         else e.preventDefault();
+    });
+    $('#date').datetimepicker({
+        daysOfWeekDisabled: [0, 6],
+        //inline: true,
+        sideBySide: true,
+        stepping: 30,
+        minDate: moment()
     });
 });
 </script>

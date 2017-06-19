@@ -17,6 +17,15 @@
         </div>
     </div>
 </div>
+@if (count($errors) > 0)
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 <form role="form" method="POST" action="{{ route('opportunity.store') }}">
     {{ csrf_field() }}
     <input name="client_id" type="hidden" required="required" class="form-control" value="@if($new_lead) {{$new_lead->zoom_id}} @endif" />
