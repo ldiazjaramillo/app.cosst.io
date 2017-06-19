@@ -224,7 +224,7 @@ class OpportunitiesController extends Controller
                 $message->to(['ldiazjaramillo@gmail.com']);
             }else{
                 $message->to([ $current_agent['email'], $data['client_email'] ]);
-                $message->bbc('ethan@vitalfew.io', 'Ethan');
+                $message->bbc('ethan@mygusto.com', 'Ethan');
             }
             
             $message->attach($filename, array('mime' => "text/calendar"));
