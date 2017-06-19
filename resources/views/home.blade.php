@@ -6,12 +6,13 @@
         <div class="col-md-6 col-md-offset-3">
             <form class="form" action={{ route('opportunity.create') }}>
                 <div class="form-group">
-                    <select name="new_id" id="new_id" class="form-control input-lg select2">
+                    <input name="new_id" id="new_id" class="form-control input-lg" placeholder="New Opportunity ID">
+                    <!--<select name="new_id" id="new_id" class="form-control input-lg select2">
                         <option value="">New Opportunity ID</option>
                     @foreach($new_opportunities as $value => $name)
                         <option value="{{ $value }}">{{ $name }}</option>
                     @endforeach
-                    </select>
+                    </select>-->
                 </div>
                 <div class="form-group text-center">
                 - Or -
