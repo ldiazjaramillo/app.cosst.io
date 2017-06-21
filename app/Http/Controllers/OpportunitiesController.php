@@ -197,6 +197,7 @@ class OpportunitiesController extends Controller
         $opportunity->agent_id = $request->get('agent_id');
         $opportunity->date = $Date->toDateTimeString();
         $opportunity->comment = $request->get('comment');
+        $opportunity->timezone = $request->get('timezone');
         $opportunity->status = 2;
         $opportunity->save();
         $current_agent = $agents[$opportunity->type_id][$opportunity->agent_id];
