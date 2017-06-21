@@ -95,26 +95,17 @@
             @php
                 //$tzlist = DateTimeZone::listIdentifiers(DateTimeZone::ALL);
                 $tzlist = array();
-                $tzlist['Pacific/Honolulu']     = 'Hawaii-Aleutian Standard Time (HAST)';
-                $tzlist['US/Aleutian']          = 'Hawaii-Aleutian with Daylight Savings Time (HADT)';
-                $tzlist['Etc/GMT+9']            = 'Alaska Standard Time (AKST)';
-                $tzlist['America/Anchorage']    = 'Alaska with Daylight Savings Time (AKDT)';
-                $tzlist['America/Dawson_Creek'] = 'Pacific Standard Time (PST)';
-                $tzlist['PST8PDT']              = 'Pacific with Daylight Savings Time (PDT)';
-                $tzlist['MST']                  = 'Mountain Standard Time (MST)';
-                $tzlist['MST7MDT']              = 'Mountain with Daylight Savings Time (MDT)';
-                $tzlist['Canada/Saskatchewan']  = 'Central Standard Time (CST)';
-                $tzlist['CST6CDT']              = 'Central with Daylight Savings Time (CDT)';
                 $tzlist['America/New_York']     = 'Eastern Standard Time (EST)';
-                $tzlist['EST5EDT']              = 'Eastern with Daylight Savings Time (EDT)';
+                $tzlist['America/Chicago']      = 'Central Standard Time (CST)';
+                $tzlist['America/Denver'] = 'Mountain Standard Time (MST)';
+                $tzlist['America/Los_Angeles'] = 'Pacific Standard Time (PST)';
                 $tzlist['America/Puerto_Rico']  = 'Atlantic Standard Time (AST)';
-                $tzlist['America/Halifax']      = 'Atlantic with Daylight Savings Time (ADT)';
                 //dd($tzlist);
             @endphp
             <select name="timezone" id="timezone" class="form-control select2" required>
                 <option value="">Select a timezone</option>
             @foreach($tzlist as $index => $value)
-                <option value="{{ $index }}" @if($index == "America/Puerto_Rico") selected @endif>{{ $value }}</option>
+                <option value="{{ $index }}" @if($index == "America/New_York") selected @endif>{{ $value }}</option>
             @endforeach
             </select>
         </div>
