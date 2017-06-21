@@ -213,11 +213,13 @@ class OpportunitiesController extends Controller
         $data['contact_name'] = $opportunity->contact_name;
         $data['contact_phone'] = $opportunity->contact_phone;
         $data['employees_number'] = $opportunity->employees_number;
+        $name = explode(' ', trim($opportunity->contact_name));
+        $first_name = $name[0];
         $data['description'] = "$opportunity->company_name \n
             Contact Name: $opportunity->contact_name \n
             Phone: $opportunity->contact_phone \n
             Number of Employees: $opportunity->employees_number \n
-            Note:  $opportunity->contact_name please click accept so ".$current_agent['name']." knows that you will be available at the agreed upon time. Thank you!";
+            Note: $first_name please click accept so ".$current_agent['name']." knows that you will be available at the agreed upon time. Thank you!";
         
         try{
             $client = new Client();
