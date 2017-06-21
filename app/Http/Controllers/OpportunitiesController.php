@@ -230,7 +230,7 @@ class OpportunitiesController extends Controller
                 'json' => [
                     "summary" => $data['title'],
                     "description" => $data['description'],
-                    "location" => "gusto.com",
+                    "location" => "Will call ".$opportunity->contact_name." at ".$opportunity->contact_phone." ".$opportunity->contact_email,
                     "start_date" => $DateTimezone->toIso8601String(),
                     "end_date" => $DateTimezone->copy()->addMinutes(30)->toIso8601String(),
                     "email1" => $data['client_email'],
