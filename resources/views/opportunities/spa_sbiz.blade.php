@@ -106,7 +106,7 @@
                 $tzlist['MST7MDT']              = 'Mountain with Daylight Savings Time (MDT)';
                 $tzlist['Canada/Saskatchewan']  = 'Central Standard Time (CST)';
                 $tzlist['CST6CDT']              = 'Central with Daylight Savings Time (CDT)';
-                $tzlist['EST']                  = 'Eastern Standard Time (EST)';
+                $tzlist['America/New_York']     = 'Eastern Standard Time (EST)';
                 $tzlist['EST5EDT']              = 'Eastern with Daylight Savings Time (EDT)';
                 $tzlist['America/Puerto_Rico']  = 'Atlantic Standard Time (AST)';
                 $tzlist['America/Halifax']      = 'Atlantic with Daylight Savings Time (ADT)';
