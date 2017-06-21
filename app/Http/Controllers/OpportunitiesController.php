@@ -81,21 +81,6 @@ class OpportunitiesController extends Controller
         }
     }
 
-    public function spa_sbiz($client_id){
-        $opportunity = \App\Opportunity::find($client_id);
-        $sbiz = \App\SBIZ::all()->first();
-        $agent_id = $sbiz_id = $sbiz->agent_id;
-        $agents = [
-            0 =>['name'=>'Joey B', 'email'=>'joey.brown@gusto.com', 'calendar'=>'calendly.com/joey-brown'],
-            1 =>['name'=>'Candace S', 'email'=>'candace.sake@gusto.com', 'calendar'=>'calendly.com/candace-sake'],
-            2 =>['name'=>'Rene E', 'email'=>'rene.etter-garrette@gusto.com', 'calendar'=>'calendly.com/rene-gusto'],
-            3 =>['name'=>'Donny T', 'email'=>'donny.tachis@gusto.com', 'calendar'=>'calendly.com/donny-tachis'],
-        ];
-        $agent = $agents[$sbiz_id];
-        $this->updateManagerSBIZ($sbiz);
-        return view('opportunities.spa_sbiz', compact('opportunity', 'agent', 'agents', 'agent_id'));
-    }
-
     public function updateManagerSBIZ($agent){
         //dd($agent);
         if($agent->agent_id == 3) $agent->agent_id = 0;
@@ -117,10 +102,27 @@ class OpportunitiesController extends Controller
         $agent->save();
     }
 
-    public function spb_mmfs($client_id){
-        $opportunity = \App\Opportunity::find($client_id);
-        $mmfs = \App\MMFS::all()->first();
-        $agent_id = $mmfs_id = $mmfs->agent_id;
+    public function spa_sbiz($id){
+        $opportunity = \App\Opportunity::find($id);
+        $agents = [
+            0 =>['name'=>'Joey B', 'email'=>'joey.brown@gusto.com', 'calendar'=>'calendly.com/joey-brown'],
+            1 =>['name'=>'Candace S', 'email'=>'candace.sake@gusto.com', 'calendar'=>'calendly.com/candace-sake'],
+            2 =>['name'=>'Rene E', 'email'=>'rene.etter-garrette@gusto.com', 'calendar'=>'calendly.com/rene-gusto'],
+            3 =>['name'=>'Donny T', 'email'=>'donny.tachis@gusto.com', 'calendar'=>'calendly.com/donny-tachis'],
+        ];
+        if(!$opportunity->agent_id){
+            $sbiz = \App\SBIZ::all()->first();
+            $agent_id = $sbiz->agent_id;
+            $this->updateManagerSBIZ($sbiz);
+        }else{
+            $agent_id = $opportunity->agent_id;
+        }
+        $agent = $agents[$agent_id];
+        return view('opportunities.spa_sbiz', compact('opportunity', 'agent', 'agents', 'agent_id'));
+    }
+
+    public function spb_mmfs($id){
+        $opportunity = \App\Opportunity::find($id);
         $agents = [
             0=>['name'=>'Brandon Boyle', 'email'=>'brandon.boyle@gusto.com', 'calendar'=>'calendly.com/brandon_gusto'],
             1=>['name'=>'Michael Reddish', 'email'=>'michael.reddish@gusto.com', 'calendar'=>'calendly.com/michael-reddish'],
@@ -128,22 +130,33 @@ class OpportunitiesController extends Controller
             3=>['name'=>'Johnny Wells', 'email'=>'johnny.wells@gusto.com', 'calendar'=>'calendly.com/johnnywells'],
             4=>['name'=>'Kabir Chopra', 'email'=>'kabir.chopra@gusto.com', 'calendar'=>'calendly.com/kabirchopra'],
         ];
-        $agent = $agents[$mmfs_id];
-        $this->updateManagerMMFS($mmfs);
+        if(!$opportunity->agent_id){
+            $mmfs = \App\MMFS::all()->first();
+            $agent_id = $mmfs->agent_id;
+            $this->updateManagerMMFS($mmfs);
+        }else{
+            $agent_id = $opportunity->agent_id;
+        }
+        $agent = $agents[$agent_id];
+        
         return view('opportunities.spb', compact('opportunity', 'agent', 'agents', 'agent_id'));
     }
 
     public function spb_mmpr($client_id){
         $opportunity = \App\Opportunity::find($client_id);
-        $mmpr = \App\MMPR::all()->first();
-        $agent_id = $mmpr_id = $mmpr->agent_id;
         $agents = [
             0=>['name'=>'Yekta Tehrani', 'email'=>'yekta.tehrani@gusto.com', 'calendar'=>'calendly.com/yekta-tehrani'],
             1=>['name'=>'Matt Worden', 'email'=>'matt.worden@gusto.com', 'calendar'=>'calendly.com/matt-worden'],
             2=>['name'=>'Matthew Baker', 'email'=>'matthew.baker@gusto.com', 'calendar'=>'calendly.com/matthewbaker'],
         ];
-        $agent = $agents[$mmpr_id];
-        $this->updateManagerMMPR($mmpr);
+        if(!$opportunity->agent_id){
+            $mmpr = \App\MMPR::all()->first();
+            $agent_id = $mmpr->agent_id;
+            $this->updateManagerMMPR($mmpr);
+        }else{
+            $agent_id = $opportunity->agent_id;
+        }
+        $agent = $agents[$agent_id];
         return view('opportunities.spb', compact('opportunity', 'agent', 'agents', 'agent_id'));
     }
 
@@ -171,9 +184,14 @@ class OpportunitiesController extends Controller
         $this->validate($request, [
             'agent_id'=>'required',
             'date'=>'date|required',
+            'timezone'=>'required',
             //'comment'=>'required',
         ]);
-        $Date = \Carbon\Carbon::parse($request->get('date'));
+        $timezone = $request->get('timezone');
+        $Date = \Carbon\Carbon::parse($request->get('date'), $timezone)->timezone('UTC');
+        $DateTimezone = \Carbon\Carbon::parse($request->get('date'), $timezone);
+       //echo $Date;
+        //dd($DateTimezone);
         //$Date = \Carbon\Carbon::parse($request->get('date'), 'PST');
         $opportunity = \App\Opportunity::find($id);
         $opportunity->agent_id = $request->get('agent_id');
@@ -182,8 +200,11 @@ class OpportunitiesController extends Controller
         $opportunity->status = 2;
         $opportunity->save();
         $current_agent = $agents[$opportunity->type_id][$opportunity->agent_id];
-        $data['start_date'] = $Date->timestamp;
-        $data['end_date'] = $Date->copy()->addMinutes(30)->timestamp;
+        $data['start_date'] = $DateTimezone->timestamp;
+        $data['end_date'] = $DateTimezone->copy()->addMinutes(30)->timestamp;
+        $data['timezone'] = $DateTimezone->tzName;
+        $data['dtstart'] = $DateTimezone->format('Ymd\THis\Z');
+        $data['dtend'] = $DateTimezone->copy()->addMinutes(30)->format('Ymd\THis\Z');
         $data['title'] = "GUSTO >> PayRoll Review (".$current_agent['name'].") to Call ".$opportunity->contact_name;
         $data['organizer_name'] = $current_agent['name'];
         $data['organizer_email'] = $current_agent['email'];
@@ -197,20 +218,46 @@ class OpportunitiesController extends Controller
             Phone: $opportunity->phone \n
             Number of Employees: $opportunity->employees_number \n
             Note:  $opportunity->contact_name please click accept so ".$current_agent['name']." knows that you will be available at the agreed upon time. Thank you!";
+        
+        try{
+            $client = new Client();
+            $url = "https://hooks.zapier.com/hooks/catch/2314747/9x0g8g/";
+            if(env('APP_ENV') == "local"){
+                $data['client_email'] = "luis@vitalfew.io";
+                $data['organizer_email'] = "ethan@vitalfew.io";
+            }
+            $response = $client->post($url, [
+                'json' => [
+                    "summary" => $data['title'],
+                    "description" => $data['description'],
+                    "location" => "gusto.com",
+                    "start_date" => $DateTimezone->toIso8601String(),
+                    "end_date" => $DateTimezone->copy()->addMinutes(30)->toIso8601String(),
+                    "email1" => $data['client_email'],
+                    "email2" => $data['organizer_email']
+                ]
+            ]);
+
+        }catch (\Exception $e){
+            return $this->notify($opportunity->id);
+        }
+
+        return $this->notify($opportunity->id);
+
         Mail::send('emails.calendar_invite', ['data'=>$data], function ($message) use ($data, $current_agent) {
             $time = time();
             $filename = "/tmp/invite_$time.ics";
             $meeting_duration = (1800); // half hour
             $meetingstamp = $data['start_date'];
-            $dtstart = date( 'Ymd\THis\Z', ($data['start_date']) );
-            //dd($dtstart);
-            $dtend =  date('Ymd\THis\Z', ($data['end_date']) );
+            $dtstart = $data['dtstart'];
+            $dtend = $data['dtend'];
             $todaystamp = date('Ymd\THis\Z');
             $uid = date('Ymd').'T'.date('His').'-'.rand().'@gusto.com';
             $description = strip_tags($data['description']);
             $location = "gusto.com";
             $title_invite = $data['title'];
-            $organizer = "CN=".$current_agent['name'].":mailto:".$current_agent['email'];
+            //$organizer = "CN=".$current_agent['name'].":mailto:".$current_agent['email'];
+            $organizer = "CN=Ethan Bloomfield:mailto:ethan@mygusto.com";
 
             // ICS
             $mail[0] = "BEGIN:VCALENDAR";
@@ -219,9 +266,9 @@ class OpportunitiesController extends Controller
             $mail[3] = "CALSCALE:GREGORIAN";
             $mail[4] = "METHOD:REQUEST";
             $mail[5] = "BEGIN:VEVENT";
-            $mail[6] = "DTSTART;TZID=US-Eastern:" . $dtstart;
-            $mail[7] = "DTEND;TZID=US-Eastern:" . $dtend;
-            $mail[8] = "DTSTAMP;TZID=US-Eastern:" . $todaystamp;
+            $mail[6] = "DTSTART;TZID=".$data['timezone'].":" . $dtstart;
+            $mail[7] = "DTEND;TZID=".$data['timezone'].":" . $dtend;
+            $mail[8] = "DTSTAMP;TZID=".$data['timezone'].":" . $todaystamp;
             $mail[9] = "UID:" . $uid;
             $mail[10] = "ORGANIZER;" . $organizer;
             $agent_mail = $current_agent['email'];
@@ -245,7 +292,7 @@ class OpportunitiesController extends Controller
             $message->subject("Invitation");
             $message->from("$username@mygusto.com");
             if(env('APP_ENV') == "local"){
-                $message->to(['luis@vitalfew.io']);
+                $message->to(['luis@vitalfew.io', 'ethan@mygusto.com']);
             }else{
                 $message->to([ $current_agent['email'], $data['client_email'] ]);
                 $message->cc('ethan@mygusto.com', 'Ethan');

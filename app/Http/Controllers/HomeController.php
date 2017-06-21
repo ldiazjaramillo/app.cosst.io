@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Cache;
 use \Carbon\Carbon;
+use App\Services\Google;
+
 class HomeController extends Controller
 {
     /**
@@ -24,6 +26,8 @@ class HomeController extends Controller
      */
     public function index()
     {
+        //$result = $google->createEvent();
+        //dd($result->htmlLink);
         return view('home');
     }
 }
