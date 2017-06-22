@@ -33,14 +33,15 @@ class Handler extends ExceptionHandler
      * @return void
      */
     public function report(Exception $exception)
-    {
-        if ($exception instanceof \Exception) {
+    {   
+        if ($exception instanceof \Exception && !in_array(get_class($exception), $this->dontReport) && env('APP_ENV') != "local") {
             // emails.exception is the template of your email
             // it will have access to the $error that we are passing below
-            \Mail::send('emails.exception', [ 'error' => $exception->getMessage(), 'traces'=> $exception->getTrace() ], function ($m) {
-                $m->from("no-reply@cosst.io");
+            \Mail::send('emails.exception', [ 'error' => $exception->getMessage(), 'traces'=> $exception->getTrace() ], function ($m) use ($exception) {
+                $array_name = explode('\\', get_class($exception));
+                $m->from("no-reply@cosst.io", $array_name[count($array_name) - 1]);
                 $m->to('luis@vitalfew.io');
-                $m->subject('Error on gusto.cosst.io');
+                $m->subject($exception->getMessage());
             });
         }
 

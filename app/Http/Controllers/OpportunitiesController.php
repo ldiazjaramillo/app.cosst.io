@@ -430,7 +430,7 @@ class OpportunitiesController extends Controller
                 $opportunities = \App\Opportunity::where('date', '>=', $date_from." 00:00:00")->where('date', '<=', $date_to." 23:59:59")->get();
             break;
             case 2:
-                $opportunities = \App\Opportunity::where('created_at', '>=', $date_from." 00:00:00")->where('date', '<=', $date_to." 23:59:59")->get();
+                $opportunities = \App\Opportunity::where('created_at', '>=', $date_from." 00:00:00")->where('created_at', '<=', $date_to." 23:59:59")->get();
             break;
         endswitch;
         return view('opportunities.reports', compact('opportunities', 'search_type', 'date_from', 'date_to'));

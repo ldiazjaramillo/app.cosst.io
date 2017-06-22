@@ -1,5 +1,6 @@
 @if(\Auth::user())<h2>Error message from: {{ \Auth::user()->email }} ({{ \Auth::user()->name }})</h2>@endif
 <h3>Error Message: {{ $error }}</h3>
+<h2>{{ \Carbon\Carbon::now('America/Caracas') }}</h2>
 <ol>
 @foreach($traces as $trace)
 <li>
