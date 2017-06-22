@@ -408,4 +408,27 @@ class OpportunitiesController extends Controller
         //$existing_opportunities = $existing_opportunities->get();
         return response()->json(['items'=>$existing_opportunities]);
     }
+
+    public function reports(){
+        $search_type = "";
+        $search_date = date('Y-m-d');
+        return view('opportunities.reports', compact('search_type', 'search_date'));
+    }
+
+    public function get_reports(Request $request){
+        $this->validate($request, [
+            'search_type'=>'required',
+        ]);
+        $search_type = $request->get('search_type');
+        $search_date = $request->get('date');
+        switch($search_type):
+            case 1:
+                $opportunities = \App\Opportunity::where('date', '>=', $search_date." 00:00:00")->where('date', '<=', $search_date." 23:59:59")->get();
+            break;
+            case 2:
+                $opportunities = \App\Opportunity::where('created_at', '>=', $search_date." 00:00:00")->where('date', '<=', $search_date." 23:59:59")->get();
+            break;
+        endswitch;
+        return view('opportunities.reports', compact('opportunities', 'search_type', 'search_date'));
+    }
 }
