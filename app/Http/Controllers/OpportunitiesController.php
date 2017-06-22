@@ -411,24 +411,28 @@ class OpportunitiesController extends Controller
 
     public function reports(){
         $search_type = "";
-        $search_date = date('Y-m-d');
-        return view('opportunities.reports', compact('search_type', 'search_date'));
+        $date_from = \Carbon\Carbon::parse('yesterday')->format('Y-m-d');
+        $date_to = date('Y-m-d');
+        return view('opportunities.reports', compact('search_type', 'date_from', 'date_to'));
     }
 
     public function get_reports(Request $request){
         $this->validate($request, [
-            'search_type'=>'required',
+            'search_type' => 'required',
+            'date_from' => 'required|date|date_format:Y-m-d|before:date_to',
+            'date_to' => 'required|date|date_format:Y-m-d',
         ]);
         $search_type = $request->get('search_type');
-        $search_date = $request->get('date');
+        $date_from = $request->get('date_from');
+        $date_to = $request->get('date_to');
         switch($search_type):
             case 1:
-                $opportunities = \App\Opportunity::where('date', '>=', $search_date." 00:00:00")->where('date', '<=', $search_date." 23:59:59")->get();
+                $opportunities = \App\Opportunity::where('date', '>=', $date_from." 00:00:00")->where('date', '<=', $date_to." 23:59:59")->get();
             break;
             case 2:
-                $opportunities = \App\Opportunity::where('created_at', '>=', $search_date." 00:00:00")->where('date', '<=', $search_date." 23:59:59")->get();
+                $opportunities = \App\Opportunity::where('created_at', '>=', $date_from." 00:00:00")->where('date', '<=', $date_to." 23:59:59")->get();
             break;
         endswitch;
-        return view('opportunities.reports', compact('opportunities', 'search_type', 'search_date'));
+        return view('opportunities.reports', compact('opportunities', 'search_type', 'date_from', 'date_to'));
     }
 }

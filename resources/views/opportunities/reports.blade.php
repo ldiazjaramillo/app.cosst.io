@@ -21,7 +21,7 @@ $search_options = [
 <form method="post" action="{{ route('opportunity.reports') }}">
 {{ csrf_field() }}
      <div class='col-sm-4'>
-        <div class="form-group">
+        <div class="form-group{{ $errors->has('search_type') ? ' has-error' : '' }}">
             <select name="search_type" id="search_type" class="form-control" required>
             @foreach($search_options as $index => $value)
                 <option value="{{ $index }}" @if($index == $search_type) selected @endif>{{ $value }}</option>
@@ -29,9 +29,14 @@ $search_options = [
             </select>
         </div>
     </div>
-    <div class='col-sm-4'>
-        <div class="form-group">
-            <input type="text" id="date" name="date" class="form-control" value="{{$search_date}}">
+    <div class='col-sm-2'>
+        <div class="form-group{{ $errors->has('date_from') ? ' has-error' : '' }}">
+            <input type="text" id="date_from" name="date_from" class="form-control" value="{{$date_from}}">
+        </div>
+    </div>
+    <div class='col-sm-2'>
+        <div class="form-group"{{ $errors->has('date_to') ? ' has-error' : '' }}>
+            <input type="text" id="date_to" name="date_to" class="form-control" value="{{$date_to}}">
         </div>
     </div>
     <div class='col-sm-4'>
@@ -80,12 +85,23 @@ $(document).ready(function(){
         if(confirm('Did you sent calendly form?')) return;
         else e.preventDefault();
     });
-    $('#date').datetimepicker({
+    $('#date_from').datetimepicker({
         daysOfWeekDisabled: [0, 6],
         //inline: true,
         format: 'YYYY-MM-DD',
         sideBySide: false,
         useCurrent: false,  
+    });
+    $('#date_to').datetimepicker({
+        daysOfWeekDisabled: [0, 6],
+        format: 'YYYY-MM-DD',
+        useCurrent: false //Important! See issue #1075
+    });
+    $("#date_from").on("dp.change", function (e) {
+        $('#date_to').data("DateTimePicker").minDate(e.date);
+    });
+    $("#date_to").on("dp.change", function (e) {
+        $('#date_from').data("DateTimePicker").maxDate(e.date);
     });
     $('#table').DataTable();
 });
