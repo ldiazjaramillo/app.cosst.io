@@ -12,7 +12,7 @@
     </tr>
 </thead>
 <tbody>
-    @foreach($opportunities as $opportunity)
+    @forelse($opportunities as $opportunity)
     <tr>
         <td>{{ $opportunity->client_id }}</td>
         <td>{{ $opportunity->contact_name }}</td>
@@ -23,6 +23,10 @@
         <td>{{ $opportunity->gusto_agent }}</td>
         <td>{{ $opportunity->status_name }}</td>
     </tr>
-    @endforeach
+    @empty
+        <tr>
+            <td colspan="8">No data available for this date</td>
+        </tr>
+    @endforelse
 </tbody>
 </table>
