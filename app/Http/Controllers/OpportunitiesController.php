@@ -389,7 +389,7 @@ class OpportunitiesController extends Controller
             SELECT CONCAT(COALESCE(`first_name`, ''),' ', COALESCE(`last_name`, ''), ' (', COALESCE(`company_name`, '') ,' ) | ', COALESCE(`zoom_id`, '') ) AS text, id
             FROM leads
             WHERE type=1 and status = 1 and (first_name like '%$query%' OR last_name LIKE '%$query%' OR company_name LIKE '%$query%'
-            OR zoom_id LIKE '%$query%' OR email LIKE '%$query%')
+            OR zoom_id LIKE '%$query%' OR company_zoom_id LIKE '%$query%' OR email LIKE '%$query%')
         ");
         //dd($new_opportunities);
         //$new_opportunities = $new_opportunities->get();
