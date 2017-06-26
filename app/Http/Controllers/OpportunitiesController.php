@@ -380,7 +380,9 @@ class OpportunitiesController extends Controller
 
     public function view($id){
         $opportunity = \App\Opportunity::find($id);
-        return view('opportunities.view', compact('opportunity'));
+        $status_options = $opportunity->status_options;
+        $status_id = $opportunity->status;
+        return view('opportunities.view', compact('opportunity', 'status_options', 'status_id'));
     }
 
     public function getNewLeads(Request $request){
@@ -434,5 +436,27 @@ class OpportunitiesController extends Controller
             break;
         endswitch;
         return view('opportunities.reports', compact('opportunities', 'search_type', 'date_from', 'date_to'));
+    }
+
+    public function get_status_update($opportunity_id){
+        $opportunity = \App\Opportunity::find($opportunity_id);
+        $status_options = $opportunity->status_options;
+        $status_id = $opportunity->status;
+        return view('opportunities.status_update', compact('status_id', 'status_options'));
+    }
+
+    public function status_update(Request $request, $opportunity_id){
+        $opportunity = \App\Opportunity::find($opportunity_id);
+        $opportunity->status = $request->get('status');
+        $opportunity->save();
+        flash('Status updated successfully.')->success();
+        return redirect( route('opportunity.view', [$opportunity_id]) );
+    }
+
+    public function comments_update(Request $request, $opportunity_id){
+        $opportunity = \App\Opportunity::find($opportunity_id);
+        $opportunity->comment = $request->get('comments');
+        $opportunity->save();
+        return response()->json(['message'=>'Comments saved']);
     }
 }

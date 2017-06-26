@@ -8,6 +8,7 @@
         <th>{{ ($search_type==1) ? "Time" : "Invite" }}</th>
         <th>Gusto Agent</th>
         <th>Status</th>
+        <th></th>
     </tr>
 </thead>
 <tbody>
@@ -20,6 +21,7 @@
         <td>{{ ($search_type==1) ? $opportunity->event_time : $opportunity->event_date }}</td>
         <td>{{ $opportunity->gusto_agent }}</td>
         <td>{{ $opportunity->status_name }}</td>
+        <td><a href="{{ route('opportunity.view', [$opportunity->id]) }}" class="btn btn-default">View</a></td>
     </tr>
     @empty
         <tr>

@@ -32,8 +32,13 @@ class Opportunity extends Model
         ];
     
     protected $status_options = [
-        1 => "DB Registered",
-        2 => "Event Scheduled"
+        1 => "DB registered",
+        2 => "Event scheduled",
+        3 => "Not interested",
+        4 => "Meeting confirmed",
+        5 => "Meeting held",
+        6 => "Meeting cancelled",
+        7 => "Meeting rescheduled"
     ];
 
     public function getEventTimeAttribute(){
@@ -64,5 +69,9 @@ class Opportunity extends Model
 
     public function getStatusNameAttribute(){
         return $this->status_options[$this->status];
+    }
+
+    public function getStatusOptionsAttribute(){
+        return $this->status_options;
     }
 }

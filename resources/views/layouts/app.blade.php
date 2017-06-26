@@ -83,7 +83,9 @@
                 </div>
             </div>
         </nav>
-        
+        <div class="container">
+            @include('flash::message')
+        </div>
         <div class="container" id="container">
             @yield('content')
         </div>
@@ -93,6 +95,13 @@
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>
+    <script>
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+    </script>
     <script src="{{ asset('js/select2.min.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>
     <script>new Clipboard('.clipboard');</script>
