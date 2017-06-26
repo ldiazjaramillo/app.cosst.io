@@ -45,7 +45,7 @@ $agents = [
         </ul>
         <div class="panel-footer">
             &nbsp;
-            <!--<a href="/summary" class="btn btn-default">Go back</a>-->
+            <a href="{{ url()->previous() }}" class="btn btn-default">Go back</a>
         </div>
     </div>
 </div>

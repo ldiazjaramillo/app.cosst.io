@@ -65,8 +65,8 @@ Route::group(['prefix' => 'opportunity', 'middleware' => 'auth'], function () {
     Route::get('view/{id}', 'OpportunitiesController@view')->name('opportunity.view');
     Route::get('get/new/leads', 'OpportunitiesController@getNewLeads')->name('get.new.leads');
     Route::get('get/existing/leads', 'OpportunitiesController@getExistingLeads')->name('get.existing.leads');
-    Route::get('reports', 'OpportunitiesController@reports')->name('opportunity.reports');
-    Route::post('reports', 'OpportunitiesController@get_reports');
+    Route::get('reports', 'OpportunitiesController@reports');
+    Route::get('reports', 'OpportunitiesController@get_reports')->name('opportunity.reports');
     Route::get('status/update/{opportunity_id}', 'OpportunitiesController@get_status_update')->name('opportunity.status.update');
     Route::post('status/update/{opportunity_id}', 'OpportunitiesController@status_update')->name('opportunity.status.store');
     Route::post('comments/update/{opportunity_id}', 'OpportunitiesController@comments_update')->name('opportunity.comments.store');

@@ -18,8 +18,8 @@ $search_options = [
 ];
 @endphp
 <div class="row">
-<form method="post" action="{{ route('opportunity.reports') }}">
-{{ csrf_field() }}
+<form method="GET" action="{{ route('opportunity.reports') }}">
+
      <div class='col-sm-4'>
         <div class="form-group{{ $errors->has('search_type') ? ' has-error' : '' }}">
             <select name="search_type" id="search_type" class="form-control" required>
@@ -88,7 +88,7 @@ $search_options = [
     display: inline;
 }
 a.dt-button{
-    margin-right: 5px;
+    margin-left: 5px;
 }
 }
 </style>
@@ -117,14 +117,14 @@ $(document).ready(function(){
         $('#date_from').data("DateTimePicker").maxDate(e.date);
     });
     $('#table').DataTable({
-        dom: 'Bfrtip',
+        dom: 'lBfrtip',
         buttons: [
             'csv', 'excel', 'pdf', 'print'
         ],
         "aoColumnDefs": [
             { "bSearchable": false, "aTargets": [ 7 ] },
             { "bSortable": false, "aTargets": [ 7 ] }
-        ]
+        ],
     });
     $(".dt-button").addClass("btn btn-default");
 });
