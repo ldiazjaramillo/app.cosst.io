@@ -421,7 +421,7 @@ class OpportunitiesController extends Controller
     public function get_reports(Request $request){
         $this->validate($request, [
             'search_type' => 'required',
-            'date_from' => 'required|date|date_format:Y-m-d|before:date_to',
+            'date_from' => 'required|date|date_format:Y-m-d|before_or_equal:date_to',
             'date_to' => 'required|date|date_format:Y-m-d',
         ]);
         $search_type = $request->get('search_type');

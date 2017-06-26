@@ -40,11 +40,19 @@ class Opportunity extends Model
         6 => "Meeting cancelled",
         7 => "Meeting rescheduled"
     ];
+    protected $tzlist = [
+        'UTC' => 'UTC',
+        'America/New_York' => 'Eastern Standard Time (EST)',
+        'America/Chicago' => 'Central Standard Time (CST)',
+        'America/Denver' => 'Mountain Standard Time (MST)',
+        'America/Los_Angeles' => 'Pacific Standard Time (PST)',
+        'America/Puerto_Rico' => 'Atlantic Standard Time (AST)',
+    ];
 
     public function getEventTimeAttribute(){
         if($this->date){
             $date = \Carbon\Carbon::parse($this->date, $this->timezone);
-            return $date->toTimeString()." ".$date->tzName;
+            return $date->toTimeString()." ".$this->tzlist[$date->tzName];
         }else{
             return "N/A";
         }
@@ -53,7 +61,7 @@ class Opportunity extends Model
     public function getEventDateAttribute(){
         if($this->date){
             $date = \Carbon\Carbon::parse($this->date, $this->timezone);
-            return $date->toDateTimeString()." ".$date->tzName;
+            return $date->toDateTimeString()." ".$this->tzlist[$date->tzName];
         }else{
             return "N/A";
         }
