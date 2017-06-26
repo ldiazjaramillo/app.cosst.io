@@ -56,7 +56,7 @@ $agents = [
         </div>
         <ul class="list-group">
             <li class="list-group-item"><strong>Client ID: </strong>{{ $opportunity->client_id }}</li>
-            @php $types = [null=>"N/A", 1=>"Cold Source", 2=>"Existing Source"] @endphp
+            @php $types = [null=>"N/A", 1=>"Cold Source", 2=>"Existing Source", 3=>"Account outreach"] @endphp
             <li class="list-group-item"><strong>Lead Type: </strong>{{ $types[$opportunity->lead_type] }}</li>
         </ul>
         <div class="panel-footer">
