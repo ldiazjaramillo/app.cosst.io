@@ -382,6 +382,9 @@ class OpportunitiesController extends Controller
         $opportunity = \App\Opportunity::find($id);
         $status_options = $opportunity->status_options;
         $status_id = $opportunity->status;
+        $lead = \App\Lead::where('zoom_id', $opportunity->client_id)->orWhere('zoom_company_id', $opportunity->client_id)->first();
+        if($lead) $opportunity->lead_type = $lead->type;
+        else $opportunity->lead_type = null;
         return view('opportunities.view', compact('opportunity', 'status_options', 'status_id'));
     }
 

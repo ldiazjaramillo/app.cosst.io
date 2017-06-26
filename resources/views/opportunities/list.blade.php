@@ -18,7 +18,7 @@
         <td>{{ $opportunity->contact_name }}</td>
         <td>{{ $opportunity->company_name }}</td>
         <td>{{ $opportunity->contact_email }}</td>
-        <td>{{ ($search_type==1) ? $opportunity->event_time : $opportunity->event_date }}</td>
+        <td>{{ $opportunity->event_date }}</td>
         <td>{{ $opportunity->gusto_agent }}</td>
         <td>{{ $opportunity->status_name }}</td>
         <td><a href="{{ route('opportunity.view', [$opportunity->id]) }}" class="btn btn-default">View</a></td>

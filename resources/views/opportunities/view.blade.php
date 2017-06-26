@@ -56,6 +56,8 @@ $agents = [
         </div>
         <ul class="list-group">
             <li class="list-group-item"><strong>Client ID: </strong>{{ $opportunity->client_id }}</li>
+            @php $types = [null=>"N/A", 1=>"Cold Source", 2=>"Existing Source"] @endphp
+            <li class="list-group-item"><strong>Lead Type: </strong>{{ $types[$opportunity->lead_type] }}</li>
         </ul>
         <div class="panel-footer">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-sm">Update Status</button>

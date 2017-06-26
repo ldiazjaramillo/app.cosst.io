@@ -56,6 +56,13 @@ $search_options = [
 @section('bottom_script')
 <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"</script>
+<script src="//cdn.datatables.net/buttons/1.3.1/js/buttons.flash.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.27/build/pdfmake.min.js"></script>
+<script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.27/build/vfs_fonts.js"></script>
+<script src="//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js"></script>
+<script src="//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css">
 <style>
@@ -76,6 +83,12 @@ $search_options = [
     background: -moz-linear-gradient(top, #585858 0%, #111 100%);
     background: -ms-linear-gradient(top, #585858 0%, #111 100%);
     background: -o-linear-gradient(top, #585858 0%, #111 100%);
+}
+.dt-buttons{
+    display: inline;
+}
+a.dt-button{
+    margin-right: 5px;
 }
 }
 </style>
@@ -103,7 +116,17 @@ $(document).ready(function(){
     $("#date_to").on("dp.change", function (e) {
         $('#date_from').data("DateTimePicker").maxDate(e.date);
     });
-    $('#table').DataTable();
+    $('#table').DataTable({
+        dom: 'Bfrtip',
+        buttons: [
+            'csv', 'excel', 'pdf', 'print'
+        ],
+        "aoColumnDefs": [
+            { "bSearchable": false, "aTargets": [ 7 ] },
+            { "bSortable": false, "aTargets": [ 7 ] }
+        ]
+    });
+    $(".dt-button").addClass("btn btn-default");
 });
 </script>
 @endsection
