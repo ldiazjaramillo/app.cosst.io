@@ -43,17 +43,27 @@ class Opportunity extends Model
     ];
     protected $tzlist = [
         'UTC' => 'UTC',
-        'America/New_York' => 'Eastern Standard Time (EST)',
-        'America/Chicago' => 'Central Standard Time (CST)',
-        'America/Denver' => 'Mountain Standard Time (MST)',
-        'America/Los_Angeles' => 'Pacific Standard Time (PST)',
-        'America/Puerto_Rico' => 'Atlantic Standard Time (AST)',
+        'America/New_York' => 'EST',
+        'America/Chicago' => 'CST',
+        'America/Denver' => 'MST',
+        'America/Los_Angeles' => 'PST',
+        'America/Puerto_Rico' => 'AST',
     ];
 
     public function getEventTimeAttribute(){
         if($this->date){
             $date = \Carbon\Carbon::parse($this->date, $this->timezone);
-            return $date->toTimeString()." ".$this->tzlist[$date->tzName];
+            if($date->isToday()) return "Today at ".$date->format("h:i A")." ".$this->tzlist[$date->tzName];
+            else return $date->toDayDateTimeString()." ".$this->tzlist[$date->tzName];
+        }else{
+            return "N/A";
+        }
+    }
+
+    public function getTodayTimeAttribute(){
+        if($this->date){
+            $date = \Carbon\Carbon::parse($this->date, $this->timezone);
+            return $date->format("h:i A")." ".$this->tzlist[$date->tzName];
         }else{
             return "N/A";
         }
@@ -82,5 +92,13 @@ class Opportunity extends Model
 
     public function getStatusOptionsAttribute(){
         return $this->status_options;
+    }
+
+    public function getAgentsOptionsAttribute(){
+        return $this->agents[$this->type_id];
+    }
+
+    public function getTzlistOptionsAttribute(){
+        return $this->tzlist;
     }
 }

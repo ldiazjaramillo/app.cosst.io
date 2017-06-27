@@ -7,6 +7,7 @@ use Storage;
 use Excel;
 use GuzzleHttp\Client;
 use Mail;
+use \Carbon\Carbon;
 
 class OpportunitiesController extends Controller
 {
@@ -316,17 +317,17 @@ class OpportunitiesController extends Controller
         $filename = $name.".".$extension;
         Excel::create($name, function($excel) {
             $opportunities = \App\Opportunity::all();
-            $sbiz = $opportunities->where('type_id', 1);
+            $sbiz = $opportunities->where('type_id', 1)->where('status', '>', 1);
             // SBIZ sheet
             $excel->sheet('SBIZ', function($sheet) use($sbiz) {
                 $sheet->fromModel($sbiz);
             });
-            $mmfs = $opportunities->where('type_id', 2);
+            $mmfs = $opportunities->where('type_id', 2)->where('status', '>', 1);
             // MMFS sheet
             $excel->sheet('MMFS', function($sheet) use($mmfs) {
                 $sheet->fromModel($mmfs);
             });
-            $mmpr = $opportunities->where('type_id', 3);
+            $mmpr = $opportunities->where('type_id', 3)->where('status', '>', 1);
             // MMPR sheet
             $excel->sheet('MMPR', function($sheet) use($mmpr) {
                 $sheet->fromModel($mmpr);
@@ -407,7 +408,7 @@ class OpportunitiesController extends Controller
             SELECT CONCAT(COALESCE(`first_name`, ''),' ', COALESCE(`last_name`, ''), ' (', COALESCE(`company_name`, '') ,' ) | ', COALESCE(`zoom_id`, '') ) AS text, id
             FROM leads
             WHERE type IN (2,3) and status = 2 and (first_name like '%$query%' OR last_name LIKE '%$query%' OR company_name LIKE '%$query%'
-            OR zoom_id LIKE '%$query%' OR email LIKE '%$query%')
+            OR zoom_id LIKE '%$query%' OR zoom_company_id LIKE '%$query%' OR email LIKE '%$query%')
         ");
         //dd($existing_opportunities);
         //$existing_opportunities = $existing_opportunities->get();
@@ -441,6 +442,12 @@ class OpportunitiesController extends Controller
         return view('opportunities.reports', compact('opportunities', 'search_type', 'date_from', 'date_to'));
     }
 
+    public function reports_today(){
+        $opportunities = \App\Opportunity::where('date', '>=', date("Y-m-d")." 00:00:00")->where('date', '<=', date("Y-m-d")." 23:59:59")->get();
+        $search_type = 3;
+        return view('opportunities.reports_today', compact('opportunities', 'search_type'));
+    }
+
     public function get_status_update($opportunity_id){
         $opportunity = \App\Opportunity::find($opportunity_id);
         $status_options = $opportunity->status_options;
@@ -462,4 +469,17 @@ class OpportunitiesController extends Controller
         $opportunity->save();
         return response()->json(['message'=>'Comments saved']);
     }
+
+    public function invite_update(Request $request, $opportunity_id){
+        $opportunity = \App\Opportunity::find($opportunity_id);
+        $timezone = $request->get('timezone');
+        $Date = \Carbon\Carbon::parse($request->get('date'), $timezone)->timezone('UTC');
+        $opportunity->date = $Date->toDateTimeString();
+        $opportunity->timezone = $timezone;
+        $opportunity->agent_id = $request->get('agent_id');
+        $opportunity->save();
+        flash('Invite date updated successfully.')->success();
+        return redirect( route('opportunity.view', [$opportunity_id]) );
+    }
+    
 }

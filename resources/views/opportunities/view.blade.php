@@ -39,9 +39,6 @@ $agents = [
             @if(isset($agents[$opportunity->type_id][$opportunity->agent_id]['name']))
             <li class="list-group-item"><strong>Gusto Agent: </strong>{{ $agents[$opportunity->type_id][$opportunity->agent_id]['name'] }}</li>
             @endif
-            @if($opportunity->date)
-            <li class="list-group-item"><strong>Invitation Date: </strong>{{ \Carbon\Carbon::parse($opportunity->date)->format('Y-m-d') }}</li>
-            @endif
         </ul>
         <div class="panel-footer">
             &nbsp;
@@ -52,18 +49,15 @@ $agents = [
 <div class="col-md-6">
     <div class="panel panel-info">
         <div class="panel-heading">
-            <h3>Status: {{ $opportunity->status_options[$opportunity->status] }}</h3>
+            <h3><strong>Client ID: </strong>{{ $opportunity->client_id }}</h3>
         </div>
         <ul class="list-group">
-            <li class="list-group-item"><strong>Client ID: </strong>{{ $opportunity->client_id }}</li>
+            <li class="list-group-item"><strong>Status: </strong>{{ $opportunity->status_options[$opportunity->status] }} <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#status_modal">Update Status</button></li>
             @php $types = [null=>"N/A", 1=>"Cold Source", 2=>"Existing Source", 3=>"Account outreach"] @endphp
             <li class="list-group-item"><strong>Lead Type: </strong>{{ $types[$opportunity->lead_type] }}</li>
+            <li class="list-group-item"><strong>Invitation Date: </strong>{{ $opportunity->event_date }}  <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#invite_modal">Change Date</button></li>
         </ul>
-        <div class="panel-footer">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-sm">Update Status</button>
-        </div>
-    </div>
-    <div class="panel panel-default">
+
         <div class="panel-body">
             <div class="alert alert-warning alert-dismissible" role="alert" id="note_warning" style="display:none;">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -83,13 +77,13 @@ $agents = [
             </div>
         </div>
         <div class="panel-footer">
-            <button type="button" class="btn btn-primary" id="save_notes">Save</button>
+            <button type="button" class="btn btn-primary" id="save_notes">Save notes</button>
         </div>
     </div>
 
 </div>
 <!-- Small modal -->
-<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" id="status_modal">
   <div class="modal-dialog modal-sm" role="document">
     <div class="modal-content">
     <form action="{{ route('opportunity.status.store', [$opportunity->id]) }}" method="POST">
@@ -105,6 +99,59 @@ $agents = [
             <button class="btn btn-primary">Update</button>
         </div>
     </form>
+    </div>
+  </div>
+</div>
+
+<!-- Small modal -->
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="Modal invite" id="invite_modal">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+    <form method="post" action="{{ route('opportunity.invite.update', [ $opportunity->id ]) }}">
+        {{ csrf_field() }}
+        <div class="modal-body">
+            <div class="row">
+                <div class='col-sm-6'>
+                    <div class="form-group">
+                        <label for="">Gusto Agent</label>
+                        <select name="agent_id" class="form-control">
+                            <option value="">Select a Gusto agent</option>
+                        @foreach($opportunity->agents_options as $index => $value)
+                            <option value="{{ $index }}"@if($index == $opportunity->agent_id) selected @endif>{{ $value['name'] }}</option>
+                        @endforeach
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class='col-sm-6'>
+                    <div class="form-group">
+                        <label for="">Timezone</label>
+                        <select name="timezone" id="timezone" class="form-control select2" required>
+                            <option value="">Select a timezone</option>
+                        @foreach($opportunity->tzlist_options as $index => $value)
+                            <option value="{{ $index }}" @if($index == "America/New_York") selected @endif>{{ $value }}</option>
+                        @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class='col-sm-6'>
+                    <div class="form-group">
+                        <label for="">Date and Time</label>
+                        <div class='input-group date' id='update_date'>
+                            <input type='text' class="form-control" name="date" value="@if($opportunity->date) {{ $opportunity->date }} @endif" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary">Update</button>
+        </div>
+        </form>
     </div>
   </div>
 </div>
@@ -137,6 +184,13 @@ $(document).ready(function () {
             $("#note_warning, #note_success").hide();
             $("#note_danger").show();
         });
+    });
+    $('#update_date').datetimepicker({
+        daysOfWeekDisabled: [0, 6],
+        //inline: true,
+        sideBySide: true,
+        stepping: 15,
+        minDate: moment()
     });
 });
 </script>
