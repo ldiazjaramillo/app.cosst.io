@@ -59,7 +59,7 @@ class Opportunity extends Model
 
     public function getEventTimeAttribute(){
         if($this->date){
-            $date = \Carbon\Carbon::parse($this->date, $this->timezone);
+            $date = \Carbon\Carbon::parse($this->date)->tz($this->timezone);
             if($date->isToday()) return "Today at ".$date->format("h:i A")." ".$this->tzlist[$date->tzName];
             else return $date->toDayDateTimeString()." ".$this->tzlist[$date->tzName];
         }else{
@@ -69,7 +69,7 @@ class Opportunity extends Model
 
     public function getTodayTimeAttribute(){
         if($this->date){
-            $date = \Carbon\Carbon::parse($this->date, $this->timezone);
+            $date = \Carbon\Carbon::parse($this->date)->tz($this->timezone);
             return $date->format("h:i A")." ".$this->tzlist[$date->tzName];
         }else{
             return "N/A";
@@ -78,7 +78,7 @@ class Opportunity extends Model
 
     public function getEventDateAttribute(){
         if($this->date){
-            $date = \Carbon\Carbon::parse($this->date, $this->timezone);
+            $date = \Carbon\Carbon::parse($this->date)->tz($this->timezone);
             return $date->toDateTimeString()." ".$this->tzlist[$date->tzName];
         }else{
             return "N/A";
