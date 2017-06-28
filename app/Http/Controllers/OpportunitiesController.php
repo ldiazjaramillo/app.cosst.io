@@ -15,33 +15,53 @@ class OpportunitiesController extends Controller
     public function create(Request $request){
         if($request->has('new_id')) $new_lead = \App\Lead::find($request->get('new_id'));
         else if($request->has('existing_id')) $new_lead = \App\Lead::find($request->get('existing_id'));
+        else if($request->has('new_partner')) $new_lead = \App\Lead::find($request->get('new_partner'));
         else $new_lead = false;
         $number_options = ['1-2'=>'1-2 Employees', '3-9'=>'3-9 Employees', '10+'=>'10+ Employees'];
         return view('opportunities.create', compact('number_options', 'new_lead'));
     }
 
     public function store(Request $request){
-        $errors = $this->validate($request, [
-            'company_name'=>'required',
-            'contact_name'=>'required',
-            'decision_maker'=>'required',
-            'contact_phone'=>'required',
-            'contact_email'=>'required|email',
-            //'client_id'=>'required|unique:opportunities,client_id',
-            'company_state'=>'required',
-            'company_states'=>'required',
-            'external_account'=>'required',
-            'employees_number'=>'required',
-        ]);
+        if($request->get('lead_type') == 3){
+            $errors = $this->validate($request, [
+                'company_name'=>'required',
+                'contact_name'=>'required',
+                'decision_maker'=>'required',
+                'contact_phone'=>'required',
+                'contact_email'=>'required|email',
+                //'client_id'=>'required|unique:opportunities,client_id',
+                'company_state'=>'required',
+                'company_states'=>'required',
+                'provide_accounting'=>'required',
+                'employees_number'=>'required',
+                'clients_number'=>'required',
+            ]);
+        }else{
+            $errors = $this->validate($request, [
+                'company_name'=>'required',
+                'contact_name'=>'required',
+                'decision_maker'=>'required',
+                'contact_phone'=>'required',
+                'contact_email'=>'required|email',
+                //'client_id'=>'required|unique:opportunities,client_id',
+                'company_state'=>'required',
+                'company_states'=>'required',
+                'external_account'=>'required',
+                'employees_number'=>'required',
+            ]);
+        }
+        
         //dd($request->all());
         if($request->has('company_states')){
             $request['company_states'] = implode($request->get('company_states'), ',');
         }
         $request['user_id'] = \Auth::user()->id;
-        $request['type_id'] = $this->getOpportunityType($request->get('employees_number'), $request->get('company_state'), $request->get('client_id'));
-        $opportunity = \App\Opportunity::create($request->all());
+        if($request->get('lead_type') == 3) $request['type_id'] = 4;
+        else $request['type_id'] = $this->getOpportunityType($request->get('employees_number'), $request->get('company_state'), $request->get('client_id'));
+        $opportunity = \App\Opportunity::create($request->except('lead_type'));
 
-        $url = $this->getRedirectPage($opportunity->employees_number, $opportunity->company_state, $opportunity->id);
+        if($request->get('lead_type') == 3) $url ="opportunity/new_partners/$opportunity->id";
+        else $url = $this->getRedirectPage($opportunity->employees_number, $opportunity->company_state, $opportunity->id);
 
         return redirect($url);
     }
@@ -99,6 +119,13 @@ class OpportunitiesController extends Controller
     public function updateManagerMMPR($agent){
         //dd($agent);
         if($agent->agent_id == 2) $agent->agent_id = 0;
+        else $agent->agent_id = $agent->agent_id + 1;
+        $agent->save();
+    }
+
+    public function updateManagerPartner($agent){
+        //dd($agent);
+        if($agent->agent_id == 4) $agent->agent_id = 0;
         else $agent->agent_id = $agent->agent_id + 1;
         $agent->save();
     }
@@ -161,6 +188,26 @@ class OpportunitiesController extends Controller
         return view('opportunities.spb', compact('opportunity', 'agent', 'agents', 'agent_id'));
     }
 
+    public function new_partners($client_id){
+        $opportunity = \App\Opportunity::find($client_id);
+        $agents = [
+            0=>['name'=>'Dominic Daley', 'email'=>'dominic.daley@gusto.com', 'calendar'=>'calendly.com/dominic_gusto'],
+            1=>['name'=>'Adam Howard', 'email'=>'adam@gusto.com', 'calendar'=>'calendly.com/adam-howard'],
+            2=>['name'=>'Marie-Therese', 'email'=>'Joyce mt@gusto.com', 'calendar'=>'calendly.com/mtwithgusto'],
+            3=>['name'=>'Elliott Scherer', 'email'=>'elliott.scherer@gusto.com', 'calendar'=>'calendly.com/elliott-scherer'],
+            4=>['name'=>'Joey Schultz', 'email'=>'joey.schultz@gusto.com', 'calendar'=>'calendly.com/joey-schultz'],
+        ];
+        if(!$opportunity->agent_id){
+            $partner = \App\Partner::all()->first();
+            $agent_id = $partner->agent_id;
+            $this->updateManagerPartner($partner);
+        }else{
+            $agent_id = $opportunity->agent_id;
+        }
+        $agent = $agents[$agent_id];
+        return view('opportunities.new_partners', compact('opportunity', 'agent', 'agents', 'agent_id'));
+    }
+
     public function notify2(Request $request, $id){
         $agents = [
             1 => [
@@ -180,6 +227,13 @@ class OpportunitiesController extends Controller
                 0=>['name'=>'Yekta Tehrani', 'email'=>'yekta.tehrani@gusto.com', 'calendar'=>'calendly.com/yekta-tehrani'],
                 1=>['name'=>'Matt Worden', 'email'=>'matt.worden@gusto.com', 'calendar'=>'calendly.com/matt-worden'],
                 2=>['name'=>'Matthew Baker', 'email'=>'matthew.baker@gusto.com', 'calendar'=>'calendly.com/matthewbaker'],
+            ],
+            4 => [
+                0=>['name'=>'Dominic Daley', 'email'=>'dominic.daley@gusto.com', 'calendar'=>'calendly.com/dominic_gusto'],
+                1=>['name'=>'Adam Howard', 'email'=>'adam@gusto.com', 'calendar'=>'calendly.com/adam-howard'],
+                2=>['name'=>'Marie-Therese', 'email'=>'Joyce mt@gusto.com', 'calendar'=>'calendly.com/mtwithgusto'],
+                3=>['name'=>'Elliott Scherer', 'email'=>'elliott.scherer@gusto.com', 'calendar'=>'calendly.com/elliott-scherer'],
+                4=>['name'=>'Joey Schultz', 'email'=>'joey.schultz@gusto.com', 'calendar'=>'calendly.com/joey-schultz'],
             ]
         ];
         $this->validate($request, [
@@ -408,6 +462,19 @@ class OpportunitiesController extends Controller
             SELECT CONCAT(COALESCE(`first_name`, ''),' ', COALESCE(`last_name`, ''), ' (', COALESCE(`company_name`, '') ,' ) | ', COALESCE(`zoom_id`, '') ) AS text, id
             FROM leads
             WHERE type IN (2,3) and status = 2 and (first_name like '%$query%' OR last_name LIKE '%$query%' OR company_name LIKE '%$query%'
+            OR zoom_id LIKE '%$query%' OR zoom_company_id LIKE '%$query%' OR email LIKE '%$query%')
+        ");
+        //dd($existing_opportunities);
+        //$existing_opportunities = $existing_opportunities->get();
+        return response()->json(['items'=>$existing_opportunities]);
+    }
+
+    public function getPartnersLeads(Request $request){
+        $query = $request->get('q');
+        $existing_opportunities = \DB::select("
+            SELECT CONCAT(COALESCE(`first_name`, ''),' ', COALESCE(`last_name`, ''), ' (', COALESCE(`company_name`, '') ,' ) | ', COALESCE(`zoom_id`, '') ) AS text, id
+            FROM leads
+            WHERE type=3 and status = 1 and (first_name like '%$query%' OR last_name LIKE '%$query%' OR company_name LIKE '%$query%'
             OR zoom_id LIKE '%$query%' OR zoom_company_id LIKE '%$query%' OR email LIKE '%$query%')
         ");
         //dd($existing_opportunities);

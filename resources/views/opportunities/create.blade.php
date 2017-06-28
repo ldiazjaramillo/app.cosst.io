@@ -29,6 +29,7 @@
 <form role="form" method="POST" action="{{ route('opportunity.store') }}">
     {{ csrf_field() }}
     <input name="client_id" type="hidden" required="required" class="form-control" value="@if($new_lead) {{$new_lead->zoom_id}} @endif" />
+    <input name="lead_type" type="hidden" required="required" class="form-control" value="@if($new_lead) {{$new_lead->type}} @endif" />
     <div class="row setup-content" id="step-1">
         <div class="col-xs-12">
             <div class="col-md-12">
@@ -112,7 +113,22 @@
                         </span>
                     @endif
                 </div>
-
+            @if($new_lead && $new_lead->type == 3)
+                <div class="form-group{{ $errors->has('provide_accounting') ? ' has-error' : '' }}">
+                    <label class="control-label">Do you provide accounting bookeeping for clients?</label>
+                    <label class="radio-inline">
+                        <input type="radio" name="provide_accounting" id="provide_accounting1" value="1" required="required" @if(old('provide_accounting') == 1) checked @endif>Yes
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="provide_accounting" id="provide_accounting0" value="0" required="required" @if(old('provide_accounting') === 0) checked @endif>No
+                    </label>
+                    @if ($errors->has('provide_accounting'))
+                        <span class="help-block">
+                            <strong>{{ $errors->first('provide_accounting') }}</strong>
+                        </span>
+                    @endif
+                </div>
+            @else
                 <div class="form-group{{ $errors->has('external_account') ? ' has-error' : '' }}">
                     <label class="control-label">Do you have a an external account/bookeeper?</label>
                     <label class="radio-inline">
@@ -127,6 +143,7 @@
                         </span>
                     @endif
                 </div>
+            @endif
                 <div class="form-group{{ $errors->has('employees_number') ? ' has-error' : '' }}">
                     <label class="control-label">How many employees does the client have?</label>
                     <select name="employees_number" required="required" class="form-control">
@@ -148,7 +165,22 @@
                         </span>
                     @endif
                 </div>
+            @if($new_lead && $new_lead->type == 3)
+                <div class="form-group{{ $errors->has('clients_number') ? ' has-error' : '' }}">
+                    <label class="control-label">How many clients do you have?</label>
+                    <input type="number" name="clients_number" id="clients_number" class="form-control"  required="required" value="{{ old('clients_number') }}">
+                    @if ($errors->has('clients_number'))
+                        <span class="help-block">
+                            <strong>{{ $errors->first('clients_number') }}</strong>
+                        </span>
+                    @endif
+                </div>
+            @endif
+            @if($new_lead && $new_lead->type == 3)
+                <button class="btn btn-success btn-lg pull-right nextBtn" type="submit">Finish!</button>
+            @else
                 <button class="btn btn-primary nextBtn btn-lg pull-right" type="button" >Next</button>
+            @endif
             </div>
         </div>
     </div>
@@ -304,7 +336,7 @@ $(document).ready(function () {
         }
     });
 
-    allNextBtn.click(function(){
+    allNextBtn.click(function(e){
         var curStep = $(this).closest(".setup-content"),
             curStepBtn = curStep.attr("id"),
             nextStepWizard = $('div.setup-panel div a[href="#' + curStepBtn + '"]').parent().next().children("a"),
@@ -318,9 +350,9 @@ $(document).ready(function () {
                 $(curInputs[i]).closest(".form-group").addClass("has-error");
             }
         }
-
-        if (isValid)
-            nextStepWizard.removeAttr('disabled').trigger('click');
+        if(!isValid && $(this).attr('type') == "submit") e.preventDefault();
+        else if(isValid && $(this).attr('type') == "submit") return;
+        if (isValid) nextStepWizard.removeAttr('disabled').trigger('click');
     });
 
     $('div.setup-panel div a.btn-primary').trigger('click');
