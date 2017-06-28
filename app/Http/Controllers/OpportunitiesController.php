@@ -22,7 +22,7 @@ class OpportunitiesController extends Controller
     }
 
     public function store(Request $request){
-        if($request->get('lead_type') == 3){
+        if($request->get('lead_type') == 3 && $request->get('lead_status') == 1){
             $errors = $this->validate($request, [
                 'company_name'=>'required',
                 'contact_name'=>'required',
@@ -56,11 +56,11 @@ class OpportunitiesController extends Controller
             $request['company_states'] = implode($request->get('company_states'), ',');
         }
         $request['user_id'] = \Auth::user()->id;
-        if($request->get('lead_type') == 3) $request['type_id'] = 4;
+        if($request->get('lead_type') == 3 && $request->get('lead_status') == 1) $request['type_id'] = 4;
         else $request['type_id'] = $this->getOpportunityType($request->get('employees_number'), $request->get('company_state'), $request->get('client_id'));
         $opportunity = \App\Opportunity::create($request->except('lead_type'));
 
-        if($request->get('lead_type') == 3) $url ="opportunity/new_partners/$opportunity->id";
+        if($request->get('lead_type') == 3 && $request->get('lead_status') == 1) $url ="opportunity/new_partners/$opportunity->id";
         else $url = $this->getRedirectPage($opportunity->employees_number, $opportunity->company_state, $opportunity->id);
 
         return redirect($url);

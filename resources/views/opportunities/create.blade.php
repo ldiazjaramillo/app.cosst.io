@@ -30,6 +30,7 @@
     {{ csrf_field() }}
     <input name="client_id" type="hidden" required="required" class="form-control" value="@if($new_lead) {{$new_lead->zoom_id}} @endif" />
     <input name="lead_type" type="hidden" required="required" class="form-control" value="@if($new_lead) {{$new_lead->type}} @endif" />
+    <input name="lead_status" type="hidden" required="required" class="form-control" value="@if($new_lead) {{$new_lead->status}} @endif" />
     <div class="row setup-content" id="step-1">
         <div class="col-xs-12">
             <div class="col-md-12">
@@ -113,7 +114,7 @@
                         </span>
                     @endif
                 </div>
-            @if($new_lead && $new_lead->type == 3)
+            @if($new_lead && $new_lead->type == 3  && $new_lead->status == 1)
                 <div class="form-group{{ $errors->has('provide_accounting') ? ' has-error' : '' }}">
                     <label class="control-label">Do you provide accounting bookeeping for clients?</label>
                     <label class="radio-inline">
@@ -165,7 +166,7 @@
                         </span>
                     @endif
                 </div>
-            @if($new_lead && $new_lead->type == 3)
+            @if($new_lead && $new_lead->type == 3  && $new_lead->status == 1)
                 <div class="form-group{{ $errors->has('clients_number') ? ' has-error' : '' }}">
                     <label class="control-label">How many clients do you have?</label>
                     <input type="number" name="clients_number" id="clients_number" class="form-control"  required="required" value="{{ old('clients_number') }}">
@@ -176,7 +177,7 @@
                     @endif
                 </div>
             @endif
-            @if($new_lead && $new_lead->type == 3)
+            @if($new_lead && $new_lead->type == 3  && $new_lead->status == 1)
                 <button class="btn btn-success btn-lg pull-right nextBtn" type="submit">Finish!</button>
             @else
                 <button class="btn btn-primary nextBtn btn-lg pull-right" type="button" >Next</button>
