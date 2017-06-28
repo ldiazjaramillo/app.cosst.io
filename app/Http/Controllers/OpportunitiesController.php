@@ -58,7 +58,7 @@ class OpportunitiesController extends Controller
         $request['user_id'] = \Auth::user()->id;
         if($request->get('lead_type') == 3 && $request->get('lead_status') == 1) $request['type_id'] = 4;
         else $request['type_id'] = $this->getOpportunityType($request->get('employees_number'), $request->get('company_state'), $request->get('client_id'));
-        $opportunity = \App\Opportunity::create($request->except('lead_type'));
+        $opportunity = \App\Opportunity::create($request->except(['lead_type', 'lead_status']));
 
         if($request->get('lead_type') == 3 && $request->get('lead_status') == 1) $url ="opportunity/new_partners/$opportunity->id";
         else $url = $this->getRedirectPage($opportunity->employees_number, $opportunity->company_state, $opportunity->id);
