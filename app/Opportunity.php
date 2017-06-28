@@ -28,7 +28,14 @@ class Opportunity extends Model
                 0=>['name'=>'Yekta Tehrani', 'email'=>'yekta.tehrani@gusto.com', 'calendar'=>'calendly.com/yekta-tehrani'],
                 1=>['name'=>'Matt Worden', 'email'=>'matt.worden@gusto.com', 'calendar'=>'calendly.com/matt-worden'],
                 2=>['name'=>'Matthew Baker', 'email'=>'matthew.baker@gusto.com', 'calendar'=>'calendly.com/matthewbaker'],
-            ]
+            ],
+            4 => [
+                0=>['name'=>'Dominic Daley', 'email'=>'dominic.daley@gusto.com', 'calendar'=>'calendly.com/dominic_gusto'],
+                1=>['name'=>'Adam Howard', 'email'=>'adam@gusto.com', 'calendar'=>'calendly.com/adam-howard'],
+                2=>['name'=>'Marie-Therese', 'email'=>'Joyce mt@gusto.com', 'calendar'=>'calendly.com/mtwithgusto'],
+                3=>['name'=>'Elliott Scherer', 'email'=>'elliott.scherer@gusto.com', 'calendar'=>'calendly.com/elliott-scherer'],
+                4=>['name'=>'Joey Schultz', 'email'=>'joey.schultz@gusto.com', 'calendar'=>'calendly.com/joey-schultz'],
+            ]    
         ];
     
     protected $status_options = [

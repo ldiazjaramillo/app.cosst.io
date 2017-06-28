@@ -28,6 +28,11 @@ class CreateLeadsTable extends Migration
         //LOAD DATA LOCAL INFILE "/var/lib/mysql-files/june23B.csv" into table leads FIELDS TERMINATED BY ',' ENCLOSED BY '"' (last_name,first_name,position,phone,email,lead_city,lead_state,lead_zip,country,zoom_company_id,company_name,company_url,revenue,employees);
         //LOAD DATA LOCAL INFILE "/var/lib/mysql-files/june27COLD.csv" into table leads FIELDS TERMINATED BY ',' ENCLOSED BY '"' (last_name,first_name,position,phone,email,lead_city,lead_state,lead_zip,country,zoom_company_id,company_name,company_url,revenue,revenue_range,employees,type,status);
         //LOAD DATA LOCAL INFILE "/var/lib/mysql-files/partners1.csv" into table leads FIELDS TERMINATED BY ',' ENCLOSED BY '"' (first_name,last_name,email,zoom_id,company_url,company_name,position,phone,lead_city,lead_state,employees,employees_range,type);
+        //LOAD DATA LOCAL INFILE "/var/lib/mysql-files/partners2.csv" into table leads FIELDS TERMINATED BY ',' ENCLOSED BY '"' (last_name,first_name,email,zoom_id,company_url,lead_city,lead_state,lead_zip,phone,company_name,type);
+        //LOAD DATA LOCAL INFILE "/var/lib/mysql-files/partners3.csv" into table leads FIELDS TERMINATED BY ',' ENCLOSED BY '"' (zoom_id,first_name,last_name,email,company_url,position,company_name,lead_state,phone,type);
+        //LOAD DATA LOCAL INFILE "/var/lib/mysql-files/partners4.csv" into table leads FIELDS TERMINATED BY ',' ENCLOSED BY '"' (zoom_id,first_name,last_name,email,company_url,position,company_name,lead_state,phone,type);
+        //LOAD DATA LOCAL INFILE "/var/lib/mysql-files/partners5.csv" into table leads FIELDS TERMINATED BY ',' ENCLOSED BY '"' (zoom_id,first_name,last_name,email,company_url,position,company_name,lead_state,phone,type);
+        //LOAD DATA LOCAL INFILE "/var/lib/mysql-files/partners6.csv" into table leads FIELDS TERMINATED BY ',' ENCLOSED BY '"' (zoom_id,first_name,last_name,email,company_url,position,company_name,lead_state,phone,type);
          Schema::create('leads', function (Blueprint $table) {
             $table->increments('id');
             $table->string('zoom_id')->nullable();
