@@ -28,13 +28,21 @@
 @endif
 <form role="form" method="POST" action="{{ route('opportunity.store') }}">
     {{ csrf_field() }}
-    <input name="client_id" type="hidden" required="required" class="form-control" value="@if($new_lead) {{$new_lead->zoom_id}} @endif" />
     <input name="lead_type" type="hidden" required="required" class="form-control" value="@if($new_lead) {{$new_lead->type}} @endif" />
     <input name="lead_status" type="hidden" required="required" class="form-control" value="@if($new_lead) {{$new_lead->status}} @endif" />
     <div class="row setup-content" id="step-1">
         <div class="col-xs-12">
             <div class="col-md-12">
                 <h3> Step 1</h3>
+                <div class="form-group{{ $errors->has('client_id') ? ' has-error' : '' }}">
+                    <label class="control-label">Client ID:</label>
+                    <input name="client_id" maxlength="100" type="text" required="required" class="form-control" placeholder="Business Name" value="@if($new_lead) {{ trim($new_lead->zoom_id) }} @else {{old('client_id')}} @endif" @if(!$new_lead) readonly @endif/>
+                    @if ($errors->has('client_id'))
+                        <span class="help-block">
+                            <strong>{{ $errors->first('client_id') }}</strong>
+                        </span>
+                    @endif
+                </div>
                 <div class="form-group{{ $errors->has('company_name') ? ' has-error' : '' }}">
                     <label class="control-label">Client Business Name:</label>
                     <input name="company_name" maxlength="100" type="text" required="required" class="form-control" placeholder="Business Name" value="@if($new_lead) {{$new_lead->company_name}} @else {{old('company_name')}} @endif"/>
