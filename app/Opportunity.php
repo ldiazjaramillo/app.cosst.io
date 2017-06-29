@@ -93,6 +93,16 @@ class Opportunity extends Model
         }
     }
 
+    public function getVfAgentAttribute(){
+        if($this->user_id){
+            $user = \App\User::find($this->user_id);
+            if($user) return $user->name;
+            else return "N/A";
+        }else{
+            return "N/A";
+        }
+    }
+
     public function getStatusNameAttribute(){
         return $this->status_options[$this->status];
     }

@@ -36,9 +36,6 @@ $agents = [
             <li class="list-group-item"><strong>Email: </strong>{{ $opportunity->contact_email }}</li>
             <li class="list-group-item"><strong>Company State: </strong>{{ $opportunity->company_state }}</li>
             <li class="list-group-item"><strong>Employees: </strong>{{ $opportunity->employees_number }}</li>
-            @if(isset($agents[$opportunity->type_id][$opportunity->agent_id]['name']))
-            <li class="list-group-item"><strong>Gusto Agent: </strong>{{ $agents[$opportunity->type_id][$opportunity->agent_id]['name'] }}</li>
-            @endif
         </ul>
         <div class="panel-footer">
             &nbsp;
@@ -55,7 +52,9 @@ $agents = [
             <li class="list-group-item"><strong>Status: </strong>{{ $opportunity->status_options[$opportunity->status] }} <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#status_modal">Update Status</button></li>
             @php $types = [null=>"N/A", 1=>"Cold Source", 2=>"Existing Source", 3=>"Account outreach"] @endphp
             <li class="list-group-item"><strong>Lead Type: </strong>{{ $types[$opportunity->lead_type] }}</li>
+            <li class="list-group-item"><strong>VitalFew Agent: </strong>{{ $opportunity->vf_agent }}</li>
             <li class="list-group-item"><strong>Invitation Date: </strong>{{ $opportunity->event_date }}  <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#invite_modal">Change Date</button></li>
+            <li class="list-group-item"><strong>Gusto Agent: </strong>{{ $opportunity->gusto_agent }}</li>
         </ul>
 
         <div class="panel-body">
