@@ -36,7 +36,8 @@
                 <h3> Step 1</h3>
                 <div class="form-group{{ $errors->has('client_id') ? ' has-error' : '' }}">
                     <label class="control-label">Client ID:</label>
-                    <input name="client_id" maxlength="100" type="text" required="required" class="form-control" placeholder="Business Name" value="@if($new_lead) {{ trim($new_lead->zoom_id) }} @else {{old('client_id')}} @endif" @if(!$new_lead) readonly @endif/>
+                    @php @endphp
+                    <input name="client_id" maxlength="100" type="text" required="required" class="form-control" placeholder="Business Name" value="@if($new_lead) @if($new_lead->zoom_id) {{ trim($new_lead->zoom_id) }} @else {{ trim($new_lead->company_zoom_id) }} @endif @else {{old('client_id')}} @endif" @if($new_lead) readonly @endif/>
                     @if ($errors->has('client_id'))
                         <span class="help-block">
                             <strong>{{ $errors->first('client_id') }}</strong>
