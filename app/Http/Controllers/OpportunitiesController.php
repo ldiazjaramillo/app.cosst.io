@@ -387,6 +387,12 @@ class OpportunitiesController extends Controller
                 $sheet->fromModel($mmpr);
             });
 
+            $partners = $opportunities->where('type_id', 4)->where('status', '>', 1);
+            // partners sheet
+            $excel->sheet('partners', function($sheet) use($partners) {
+                $sheet->fromModel($partners);
+            });
+
         })->store($extension, '/tmp/');
         $storage_path = "/tmp/$filename";
         foreach(Storage::disk('google')->files() as $file) Storage::disk('google')->delete($file);
