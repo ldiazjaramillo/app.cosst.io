@@ -15,7 +15,7 @@ class AddPartnersColumnsToOpportunities extends Migration
     {
         Schema::table('opportunities', function (Blueprint $table) {
             $table->boolean('provide_accounting')->nullable()->after('external_account');
-            $table->boolean('clients_number')->nullable()->after('employees_number'); 
+            $table->integer('clients_number')->nullable()->after('employees_number'); 
         });
     }
 

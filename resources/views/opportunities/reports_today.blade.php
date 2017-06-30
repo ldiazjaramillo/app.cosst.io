@@ -8,7 +8,14 @@ $search_options = [
     2=>"Creation Date",
     3=>''
 ];
+
+$data = [];
+foreach( $opportunities->sortBy('status')->groupBy('status') as $index => $value):
+    $data[$value->first()->status_options[$index]] = $value->count();
+endforeach;
+$data2 = array( "Total" => $opportunities->count() ) + $data;
 @endphp
+
 <div class="col-md-4 col-md-offset-2">
     <canvas id="myChart1"></canvas>
 </div>
@@ -16,6 +23,20 @@ $search_options = [
     <canvas id="myChart2"></canvas>
 </div>
 <div class="row">&nbsp;<br/></div>
+<div class="row">&nbsp;<br/></div>
+<div class="col-md-12 text-right">
+<div class="btn-group">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Filter <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+        <li class="active"><a href="#" class="btn-filter" data="">All</a></li>
+    @foreach(array_keys($data) as $value)
+        <li><a href="#" class="btn-filter" data="{{ $value }}">{{ $value }}</a></li>
+    @endforeach
+    </ul>
+</div>
+</div>
 <div class="row">&nbsp;<br/></div>
 <table class="table table-bordered" id="table">
 <thead>
@@ -50,13 +71,6 @@ $search_options = [
 </tbody>
 </table>
 
-@php
-$data = [];
-foreach( $opportunities->sortBy('status')->groupBy('status') as $index => $value):
-    $data[$value->first()->status_options[$index]] = $value->count();
-endforeach;
-$data2 = array( "Total" => $opportunities->count() ) + $data;
-@endphp
 @endsection
 
 @section('bottom_script')
@@ -123,16 +137,24 @@ $(document).ready(function(){
     $("#date_to").on("dp.change", function (e) {
         $('#date_from').data("DateTimePicker").maxDate(e.date);
     });
-    $('#table').DataTable({
+    var table = $('#table').DataTable({
         dom: 'lBfrtip',
         buttons: [
             'csv', 'excel', 'pdf', 'print'
         ],
         "aoColumnDefs": [
-            { "bSearchable": false, "aTargets": [ 7 ] },
             { "bSortable": false, "aTargets": [ 7 ] }
         ],
     });
+
+    $(".btn-filter").on('click', function(e){
+        e.preventDefault();
+        var query = $(this).attr('data');
+        $("ul.dropdown-menu > li").removeClass("active");
+        $(this).parent().toggleClass("active");
+        table.search(query).draw();
+    });
+    
     $(".dt-button").addClass("btn btn-default");
     var ctx1 = document.getElementById('myChart1').getContext('2d');
     var ctx2 = document.getElementById('myChart2').getContext('2d');

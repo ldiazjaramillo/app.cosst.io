@@ -57,6 +57,10 @@ class Opportunity extends Model
         'America/Puerto_Rico' => 'AST',
     ];
 
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
+
     public function getEventTimeAttribute(){
         if($this->date){
             $date = \Carbon\Carbon::parse($this->date)->tz($this->timezone);
@@ -112,7 +116,8 @@ class Opportunity extends Model
     }
 
     public function getAgentsOptionsAttribute(){
-        return $this->agents[$this->type_id];
+        if($this->type_id) return $this->agents[$this->type_id];
+        else return [];
     }
 
     public function getTzlistOptionsAttribute(){

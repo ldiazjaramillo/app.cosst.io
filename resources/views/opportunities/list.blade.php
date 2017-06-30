@@ -7,6 +7,7 @@
         <th>Email</th>
         <th>{{ ($search_type==1) ? "Time" : "Invite" }}</th>
         <th>Gusto Agent</th>
+        <th>VF Agent</th>
         <th>Status</th>
         <th></th>
     </tr>
@@ -20,6 +21,7 @@
         <td>{{ $opportunity->contact_email }}</td>
         <td>{{ $opportunity->event_time }}</td>
         <td>{{ $opportunity->gusto_agent }}</td>
+        <td>@if($opportunity->user) {{ $opportunity->user->name }} @else "N/A" @endif</td>
         <td>{{ $opportunity->status_name }}</td>
         <td><a href="{{ route('opportunity.view', [$opportunity->id]) }}" class="btn btn-default">View</a></td>
     </tr>

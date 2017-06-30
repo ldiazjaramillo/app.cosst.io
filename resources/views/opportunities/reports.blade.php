@@ -16,7 +16,25 @@ $search_options = [
     1=>"Event Date",
     2=>"Creation Date"
 ];
+
+if(isset($opportunities)){
+    $data = [];
+    foreach( $opportunities->sortBy('status')->groupBy('status') as $index => $value):
+        $data[$value->first()->status_options[$index]] = $value->count();
+    endforeach;
+    $data2 = array( "Total" => $opportunities->count() ) + $data;
+}
 @endphp
+@if(isset($opportunities))
+    <div class="col-md-4 col-md-offset-2">
+        <canvas id="myChart1"></canvas>
+    </div>
+    <div class="col-md-4">
+        <canvas id="myChart2"></canvas>
+    </div>
+    <div class="row">&nbsp;<br/></div>
+    <div class="row">&nbsp;<br/></div>
+@endif
 <div class="row">
 <form method="GET" action="{{ route('opportunity.reports') }}">
 
@@ -42,13 +60,27 @@ $search_options = [
     <div class='col-sm-4'>
         <div class="form-group">
             <button class="btn btn-primary">Search</button>
+        @if(isset($opportunities))
+            <!-- Single button -->
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Filter <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li class="active"><a href="#" class="btn-filter" data="">All</a></li>
+                @foreach(array_keys($data) as $value)
+                    <li><a href="#" class="btn-filter" data="{{ $value }}">{{ $value }}</a></li>
+                @endforeach
+                </ul>
+            </div>
+        @endif
         </div>
     </div>
 </form>
 </div>
 
 @if(isset($opportunities))
-@include('opportunities.list')
+    @include('opportunities.list')
 @endif
 
 @endsection
@@ -65,6 +97,7 @@ $search_options = [
 <script src="//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"></script>
 <style>
 }
 .dataTables_wrapper .dataTables_paginate .paginate_button:active {
@@ -116,17 +149,117 @@ $(document).ready(function(){
     $("#date_to").on("dp.change", function (e) {
         $('#date_from').data("DateTimePicker").maxDate(e.date);
     });
-    $('#table').DataTable({
+    var table = $('#table').DataTable({
         dom: 'lBfrtip',
         buttons: [
             'csv', 'excel', 'pdf', 'print'
         ],
         "aoColumnDefs": [
-            { "bSearchable": false, "aTargets": [ 7 ] },
             { "bSortable": false, "aTargets": [ 7 ] }
         ],
     });
+    //console.log(table);
+    $(".btn-filter").on('click', function(e){
+        e.preventDefault();
+        var query = $(this).attr('data');
+        $("ul.dropdown-menu > li").removeClass("active");
+        $(this).parent().toggleClass("active");
+        table.search(query).draw();
+    });
+
     $(".dt-button").addClass("btn btn-default");
+    var ctx1 = document.getElementById('myChart1').getContext('2d');
+    var ctx2 = document.getElementById('myChart2').getContext('2d');
+@if(isset($opportunities))
+    var chart1 = new Chart(ctx1, {
+        // The type of chart we want to create
+        type: 'doughnut',
+        // The data for our dataset
+        data: {
+            labels: {!! json_encode( array_keys($data), true ) !!},
+            //["DB registered","Event scheduled","Not interested","Meeting confirmed","Meeting held","Meeting cancelled","Meeting rescheduled","No show"],
+            datasets: [{
+                label: "My First dataset",
+                backgroundColor: [
+                    "rgb(54, 162, 235)",
+                    "rgb(75, 192, 192)",
+                    "rgb(201, 203, 207)",
+                    "rgb(255, 159, 64)",
+                    "rgb(153, 102, 255)",
+                    "rgb(255, 99, 132)",
+                    "rgb(255, 205, 86)",
+                    "rgb(255, 205, 250)"
+                ],
+                //borderColor: 'rgb(255, 99, 132)',
+                data: {!! json_encode( array_values($data) ) !!},
+            }]
+        },
+
+        // Configuration options go here
+        options: {
+            responsive: true,
+            legend: {
+                position: 'top',
+            },
+            title: {
+                display: true,
+                text: 'Today Stats'
+            },
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            }
+        }
+    });
+    var chart2 = new Chart(ctx2, {
+        // The type of chart we want to create
+        type: 'horizontalBar',
+        // The data for our dataset
+        data: {
+            labels: {!! json_encode( array_keys($data2), true ) !!},
+            //["DB registered","Event scheduled","Not interested","Meeting confirmed","Meeting held","Meeting cancelled","Meeting rescheduled","No show"],
+            datasets: [{
+                label: "Total",
+                backgroundColor: [
+                    "rgb(255, 105, 250)",
+                    "rgb(54, 162, 235)",
+                    "rgb(75, 192, 192)",
+                    "rgb(201, 203, 207)",
+                    "rgb(255, 159, 64)",
+                    "rgb(153, 102, 255)",
+                    "rgb(255, 99, 132)",
+                    "rgb(255, 205, 86)",
+                    "rgb(255, 205, 250)"
+                ],
+                //borderColor: 'rgb(255, 99, 132)',
+                data: {!! json_encode( array_values($data2) ) !!},
+            }]
+        },
+
+        // Configuration options go here
+        options: {
+            responsive: true,
+            legend: {
+                position: 'top',
+            },
+            title: {
+                display: true,
+                text: 'Today Stats'
+            },
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            },
+            scales: {
+                xAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+@endif
 });
 </script>
 @endsection
