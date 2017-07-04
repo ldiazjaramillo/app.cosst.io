@@ -79,3 +79,12 @@ Route::group(['prefix' => 'opportunity', 'middleware' => 'auth'], function () {
 Route::get('summary', 'OpportunitiesController@summary')->name('summary')->middleware('auth');
 
 Auth::routes();
+
+
+Route::group(['prefix' => 'admin'], function () {
+    Voyager::routes();
+});
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
