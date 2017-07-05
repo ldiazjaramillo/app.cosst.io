@@ -64,9 +64,9 @@
     <div class="col-md-4">
         State(s):
         <div class="input-group">
-            <input type="text" class="form-control" value="{{ $opportunity->company_state }}, {{ $opportunity->company_states }}" id="company_state" readonly/>
+            <input type="text" class="form-control" value="{{ $opportunity->contact_state }}" id="contact_state" readonly/>
             <span class="input-group-btn">
-                <button class="btn btn-default clipboard" type="button" data-clipboard-target="#company_state">Copy</button>
+                <button class="btn btn-default clipboard" type="button" data-clipboard-target="#contact_state">Copy</button>
             </span>
         </div><!-- /input-group -->
     </div>
@@ -122,7 +122,7 @@
     </div>
     <div class='col-sm-4'>
         <div class="form-group">
-            <textarea class="form-control" name="comment"></textarea>
+            <textarea class="form-control" name="notes"></textarea>
         </div>
     </div>
 </div>

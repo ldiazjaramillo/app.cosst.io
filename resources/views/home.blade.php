@@ -10,6 +10,7 @@
                         <option value="">New Opportunity ID</option>
                     </select>
                 </div>
+            <!--
                 <div class="form-group text-center">
                 - Or -
                 </div>
@@ -26,6 +27,7 @@
                         <option value="">Partner ID</option>
                     </select>
                 </div>
+            -->
                 <div>&nbsp;</div>
                 <div class="form-group text-center">
                     <button type="submit" class="btn btn-primary btn-lg">Go</button>

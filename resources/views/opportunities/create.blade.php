@@ -28,8 +28,7 @@
 @endif
 <form role="form" method="POST" action="{{ route('opportunity.store') }}">
     {{ csrf_field() }}
-    <input name="lead_type" type="hidden" required="required" class="form-control" value="@if($new_lead) {{$new_lead->type}} @endif" />
-    <input name="lead_status" type="hidden" required="required" class="form-control" value="@if($new_lead) {{$new_lead->status}} @endif" />
+    <input name="lead_id" type="hidden" required="required" class="form-control" @if($new_lead) value="{{$new_lead->status}}" @endif />
     <div class="row setup-content" id="step-1">
         <div class="col-xs-12">
             <div class="col-md-12">
@@ -43,7 +42,7 @@
                             else $cliend_id = trim($new_lead->zoom_company_id);
                         }
                     @endphp
-                    <input name="client_id" maxlength="100" type="text" required="required" class="form-control" placeholder="Business Name" value="{{ $cliend_id }}" />
+                    <input name="client_id" maxlength="100" type="text" required="required" class="form-control" placeholder="Client ID" value="{{ $cliend_id }}" />
                     @if ($errors->has('client_id'))
                         <span class="help-block">
                             <strong>{{ $errors->first('client_id') }}</strong>
@@ -52,7 +51,7 @@
                 </div>
                 <div class="form-group{{ $errors->has('company_name') ? ' has-error' : '' }}">
                     <label class="control-label">Client Business Name:</label>
-                    <input name="company_name" maxlength="100" type="text" required="required" class="form-control" placeholder="Business Name" value="@if($new_lead) {{$new_lead->company_name}} @else {{old('company_name')}} @endif"/>
+                    <input name="company_name" maxlength="100" type="text" required="required" class="form-control" placeholder="Business Name" @if($new_lead) value="{{$new_lead->company_name}}" @else value="{{old('company_name')}}" @endif />
                     @if ($errors->has('company_name'))
                         <span class="help-block">
                             <strong>{{ $errors->first('company_name') }}</strong>
@@ -61,30 +60,25 @@
                 </div>
                 <div class="form-group{{ $errors->has('contact_name') ? ' has-error' : '' }}">
                     <label class="control-label">Client Contact Name:</label>
-                    <input name="contact_name" maxlength="100" type="text" required="required" class="form-control" placeholder="First, Last" value="@if($new_lead) {{$new_lead->full_name}} @else {{old('contact_name')}} @endif"/>
+                    <input name="contact_name" maxlength="100" type="text" required="required" class="form-control" placeholder="First, Last" @if($new_lead) value="{{$new_lead->full_name}}" @else value="{{old('contact_name')}}" @endif />
                     @if ($errors->has('contact_name'))
                         <span class="help-block">
                             <strong>{{ $errors->first('contact_name') }}</strong>
                         </span>
                     @endif
                 </div>
-                <div class="form-group{{ $errors->has('decision_maker') ? ' has-error' : '' }}">
-                    <label class="control-label">Is this the decision Maker?</label>
-                    <label class="radio-inline">
-                        <input type="radio" name="decision_maker" id="decision_maker1" value="1" required="required" @if(old('decision_maker') == 1) checked @endif>Yes
-                    </label>
-                    <label class="radio-inline">
-                        <input type="radio" name="decision_maker" id="decision_maker0" value="0" required="required" @if(old('decision_maker') === 0) checked @endif>No
-                    </label>
-                    @if ($errors->has('decision_maker'))
+                <div class="form-group{{ $errors->has('contact_position') ? ' has-error' : '' }}">
+                    <label class="control-label">Client Job Title:</label>
+                    <input name="contact_position" maxlength="100" type="text" required="required" class="form-control" placeholder="Position" @if($new_lead) value="{{$new_lead->full_name}}" @else value="{{old('contact_position')}}" @endif />
+                    @if ($errors->has('contact_position'))
                         <span class="help-block">
-                            <strong>{{ $errors->first('decision_maker') }}</strong>
+                            <strong>{{ $errors->first('contact_position') }}</strong>
                         </span>
                     @endif
                 </div>
                 <div class="form-group{{ $errors->has('contact_phone') ? ' has-error' : '' }}">
                     <label class="control-label">Client Contact Phone:</label>
-                    <input name="contact_phone" maxlength="20" type="text" required="required" class="form-control" value="@if($new_lead) {{$new_lead->phone}} @else {{old('contact_phone')}} @endif" />
+                    <input name="contact_phone" maxlength="20" type="text" required="required" class="form-control" placeholder="Contact Phone" @if($new_lead) value="{{$new_lead->phone}}" @else value="{{old('contact_phone')}}" @endif />
                     @if ($errors->has('contact_phone'))
                         <span class="help-block">
                             <strong>{{ $errors->first('contact_phone') }}</strong>
@@ -93,73 +87,45 @@
                 </div>
                 <div class="form-group{{ $errors->has('contact_email') ? ' has-error' : '' }}">
                     <label class="control-label">Client Contact Email:</label>
-                    <input name="contact_email" type="email" required="required" class="form-control" value="@if($new_lead) {{$new_lead->email}} @else {{ old('contact_email') }} @endif" />
+                    <input name="contact_email" type="email" required="required" class="form-control" @if($new_lead) value="{{$new_lead->email}}" @else value="{{ old('contact_email') }}" @endif />
                     @if ($errors->has('contact_email'))
                         <span class="help-block">
                             <strong>{{ $errors->first('contact_email') }}</strong>
                         </span>
                     @endif
                 </div>
-                <div class="form-group{{ $errors->has('company_state') ? ' has-error' : '' }}">
-                    <label class="control-label">Company State:</label>
-                    <select name="company_state" id="company_state" required="required" class="form-control select2">
+                <div class="form-group{{ $errors->has('contact_street') ? ' has-error' : '' }}">
+                    <label class="control-label">Client Address Street:</label>
+                    <input name="contact_street" type="text" required="required" class="form-control" @if($new_lead) value="{{$new_lead->email}}" @else value="{{ old('contact_street') }}" @endif />
+                    @if ($errors->has('contact_street'))
+                        <span class="help-block">
+                            <strong>{{ $errors->first('contact_street') }}</strong>
+                        </span>
+                    @endif
+                </div>
+                <div class="form-group{{ $errors->has('contact_city') ? ' has-error' : '' }}">
+                    <label class="control-label">Client Address City:</label>
+                    <input name="contact_city" type="text" required="required" class="form-control" @if($new_lead) value="{{$new_lead->email}}" @else value="{{ old('contact_city') }}" @endif />
+                    @if ($errors->has('contact_city'))
+                        <span class="help-block">
+                            <strong>{{ $errors->first('contact_city') }}</strong>
+                        </span>
+                    @endif
+                </div>
+                <div class="form-group{{ $errors->has('contact_state') ? ' has-error' : '' }}">
+                    <label class="control-label">Client Address State:</label>
+                    <select name="contact_state" id="contact_state" required="required" class="form-control select2">
                         <option value="">Select</option>
                     @foreach(config('app.us_states') as $index=>$value)
                         <option value="{{ $index }}" @if($new_lead) @if($new_lead->lead_state == $value) selected @endif @endif>{{ $value }}</option>
                     @endforeach
                     </select>
-                    @if ($errors->has('company_state'))
+                    @if ($errors->has('contact_state'))
                         <span class="help-block">
-                            <strong>{{ $errors->first('company_state') }}</strong>
+                            <strong>{{ $errors->first('contact_state') }}</strong>
                         </span>
                     @endif
                 </div>
-                <div class="form-group{{ $errors->has('company_states') ? ' has-error' : '' }}">
-                    <label class="control-label">States you have employees:</label>
-                    <select multiple name="company_states[]" id="company_states" required="required" class="form-control select2">
-                        <option value="">Select</option>
-                    @php if(old('company_states')) $company_states_arr = old('company_states'); else $company_states_arr = []; @endphp
-                    @foreach(config('app.us_states') as $index=>$value)
-                        <option value="{{ $index }}" @if( in_array( $index, $company_states_arr ) ) selected @endif>{{ $value }}</option>
-                    @endforeach
-                    </select>
-                    @if ($errors->has('company_states'))
-                        <span class="help-block">
-                            <strong>{{ $errors->first('company_states') }}</strong>
-                        </span>
-                    @endif
-                </div>
-            @if($new_lead && $new_lead->type == 3  && $new_lead->status == 1)
-                <div class="form-group{{ $errors->has('provide_accounting') ? ' has-error' : '' }}">
-                    <label class="control-label">Do you provide accounting bookeeping for clients?</label>
-                    <label class="radio-inline">
-                        <input type="radio" name="provide_accounting" id="provide_accounting1" value="1" required="required" @if(old('provide_accounting') == 1) checked @endif>Yes
-                    </label>
-                    <label class="radio-inline">
-                        <input type="radio" name="provide_accounting" id="provide_accounting0" value="0" required="required" @if(old('provide_accounting') === 0) checked @endif>No
-                    </label>
-                    @if ($errors->has('provide_accounting'))
-                        <span class="help-block">
-                            <strong>{{ $errors->first('provide_accounting') }}</strong>
-                        </span>
-                    @endif
-                </div>
-            @else
-                <div class="form-group{{ $errors->has('external_account') ? ' has-error' : '' }}">
-                    <label class="control-label">Do you have a an external account/bookeeper?</label>
-                    <label class="radio-inline">
-                        <input type="radio" name="external_account" id="external_account1" value="1" required="required" @if(old('external_account') == 1) checked @endif>Yes
-                    </label>
-                    <label class="radio-inline">
-                        <input type="radio" name="external_account" id="external_account0" value="0" required="required" @if(old('external_account') === 0) checked @endif>No
-                    </label>
-                    @if ($errors->has('external_account'))
-                        <span class="help-block">
-                            <strong>{{ $errors->first('external_account') }}</strong>
-                        </span>
-                    @endif
-                </div>
-            @endif
                 <div class="form-group{{ $errors->has('employees_number') ? ' has-error' : '' }}">
                     <label class="control-label">How many employees does the client have?</label>
                     <select name="employees_number" required="required" class="form-control">
@@ -181,147 +147,30 @@
                         </span>
                     @endif
                 </div>
-            @if($new_lead && $new_lead->type == 3  && $new_lead->status == 1)
-                <div class="form-group{{ $errors->has('clients_number') ? ' has-error' : '' }}">
-                    <label class="control-label">How many clients do you have?</label>
-                    <input type="number" name="clients_number" id="clients_number" class="form-control"  required="required" value="{{ old('clients_number') }}">
-                    @if ($errors->has('clients_number'))
+                <div class="form-group{{ $errors->has('decision_maker') ? ' has-error' : '' }}">
+                    <label class="control-label">Is this the decision Maker?</label>
+                    <label class="radio-inline">
+                        <input type="radio" name="decision_maker" id="decision_maker1" value="1" required="required" @if(old('decision_maker') == 1) checked @endif>Yes
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="decision_maker" id="decision_maker0" value="0" required="required" @if(old('decision_maker') === 0) checked @endif>No
+                    </label>
+                    @if ($errors->has('decision_maker'))
                         <span class="help-block">
-                            <strong>{{ $errors->first('clients_number') }}</strong>
+                            <strong>{{ $errors->first('decision_maker') }}</strong>
                         </span>
                     @endif
                 </div>
-            @endif
-            @if($new_lead && $new_lead->type == 3  && $new_lead->status == 1)
+                <div class="form-group{{ $errors->has('open_positions') ? ' has-error' : '' }}">
+                    <label class="control-label">How many open positions do you currently have?</label>
+                    <input type="number" name="open_positions" id="open_positions" class="form-control"  required="required" value="{{ old('open_positions') }}">
+                    @if ($errors->has('open_positions'))
+                        <span class="help-block">
+                            <strong>{{ $errors->first('open_positions') }}</strong>
+                        </span>
+                    @endif
+                </div>
                 <button class="btn btn-success btn-lg pull-right nextBtn" type="submit">Finish!</button>
-            @else
-                <button class="btn btn-primary nextBtn btn-lg pull-right" type="button" >Next</button>
-            @endif
-            </div>
-        </div>
-    </div>
-    <div class="row setup-content" id="step-2">
-        <div class="col-xs-12">
-            <div class="col-md-12">
-                <h3> Step 2</h3>
-                <div class="form-group">
-                    <label class="control-label">Do you require Certified payroll?</label>
-                    <label class="radio-inline">
-                        <input type="radio" name="certified_payroll" id="certified_payroll1" value="1" @if(old('certified_payroll') == 1) checked @endif/>Yes
-                    </label>
-                    <label class="radio-inline">
-                        <input type="radio" name="certified_payroll" id="certified_payroll0" value="0" checked/>No
-                    </label>
-                </div>
-
-                <div class="form-group">
-                    <label class="control-label">Do you require Job costing?</label>
-                    <label class="radio-inline">
-                        <input type="radio" name="job_costing" id="job_costing1" value="1" @if(old('job_costing') == 1) checked @endif />Yes
-                    </label>
-                    <label class="radio-inline">
-                        <input type="radio" name="job_costing" id="job_costing0" value="0" checked />No
-                    </label>
-                </div>
-
-                <div class="form-group">
-                    <label class="control-label">Do you require paper checks?</label>
-                    <label class="radio-inline">
-                        <input type="radio" name="paper_checks" id="paper_checks1" value="1" @if(old('paper_checks') == 1) checked @endif />Yes
-                    </label>
-                    <label class="radio-inline">
-                        <input type="radio" name="paper_checks" id="paper_checks0" value="0" checked />No
-                    </label>
-                </div>
-
-                <div class="form-group">
-                    <label class="control-label">Do you require Schedule H filing (househould, nannies)?</label>
-                    <label class="radio-inline">
-                        <input type="radio" name="schedule_filing" id="schedule_filing1" value="1" @if(old('schedule_filing') == 1) checked @endif />Yes
-                    </label>
-                    <label class="radio-inline">
-                        <input type="radio" name="schedule_filing" id="schedule_filing0" value="0" checked />No
-                    </label>
-                </div>
-
-                <div class="form-group">
-                    <label class="control-label">Do you require a 943 filing? (farms)</label>
-                    <label class="radio-inline">
-                        <input type="radio" name="farms_filing" id="farms_filing1" value="1" @if(old('farms_filing') == 1) checked @endif />Yes
-                    </label>
-                    <label class="radio-inline">
-                        <input type="radio" name="farms_filing" id="farms_filing0" value="0" checked />No
-                    </label>
-                </div>
-
-                <div class="form-group">
-                    <label class="control-label">Do you require international?</label>
-                    <label class="radio-inline">
-                        <input type="radio" name="require_international" id="require_international1" value="1" @if(old('require_international') == 1) checked @endif />Yes
-                    </label>
-                    <label class="radio-inline">
-                        <input type="radio" name="require_international" id="require_international0" value="0" checked />No
-                    </label>
-                </div>
-
-                <div class="form-group">
-                    <label class="control-label">Do you require FICA tip credit tracking?</label>
-                    <label class="radio-inline">
-                        <input type="radio" name="require_fica" id="require_fica1" value="1" @if(old('require_fica') == 1) checked @endif />Yes
-                    </label>
-                    <label class="radio-inline">
-                        <input type="radio" name="require_fica" id="require_fica0" value="0" checked />No
-                    </label>
-                </div>
-
-                <div class="form-group">
-                    <label class="control-label">Do you require garnishment payment remits?</label>
-                    <label class="radio-inline">
-                        <input type="radio" name="require_garnishment" id="require_garnishment1" value="1" @if(old('require_garnishment') == 1) checked @endif />Yes
-                    </label>
-                    <label class="radio-inline">
-                        <input type="radio" name="require_garnishment" id="require_garnishment0" value="0" checked />No
-                    </label>
-                </div>
-                
-                <button class="btn btn-primary nextBtn btn-lg pull-right" type="button" >Next</button>
-            </div>
-        </div>
-    </div>
-    <div class="row setup-content" id="step-3">
-        <div class="col-xs-12">
-            <div class="col-md-12">
-                <h3> Step 3</h3>
-                <div class="form-group">
-                    <label class="control-label">How do you currently process payroll (yourself OR enter company name)</label>
-                    <input name="payroll_process" type="text" class="form-control" placeholder="" />
-                </div>
-
-                <div class="form-group">
-                    <label class="control-label">Do you offer company-sponsored health benefits?</label>
-                    <label class="radio-inline">
-                        <input type="radio" name="health_benefits" id="health_benefits1" value="1" @if(old('health_benefits') == 1) checked @endif />Yes
-                    </label>
-                    <label class="radio-inline">
-                        <input type="radio" name="health_benefits" id="health_benefits0" value="0" @if(old('health_benefits') === 0) checked @endif />No
-                    </label>
-                </div>
-
-                <div class="form-group">
-                    <label class="control-label">Who is your broker?</label>
-                    <input name="health_broker" type="text" class="form-control" placeholder="" />
-                </div>
-
-                <div class="form-group">
-                    <label class="control-label">Would you like to consider Gusto?</label>
-                    <label class="radio-inline">
-                        <input type="radio" name="consider" id="consider1" value="1" @if(old('consider') == 1) checked @endif />Yes
-                    </label>
-                    <label class="radio-inline">
-                        <input type="radio" name="consider" id="consider0" value="0" @if(old('consider') === 0) checked @endif />No
-                    </label>
-                </div>
-                <button class="btn btn-success btn-lg pull-right" type="submit">Finish!</button>
             </div>
         </div>
     </div>

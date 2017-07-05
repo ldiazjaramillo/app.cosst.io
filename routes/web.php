@@ -60,7 +60,7 @@ Route::group(['prefix' => 'opportunity', 'middleware' => 'auth'], function () {
     Route::get('spa_sbiz/{client_id}', 'OpportunitiesController@spa_sbiz')->name('spa_sbiz');
     Route::get('spb_mmfs/{client_id}', 'OpportunitiesController@spb_mmfs')->name('spb_mmfs');
     Route::get('spb_mmpr/{client_id}', 'OpportunitiesController@spb_mmpr')->name('spb_mmpr');
-    Route::get('new_partners/{client_id}', 'OpportunitiesController@new_partners')->name('new_partners');
+    Route::get('new/{client_id}', 'OpportunitiesController@new_client')->name('new_client');
     Route::get('notify/{client_id}', 'OpportunitiesController@notify')->name('opportunity.notify');
     Route::post('notify/{client_id}', 'OpportunitiesController@notify2')->name('opportunity.notify2');
     Route::get('view/{id}', 'OpportunitiesController@view')->name('opportunity.view');

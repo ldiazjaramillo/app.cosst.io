@@ -22,46 +22,26 @@ class OpportunitiesController extends Controller
     }
 
     public function store(Request $request){
-        if($request->get('lead_type') == 3 && $request->get('lead_status') == 1){
-            $errors = $this->validate($request, [
-                'company_name'=>'required',
-                'contact_name'=>'required',
-                'decision_maker'=>'required',
-                'contact_phone'=>'required',
-                'contact_email'=>'required|email',
-                //'client_id'=>'required|unique:opportunities,client_id',
-                'company_state'=>'required',
-                'company_states'=>'required',
-                'provide_accounting'=>'required',
-                'employees_number'=>'required',
-                'clients_number'=>'required',
-            ]);
-        }else{
-            $errors = $this->validate($request, [
-                'company_name'=>'required',
-                'contact_name'=>'required',
-                'decision_maker'=>'required',
-                'contact_phone'=>'required',
-                'contact_email'=>'required|email',
-                //'client_id'=>'required|unique:opportunities,client_id',
-                'company_state'=>'required',
-                'company_states'=>'required',
-                'external_account'=>'required',
-                'employees_number'=>'required',
-            ]);
-        }
+        $errors = $this->validate($request, [
+            'company_name'=>'required',
+            'contact_name'=>'required',
+            'contact_position'=>'required',
+            'contact_phone'=>'required',
+            'contact_email'=>'required|email',
+            'contact_street'=>'required',
+            'contact_state'=>'required',
+            'contact_city'=>'required',
+            'employees_number'=>'required',
+            'open_positions'=>'required',
+            'decision_maker'=>'required',
+        ]);
         
         //dd($request->all());
-        if($request->has('company_states')){
-            $request['company_states'] = implode($request->get('company_states'), ',');
-        }
         $request['user_id'] = \Auth::user()->id;
-        if($request->get('lead_type') == 3 && $request->get('lead_status') == 1) $request['type_id'] = 4;
-        else $request['type_id'] = $this->getOpportunityType($request->get('employees_number'), $request->get('company_state'), $request->get('client_id'));
-        $opportunity = \App\Opportunity::create($request->except(['lead_type', 'lead_status']));
+        $request['type_id'] = 1;
+        $opportunity = \App\Opportunity::create( $request->all() );
 
-        if($request->get('lead_type') == 3 && $request->get('lead_status') == 1) $url ="opportunity/new_partners/$opportunity->id";
-        else $url = $this->getRedirectPage($opportunity->employees_number, $opportunity->company_state, $opportunity->id);
+        $url ="opportunity/new/$opportunity->id";
 
         return redirect($url);
     }
@@ -125,7 +105,7 @@ class OpportunitiesController extends Controller
 
     public function updateManagerPartner($agent){
         //dd($agent);
-        if($agent->agent_id == 4) $agent->agent_id = 0;
+        if($agent->agent_id == 3) $agent->agent_id = 0;
         else $agent->agent_id = $agent->agent_id + 1;
         $agent->save();
     }
@@ -188,14 +168,13 @@ class OpportunitiesController extends Controller
         return view('opportunities.spb', compact('opportunity', 'agent', 'agents', 'agent_id'));
     }
 
-    public function new_partners($client_id){
+    public function new_client($client_id){
         $opportunity = \App\Opportunity::find($client_id);
-        $agents = [
-            0=>['name'=>'Dominic Daley', 'email'=>'dominic.daley@gusto.com', 'calendar'=>'calendly.com/dominic_gusto'],
-            1=>['name'=>'Adam Howard', 'email'=>'adam@gusto.com', 'calendar'=>'calendly.com/adam-howard'],
-            2=>['name'=>'Marie-Therese', 'email'=>'Joyce mt@gusto.com', 'calendar'=>'calendly.com/mtwithgusto'],
-            3=>['name'=>'Elliott Scherer', 'email'=>'elliott.scherer@gusto.com', 'calendar'=>'calendly.com/elliott-scherer'],
-            4=>['name'=>'Joey Schultz', 'email'=>'joey.schultz@gusto.com', 'calendar'=>'calendly.com/joey-schultz'],
+        $agents = [ 
+            0 => [ "name" => "Mark Angeles", "calendar" => "calendly.com/m-angeles", "email" => "m.angeles@jobtarget.com", "phone" => "1 (860) 288-5439"],
+            1 => [ "name" => "Ian Kukulka", "calendar" => "calendly.com/i-kukulka", "email" => "i.kukulka@jobtarget.com", "phone" => "1 (860) 288-5444"],
+            2 => [ "name" => "Rob Prest", "calendar" => "calendly.com/r-prest", "email" => "r.prest@jobtarget.com", "phone" => "1 (860) 288-5433"],
+            3 => [ "name" => "Jerry Vissers", "calendar" => "calendly.com/j-vissers", "email" => "j.vissers@jobtarget.com", "phone" => "1 (860) 288-5441"]
         ];
         if(!$opportunity->agent_id){
             $partner = \App\Partner::all()->first();
@@ -205,36 +184,17 @@ class OpportunitiesController extends Controller
             $agent_id = $opportunity->agent_id;
         }
         $agent = $agents[$agent_id];
-        return view('opportunities.new_partners', compact('opportunity', 'agent', 'agents', 'agent_id'));
+        return view('opportunities.new_client', compact('opportunity', 'agent', 'agents', 'agent_id'));
     }
 
     public function notify2(Request $request, $id){
         $agents = [
             1 => [
-                0 =>['name'=>'Joey B', 'email'=>'joey.brown@gusto.com', 'calendar'=>'calendly.com/joey-brown'],
-                1 =>['name'=>'Candace S', 'email'=>'candace.sake@gusto.com', 'calendar'=>'calendly.com/candace-sake'],
-                2 =>['name'=>'Rene E', 'email'=>'rene.etter-garrette@gusto.com', 'calendar'=>'calendly.com/rene-gusto'],
-                3 =>['name'=>'Donny T', 'email'=>'donny.tachis@gusto.com', 'calendar'=>'calendly.com/donny-tachis'],
+                0 => [ "name" => "Mark Angeles", "calendar" => "calendly.com/m-angeles", "email" => "m.angeles@jobtarget.com", "phone" => "1 (860) 288-5439"],
+                1 => [ "name" => "Ian Kukulka", "calendar" => "calendly.com/i-kukulka", "email" => "i.kukulka@jobtarget.com", "phone" => "1 (860) 288-5444"],
+                2 => [ "name" => "Rob Prest", "calendar" => "calendly.com/r-prest", "email" => "r.prest@jobtarget.com", "phone" => "1 (860) 288-5433"],
+                3 => [ "name" => "Jerry Vissers", "calendar" => "calendly.com/j-vissers", "email" => "j.vissers@jobtarget.com", "phone" => "1 (860) 288-5441"]
             ],
-            2 => [
-                0=>['name'=>'Brandon Boyle', 'email'=>'brandon.boyle@gusto.com', 'calendar'=>'calendly.com/brandon_gusto'],
-                1=>['name'=>'Michael Reddish', 'email'=>'michael.reddish@gusto.com', 'calendar'=>'calendly.com/michael-reddish'],
-                2=>['name'=>'Chad Benoit', 'email'=>'chad@gusto.com', 'calendar'=>'calendly.com/chad_zp'],
-                3=>['name'=>'Johnny Wells', 'email'=>'johnny.wells@gusto.com', 'calendar'=>'calendly.com/johnnywells'],
-                4=>['name'=>'Kabir Chopra', 'email'=>'kabir.chopra@gusto.com', 'calendar'=>'calendly.com/kabirchopra'],
-            ],
-            3 => [
-                0=>['name'=>'Yekta Tehrani', 'email'=>'yekta.tehrani@gusto.com', 'calendar'=>'calendly.com/yekta-tehrani'],
-                1=>['name'=>'Matt Worden', 'email'=>'matt.worden@gusto.com', 'calendar'=>'calendly.com/matt-worden'],
-                2=>['name'=>'Matthew Baker', 'email'=>'matthew.baker@gusto.com', 'calendar'=>'calendly.com/matthewbaker'],
-            ],
-            4 => [
-                0=>['name'=>'Dominic Daley', 'email'=>'dominic.daley@gusto.com', 'calendar'=>'calendly.com/dominic_gusto'],
-                1=>['name'=>'Adam Howard', 'email'=>'adam@gusto.com', 'calendar'=>'calendly.com/adam-howard'],
-                2=>['name'=>'Marie-Therese', 'email'=>'Joyce mt@gusto.com', 'calendar'=>'calendly.com/mtwithgusto'],
-                3=>['name'=>'Elliott Scherer', 'email'=>'elliott.scherer@gusto.com', 'calendar'=>'calendly.com/elliott-scherer'],
-                4=>['name'=>'Joey Schultz', 'email'=>'joey.schultz@gusto.com', 'calendar'=>'calendly.com/joey-schultz'],
-            ]
         ];
         $this->validate($request, [
             'agent_id'=>'required',
@@ -251,7 +211,7 @@ class OpportunitiesController extends Controller
         $opportunity = \App\Opportunity::find($id);
         $opportunity->agent_id = $request->get('agent_id');
         $opportunity->date = $Date->toDateTimeString();
-        $opportunity->comment = $request->get('comment');
+        $opportunity->notes = $request->get('notes');
         $opportunity->timezone = $request->get('timezone');
         $opportunity->status = 2;
         $opportunity->save();
