@@ -239,7 +239,7 @@ class OpportunitiesController extends Controller
         
         try{
             $client = new Client();
-            $url = "https://hooks.zapier.com/hooks/catch/2314747/9x0g8g/";
+            $url = "https://hooks.zapier.com/hooks/catch/2314747/5u1q39/";
             if(env('APP_ENV') == "local"){
                 $data['client_email'] = "luis@vitalfew.io";
                 $data['organizer_email'] = "ethan@vitalfew.io";
