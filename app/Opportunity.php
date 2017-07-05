@@ -27,7 +27,8 @@ class Opportunity extends Model
         5 => "Meeting held",
         6 => "Meeting cancelled",
         7 => "Meeting rescheduled",
-        8 => "No show"
+        8 => "No show",
+        9 => "Not qualify"
     ];
     protected $tzlist = [
         'UTC' => 'UTC',

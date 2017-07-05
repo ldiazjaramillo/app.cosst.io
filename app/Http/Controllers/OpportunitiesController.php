@@ -37,10 +37,12 @@ class OpportunitiesController extends Controller
         ]);
         
         //dd($request->all());
+        $open_positions = $request->get('open_positions');
+        if($open_positions < 5 ) $request['status'] = 9;//set status of not qualify
         $request['user_id'] = \Auth::user()->id;
         $request['type_id'] = 1;
         $opportunity = \App\Opportunity::create( $request->all() );
-
+        if($open_positions < 5 ) return view('opportunities.not_qualify');
         $url ="opportunity/new/$opportunity->id";
 
         return redirect($url);
