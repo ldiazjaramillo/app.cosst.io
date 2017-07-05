@@ -128,19 +128,7 @@
                 </div>
                 <div class="form-group{{ $errors->has('employees_number') ? ' has-error' : '' }}">
                     <label class="control-label">How many employees does the client have?</label>
-                    <select name="employees_number" required="required" class="form-control">
-                        <option value="">Select</option>
-                    @php 
-                    if($new_lead){ 
-                        if($new_lead->employees < 3) $employees = '1-2';
-                        else if($new_lead->employees >= 3 && $new_lead->employees <=9 ) $employees = '3-9';
-                        else $employees = '10+';
-                    } 
-                    @endphp
-                    @foreach($number_options as $index=>$value)
-                        <option value="{{ $index }}" @if(isset($employees)) @if($employees == $index) selected @endif @endif>{{ $value }}</option>
-                    @endforeach
-                    </select>
+                    <input type="number" name="employees_number" id="employees_number" class="form-control"  required="required" @if($new_lead) value="{{ $new_lead->employees }}" @else value="{{ old('employees_number') }}" @endif />
                     @if ($errors->has('employees_number'))
                         <span class="help-block">
                             <strong>{{ $errors->first('employees_number') }}</strong>
