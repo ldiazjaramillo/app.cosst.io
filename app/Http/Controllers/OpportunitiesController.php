@@ -223,7 +223,7 @@ class OpportunitiesController extends Controller
         $data['timezone'] = $DateTimezone->tzName;
         $data['dtstart'] = $DateTimezone->format('Ymd\THis\Z');
         $data['dtend'] = $DateTimezone->copy()->addMinutes(30)->format('Ymd\THis\Z');
-        $data['title'] = "GUSTO >> PayRoll Review (".$current_agent['name'].") to Call ".$opportunity->contact_name;
+        $data['title'] = "Jobtarget >> PostMaster Free trial Meet UP (".$current_agent['name'].") to Call ".$opportunity->contact_name;
         $data['organizer_name'] = $current_agent['name'];
         $data['organizer_email'] = $current_agent['email'];
         $data['client_email'] = $opportunity->contact_email;
