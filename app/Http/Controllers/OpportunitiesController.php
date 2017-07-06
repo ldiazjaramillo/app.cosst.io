@@ -254,7 +254,8 @@ class OpportunitiesController extends Controller
                     "start_date" => $DateTimezone->toIso8601String(),
                     "end_date" => $DateTimezone->copy()->addMinutes(30)->toIso8601String(),
                     "email1" => $data['client_email'],
-                    "email2" => $data['organizer_email']
+                    "email2" => $data['organizer_email'],
+                    "email3" => "a.cassio@jobtarget.com"
                 ]
             ]);
 
