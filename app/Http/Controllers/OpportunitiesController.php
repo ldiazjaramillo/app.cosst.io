@@ -223,7 +223,7 @@ class OpportunitiesController extends Controller
         $data['timezone'] = $DateTimezone->tzName;
         $data['dtstart'] = $DateTimezone->format('Ymd\THis\Z');
         $data['dtend'] = $DateTimezone->copy()->addMinutes(15)->format('Ymd\THis\Z');
-        $data['title'] = "Jobtarget >> PostMaster Free trial Meet UP (".$current_agent['name'].") to Call ".$opportunity->contact_name;
+        $data['title'] = "Jobtarget >> Programmatic Free trial Meet UP (".$current_agent['name'].") to Call ".$opportunity->contact_name;
         $data['organizer_name'] = $current_agent['name'];
         $data['organizer_email'] = $current_agent['email'];
         $data['client_email'] = $opportunity->contact_email;
@@ -377,7 +377,11 @@ class OpportunitiesController extends Controller
             //$url = $channels[0]['url'];
             //$url = env('SLACK_URL', false);
             $company = $opportunity->company_name;
-            $message = "A new lead has completed the process and is ready for follow up: The lead is $company, the Lead ID is $client_id";
+            $client_agent = $opportunity->gusto_agent;
+            $event_date = $opportunity->event_date;
+            $vf_agent = $opportunity->vf_agent;
+            $message = "A new appointment has been set for $client_agent by $vf_agent with $company on $event_date. Congratulations!";
+            //$message = "A new lead has completed the process and is ready for follow up: The lead is $company, the Lead ID is $client_id";
             if(env('APP_ENV') == "local") $message .= " THIS IS A TEST. PLEASE IGNORE THIS!";
 
             $response = $client->request('POST', $url, [
@@ -542,7 +546,7 @@ class OpportunitiesController extends Controller
         $data['timezone'] = $DateTimezone->tzName;
         $data['dtstart'] = $DateTimezone->format('Ymd\THis\Z');
         $data['dtend'] = $DateTimezone->copy()->addMinutes(15)->format('Ymd\THis\Z');
-        $data['title'] = "Jobtarget >> PostMaster Free trial Meet UP (".$current_agent['name'].") to Call ".$opportunity->contact_name;
+        $data['title'] = "Jobtarget >> Programmatic Free trial Meet UP (".$current_agent['name'].") to Call ".$opportunity->contact_name;
         $data['organizer_name'] = $current_agent['name'];
         $data['organizer_email'] = $current_agent['email'];
         $data['client_email'] = $opportunity->contact_email;
