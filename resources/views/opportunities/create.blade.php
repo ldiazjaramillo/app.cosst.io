@@ -96,7 +96,7 @@
                 </div>
                 <div class="form-group{{ $errors->has('contact_street') ? ' has-error' : '' }}">
                     <label class="control-label">Client Address Street:</label>
-                    <input name="contact_street" type="text" required="required" class="form-control" @if($new_lead) value="{{$new_lead->contact_street}}" @else value="{{ old('contact_street') }}" @endif />
+                    <input name="contact_street" type="text" required="required" class="form-control" @if($new_lead) value="{{$new_lead->lead_street}}" @else value="{{ old('contact_street') }}" @endif />
                     @if ($errors->has('contact_street'))
                         <span class="help-block">
                             <strong>{{ $errors->first('contact_street') }}</strong>
@@ -105,7 +105,7 @@
                 </div>
                 <div class="form-group{{ $errors->has('contact_city') ? ' has-error' : '' }}">
                     <label class="control-label">Client Address City:</label>
-                    <input name="contact_city" type="text" required="required" class="form-control" @if($new_lead) value="{{$new_lead->contact_city}}" @else value="{{ old('contact_city') }}" @endif />
+                    <input name="contact_city" type="text" required="required" class="form-control" @if($new_lead) value="{{$new_lead->lead_city}}" @else value="{{ old('contact_city') }}" @endif />
                     @if ($errors->has('contact_city'))
                         <span class="help-block">
                             <strong>{{ $errors->first('contact_city') }}</strong>
