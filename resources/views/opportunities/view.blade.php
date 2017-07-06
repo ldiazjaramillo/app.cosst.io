@@ -138,7 +138,7 @@ $agents = [
                     <div class="form-group">
                         <label for="">Date and Time</label>
                         <div class='input-group date' id='update_date'>
-                            <input type='text' class="form-control" name="date" value="@if($opportunity->date) {{ $opportunity->date }} @endif" />
+                            <input type='text' class="form-control" name="date" @if($opportunity->date) value="{{ \Carbon\Carbon::parse($opportunity->date, 'UTC')->tz($opportunity->timezone)->format('m/d/Y h:i A') }}" @endif />
                             <span class="input-group-addon">
                                 <span class="glyphicon glyphicon-calendar"></span>
                             </span>
@@ -148,7 +148,14 @@ $agents = [
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-primary">Update</button>
+            <div class="form-group">
+                <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="send_calendar_invite" id="#send_calendar_invite" value="1"> Send google calendar invite
+                </label>
+                </div>
+                <button class="btn btn-primary">Update</button>
+            </div>
         </div>
         </form>
     </div>
@@ -189,7 +196,8 @@ $(document).ready(function () {
         //inline: true,
         sideBySide: true,
         stepping: 15,
-        minDate: moment()
+        minDate: moment(),
+        useCurrent: false,
     });
 });
 </script>

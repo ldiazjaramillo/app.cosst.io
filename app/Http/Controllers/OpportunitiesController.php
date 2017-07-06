@@ -219,10 +219,10 @@ class OpportunitiesController extends Controller
         $opportunity->save();
         $current_agent = $agents[$opportunity->type_id][$opportunity->agent_id];
         $data['start_date'] = $DateTimezone->timestamp;
-        $data['end_date'] = $DateTimezone->copy()->addMinutes(30)->timestamp;
+        $data['end_date'] = $DateTimezone->copy()->addMinutes(15)->timestamp;
         $data['timezone'] = $DateTimezone->tzName;
         $data['dtstart'] = $DateTimezone->format('Ymd\THis\Z');
-        $data['dtend'] = $DateTimezone->copy()->addMinutes(30)->format('Ymd\THis\Z');
+        $data['dtend'] = $DateTimezone->copy()->addMinutes(15)->format('Ymd\THis\Z');
         $data['title'] = "Jobtarget >> PostMaster Free trial Meet UP (".$current_agent['name'].") to Call ".$opportunity->contact_name;
         $data['organizer_name'] = $current_agent['name'];
         $data['organizer_email'] = $current_agent['email'];
@@ -252,7 +252,7 @@ class OpportunitiesController extends Controller
                     "description" => $data['description'],
                     "location" => "Will call ".$opportunity->contact_name." at ".$opportunity->contact_phone." ".$opportunity->contact_email,
                     "start_date" => $DateTimezone->toIso8601String(),
-                    "end_date" => $DateTimezone->copy()->addMinutes(30)->toIso8601String(),
+                    "end_date" => $DateTimezone->copy()->addMinutes(15)->toIso8601String(),
                     "email1" => $data['client_email'],
                     "email2" => $data['organizer_email'],
                     "email3" => "a.cassio@jobtarget.com"
@@ -336,7 +336,7 @@ class OpportunitiesController extends Controller
             $opportunities = \App\Opportunity::all();
             $sbiz = $opportunities->where('type_id', 1)->where('status', '>', 1);
             // SBIZ sheet
-            $excel->sheet('SBIZ', function($sheet) use($sbiz) {
+            $excel->sheet('NEW', function($sheet) use($sbiz) {
                 $sheet->fromModel($sbiz);
             });
             $mmfs = $opportunities->where('type_id', 2)->where('status', '>', 1);
@@ -501,12 +501,15 @@ class OpportunitiesController extends Controller
 
     public function comments_update(Request $request, $opportunity_id){
         $opportunity = \App\Opportunity::find($opportunity_id);
-        $opportunity->comment = $request->get('comments');
+        $opportunity->notes = $request->get('comments');
         $opportunity->save();
         return response()->json(['message'=>'Comments saved']);
     }
 
     public function invite_update(Request $request, $opportunity_id){
+        //dd($request->all());
+        if($request->has('send_calendar_invite')) $send_invite = 1;
+        else $send_invite = 0;
         $opportunity = \App\Opportunity::find($opportunity_id);
         $timezone = $request->get('timezone');
         $Date = \Carbon\Carbon::parse($request->get('date'), $timezone)->timezone('UTC');
@@ -515,7 +518,71 @@ class OpportunitiesController extends Controller
         $opportunity->agent_id = $request->get('agent_id');
         $opportunity->save();
         flash('Invite date updated successfully.')->success();
+        if($send_invite) $this->send_invite($opportunity->id);
         return redirect( route('opportunity.view', [$opportunity_id]) );
+    }
+
+    public function send_invite($opportunity_id){
+        $agents = [
+            1 => [
+                0 => [ "name" => "Mark Angeles", "calendar" => "calendly.com/m-angeles", "email" => "m.angeles@jobtarget.com", "phone" => "1 (860) 288-5439"],
+                1 => [ "name" => "Ian Kukulka", "calendar" => "calendly.com/i-kukulka", "email" => "i.kukulka@jobtarget.com", "phone" => "1 (860) 288-5444"],
+                2 => [ "name" => "Rob Prest", "calendar" => "calendly.com/r-prest", "email" => "r.prest@jobtarget.com", "phone" => "1 (860) 288-5433"],
+                3 => [ "name" => "Jerry Vissers", "calendar" => "calendly.com/j-vissers", "email" => "j.vissers@jobtarget.com", "phone" => "1 (860) 288-5441"]
+            ],
+        ];
+        $opportunity = \App\Opportunity::find($opportunity_id);
+        $timezone = $opportunity->timezone;
+        $DateTimezone = \Carbon\Carbon::parse($opportunity->date, "UTC")->tz($timezone);
+       //echo $Date;
+        //dd($DateTimezone);
+        $current_agent = $agents[$opportunity->type_id][$opportunity->agent_id];
+        $data['start_date'] = $DateTimezone->timestamp;
+        $data['end_date'] = $DateTimezone->copy()->addMinutes(15)->timestamp;
+        $data['timezone'] = $DateTimezone->tzName;
+        $data['dtstart'] = $DateTimezone->format('Ymd\THis\Z');
+        $data['dtend'] = $DateTimezone->copy()->addMinutes(15)->format('Ymd\THis\Z');
+        $data['title'] = "Jobtarget >> PostMaster Free trial Meet UP (".$current_agent['name'].") to Call ".$opportunity->contact_name;
+        $data['organizer_name'] = $current_agent['name'];
+        $data['organizer_email'] = $current_agent['email'];
+        $data['client_email'] = $opportunity->contact_email;
+        $data['company_name'] = $opportunity->company_name;
+        $data['contact_name'] = $opportunity->contact_name;
+        $data['contact_phone'] = $opportunity->contact_phone;
+        $data['employees_number'] = $opportunity->employees_number;
+        $name = explode(' ', trim($opportunity->contact_name));
+        $first_name = $name[0];
+        $data['description'] = "$opportunity->company_name \n
+            Contact Name: $opportunity->contact_name \n
+            Phone: $opportunity->contact_phone \n
+            Number of Employees: $opportunity->employees_number \n
+            Note: $first_name please click accept so ".$current_agent['name']." knows that you will be available at the agreed upon time. Thank you!";
+        
+        try{
+            $client = new Client();
+            $url = "https://hooks.zapier.com/hooks/catch/2314747/5u1q39/";
+            if(env('APP_ENV') == "local"){
+                $data['client_email'] = "luis@vitalfew.io";
+                $data['organizer_email'] = "ethan@vitalfew.io";
+            }
+            $response = $client->post($url, [
+                'json' => [
+                    "summary" => $data['title'],
+                    "description" => $data['description'],
+                    "location" => "Will call ".$opportunity->contact_name." at ".$opportunity->contact_phone." ".$opportunity->contact_email,
+                    "start_date" => $DateTimezone->toIso8601String(),
+                    "end_date" => $DateTimezone->copy()->addMinutes(15)->toIso8601String(),
+                    "email1" => $data['client_email'],
+                    "email2" => $data['organizer_email'],
+                    "email3" => "a.cassio@jobtarget.com"
+                ]
+            ]);
+
+        }catch (\Exception $e){
+            $this->notify($opportunity->id);
+        }
+
+        $this->notify($opportunity->id);
     }
     
 }
