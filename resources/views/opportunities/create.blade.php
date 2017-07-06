@@ -69,7 +69,7 @@
                 </div>
                 <div class="form-group{{ $errors->has('contact_position') ? ' has-error' : '' }}">
                     <label class="control-label">Client Job Title:</label>
-                    <input name="contact_position" maxlength="100" type="text" required="required" class="form-control" placeholder="Position" @if($new_lead) value="{{$new_lead->contact_position}}" @else value="{{old('contact_position')}}" @endif />
+                    <input name="contact_position" maxlength="100" type="text" required="required" class="form-control" placeholder="Position" @if($new_lead) value="{{$new_lead->position}}" @else value="{{old('contact_position')}}" @endif />
                     @if ($errors->has('contact_position'))
                         <span class="help-block">
                             <strong>{{ $errors->first('contact_position') }}</strong>
