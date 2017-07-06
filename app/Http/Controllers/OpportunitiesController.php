@@ -372,7 +372,7 @@ class OpportunitiesController extends Controller
         ];
         try{
             $client = new Client(['base_uri' => 'https://hooks.slack.com/services/']);
-            $url = $channels[$opportunity->type_id]['url'];
+            $url = "https://hooks.slack.com/services/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";
             //$url = $channels[0]['url'];
             //$url = env('SLACK_URL', false);
             $company = $opportunity->company_name;
