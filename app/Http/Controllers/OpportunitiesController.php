@@ -8,6 +8,8 @@ use Excel;
 use GuzzleHttp\Client;
 use Mail;
 use \Carbon\Carbon;
+use Google_Service_Calendar;
+use \App\GoogleEvent;
 
 class OpportunitiesController extends Controller
 {
@@ -170,41 +172,103 @@ class OpportunitiesController extends Controller
         return view('opportunities.spb', compact('opportunity', 'agent', 'agents', 'agent_id'));
     }
 
-    public function new_client($client_id){
-        $opportunity = \App\Opportunity::find($client_id);
-        $agents = [ 
-            0 => [ "name" => "Mark Angeles", "calendar" => "calendly.com/m-angeles", "email" => "m.angeles@jobtarget.com", "phone" => "1 (860) 288-5439"],
-            1 => [ "name" => "Ian Kukulka", "calendar" => "calendly.com/i-kukulka", "email" => "i.kukulka@jobtarget.com", "phone" => "1 (860) 288-5444"],
-            2 => [ "name" => "Rob Prest", "calendar" => "calendly.com/r-prest", "email" => "r.prest@jobtarget.com", "phone" => "1 (860) 288-5433"],
-            3 => [ "name" => "Jerry Vissers", "calendar" => "calendly.com/j-vissers", "email" => "j.vissers@jobtarget.com", "phone" => "1 (860) 288-5441"]
-        ];
-        if(!$opportunity->agent_id){
-            $partner = \App\Partner::all()->first();
-            $agent_id = $partner->agent_id;
-            $this->updateManagerPartner($partner);
+    public function getCurrentAgent($opportunity){
+        $agents = $opportunity->getAgentsByType();
+        $currentAgent = \App\ManagerAgent::where('type_id', $opportunity->type_id)->where('client_id', $opportunity->clients_id)->first();
+        if(is_null($currentAgent)){
+            $currentAgent = \App\ManagerAgent::create([
+                'type_id' => $opportunity->type_id,
+                'client_id' => $opportunity->clients_id,
+                'agent_id' => $agents->first()->id
+            ]);
         }else{
-            $agent_id = $opportunity->agent_id;
+            $next_agent = null;
+            $is_past = false;
+            $temp_id = $currentAgent->agent_id; 
+            foreach($agents as $agent){
+                if($is_past){
+                    if( is_null($agent->gc_token) ) continue;
+                    $currentAgent->agent_id = $agent->id;
+                    $currentAgent->save();
+                    break;
+                }
+                if($agent->id == $currentAgent->agent_id) $is_past = true;
+            }
+            //dd($currentAgent->agent_id);
+            if($temp_id == $currentAgent->agent_id){
+                $currentAgent->agent_id = $agents->first()->id;
+                $currentAgent->save();
+            }
         }
-        $agent = $agents[$agent_id];
-        return view('opportunities.new_client', compact('opportunity', 'agent', 'agents', 'agent_id'));
+
+        return $currentAgent->agent_id;
     }
 
-    public function notify2(Request $request, $id){
-        $agents = [
-            1 => [
-                0 => [ "name" => "Mark Angeles", "calendar" => "calendly.com/m-angeles", "email" => "m.angeles@jobtarget.com", "phone" => "1 (860) 288-5439"],
-                1 => [ "name" => "Ian Kukulka", "calendar" => "calendly.com/i-kukulka", "email" => "i.kukulka@jobtarget.com", "phone" => "1 (860) 288-5444"],
-                2 => [ "name" => "Rob Prest", "calendar" => "calendly.com/r-prest", "email" => "r.prest@jobtarget.com", "phone" => "1 (860) 288-5433"],
-                3 => [ "name" => "Jerry Vissers", "calendar" => "calendly.com/j-vissers", "email" => "j.vissers@jobtarget.com", "phone" => "1 (860) 288-5441"]
-            ],
-        ];
+    public function new_client($opportunity_id){
+        $opportunity = \App\Opportunity::find($opportunity_id);
+        $agents = $opportunity->getAgentsByType();
+        //dd($agents);
+        $agent_id = $this->getCurrentAgent($opportunity);
+        return view('opportunities.new_client', compact('opportunity', 'agent_id'));
+    }
+
+    public function check_agent(Request $request, $opportunity_id){
+        //dd($request->all());
+        $opportunity = \App\Opportunity::find($opportunity_id);
+        $this->validate($request, [
+            'agent_id'=>'required',
+            'date'=>'required',
+        ]);
+        $agent_id = $request->get('agent_id');
+        $agent = \App\User::find($agent_id);
+        $date = $request->get('date');
+        $date_start = Carbon::parse($date)->startOfDay();
+        $google = new \App\GoogleClient($agent_id);
+        $service = new Google_Service_Calendar( $google->getClient() );
+        $timezone = $service->calendars->get('primary')->getTimeZone();
+        //dd( $freeBusy->getBusy() );
+        $Calendar = new \App\GoogleCalendar($service);
+        $freeHours = $Calendar->getFreeHours($date_start->copy()->startOfDay(), $date_start->copy()->endOfDay() );
+        return view( 'opportunities.check_agent', compact('freeHours', 'opportunity', 'agent', 'date', 'timezone') );
+        //dd($freeHours);
+    }
+
+    public function notify2(Request $request, $opportunity_id){
         $this->validate($request, [
             'agent_id'=>'required',
             'date'=>'date|required',
+            'time'=>'required',
+            'duration'=>'required',
             'timezone'=>'required',
-            //'comment'=>'required',
         ]);
+        $opportunity = \App\Opportunity::find($opportunity_id);
+        //dd($request->all());
         $timezone = $request->get('timezone');
+        $date = $request->get('date');
+        $time = $request->get('time');
+        $duration = $request->get('duration');
+        $notes = $request->get('notes');
+        $agent_id = $request->get('agent_id');
+        $agent = \App\User::find($agent_id);
+
+        $startDateTime = Carbon::parse($date." ".$time, $timezone);
+
+        $event = new GoogleEvent;
+        $event->name = 'Jobtarget >> Programmatic Free trial Meet UP';
+        $event->startDateTime = $startDateTime;
+        $event->endDateTime = $startDateTime->copy()->addMinutes($duration);
+        $event->addAttendee(['email' => \Auth::user()->email]);
+        $event->addAttendee(['email' => $agent->email, 'name'=>$agent->name,'responseStatus'=>'needsAction']);
+        $event->save($agent_id);
+
+        $opportunity->notes = $notes;
+        $opportunity->date = $startDateTime;
+        $opportunity->timezone = $timezone;
+        $opportunity->status = 2;
+        $opportunity->agent_id = $agent_id;
+        $opportunity->save();
+        return $this->notify($opportunity->id);
+
         $Date = \Carbon\Carbon::parse($request->get('date'), $timezone)->timezone('UTC');
         $DateTimezone = \Carbon\Carbon::parse($request->get('date'), $timezone);
        //echo $Date;

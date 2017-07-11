@@ -10,10 +10,68 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+use Codegis\GoogleCalendar\Event;
+Route::get('test/calendar', function() {
+    //create a new event
+    $event = new Event;
 
-Route::get('test', function() {
-    Storage::disk('google')->put('test.txt', 'Hello World');
+    $event->name = 'A new event';
+    $event->startDateTime = Carbon\Carbon::now();
+    $event->endDateTime = Carbon\Carbon::now()->addHour();
+    $event->addAttendee(['email' => 'ldiazjaramillo@gmail.com']);
+    $event->addAttendee(['email' => 'luis@vitalfew.io']);
+
+    $event->save();
+
 });
+
+Route::get('test/google-api', function() {
+    $scopes = implode(' ', array( Google_Service_Calendar::CALENDAR ) );
+    $client = new Google_Client();
+    $client->setApplicationName( env('GOOGLE_CLIENT_APP_NAME') );
+    $client->setClientId( env('GOOGLE_CLIENT_ID') );
+    $client->setClientSecret( env('GOOGLE_CLIENT_SECRET') );
+    $client->setRedirectUri('postmessage');
+    //$client = new Google_Client();
+    //$client->setAuthConfig('client_secrets.json');
+    $client->setAccessType("offline");        // offline access
+    //$client->setIncludeGrantedScopes(true);   // incremental auth
+    $client->setScopes($scopes);
+    //$client->addScope(Google_Service_Drive::DRIVE_METADATA_READONLY);
+    $client->setRedirectUri('http://localhost/oauth2');
+    $auth_url = $client->createAuthUrl();
+
+    return view('test_google_api', compact('auth_url'));
+});
+
+Route::get('oauth2', function(){
+    //dd( request()->all() );
+    $code = request()->get('code');
+    //return redirect( route('settings.setCalendarToken') );
+    $scopes = implode(' ', array( Google_Service_Calendar::CALENDAR ) );
+    
+    $client = new Google_Client();
+    $client->setApplicationName( env('GOOGLE_CLIENT_APP_NAME') );
+    $client->setClientId( env('GOOGLE_CLIENT_ID') );
+    $client->setClientSecret( env('GOOGLE_CLIENT_SECRET') );
+    $client->setRedirectUri( 'http://localhost/oauth2' );
+    $client->setAccessType( 'offline' );
+    $client->setScopes($scopes);
+    //dd($code);
+    $google_auth = $client->authenticate($code);
+    //dd($google_auth);
+    //dd($client);
+    $token = $client->getAccessToken();
+    $user = \App\User::find( \Auth::user()->id );
+    $user->gc_token = $token['access_token'];
+    $user->gc_expires_in = $token['expires_in'];
+    $user->gc_created = $token['created'];
+    if(array_key_exists('refresh_token', $token)) $user->gc_refresh_token = $token['refresh_token'];
+    $user->save();
+
+    flash('Google Calendar access granted successfuly')->success();
+    return redirect('/settings/calendar');
+})->middleware('auth');
 
 Route::get('test/excel', function(){
     $name = 'Opportunities';
@@ -54,6 +112,7 @@ Route::group(['prefix' => 'opportunity', 'middleware' => 'auth'], function () {
     Route::get('spb_mmfs/{client_id}', 'OpportunitiesController@spb_mmfs')->name('spb_mmfs');
     Route::get('spb_mmpr/{client_id}', 'OpportunitiesController@spb_mmpr')->name('spb_mmpr');
     Route::get('new/{client_id}', 'OpportunitiesController@new_client')->name('new_client');
+    Route::post('check/{client_id}', 'OpportunitiesController@check_agent')->name('opportunity.check');
     Route::get('notify/{client_id}', 'OpportunitiesController@notify')->name('opportunity.notify');
     Route::post('notify/{client_id}', 'OpportunitiesController@notify2')->name('opportunity.notify2');
     Route::get('view/{id}', 'OpportunitiesController@view')->name('opportunity.view');
@@ -69,6 +128,18 @@ Route::group(['prefix' => 'opportunity', 'middleware' => 'auth'], function () {
     Route::post('invite/update/{opportunity_id}', 'OpportunitiesController@invite_update')->name('opportunity.invite.update');
 });
 
+Route::group(['prefix' => 'settings', 'middleware' => 'auth'], function () {
+    Route::get('calendar', 'SettingsController@calendar')->name('settings.calendar');
+    Route::get('calendar', 'SettingsController@calendar')->name('settings.calendar');
+});
+
+Route::group(['prefix' => 'calendar', 'middleware' => 'auth'], function () {
+    Route::get('/', 'CalendarController@index')->name('calendar.index');
+    Route::get('/delete/{event_id}', 'CalendarController@delete')->name('calendar.delete');
+    Route::get('/update/{event_id}', 'CalendarController@update')->name('calendar.update');
+    Route::get('/create', 'CalendarController@create')->name('calendar.create');
+});
+
 Route::get('summary', 'OpportunitiesController@summary')->name('summary')->middleware('auth');
 
 Auth::routes();
@@ -81,3 +152,8 @@ Route::group(['prefix' => 'admin'], function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+
+Route::group(['prefix' => 'admin'], function () {
+    Voyager::routes();
+});

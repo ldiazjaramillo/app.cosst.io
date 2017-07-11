@@ -180,6 +180,7 @@ return [
         App\Providers\GoogleDriveServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Laracasts\Flash\FlashServiceProvider::class,
+        Codegis\GoogleCalendar\GoogleCalendarServiceProvider::class,
 
     ],
 
@@ -230,6 +231,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Excel' => 'Maatwebsite\Excel\Facades\Excel',
+        'GoogleCalendar' => Codegis\GoogleCalendar\GoogleCalendarFacade::class,
 
     ],
 

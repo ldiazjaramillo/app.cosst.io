@@ -105,4 +105,8 @@ class Opportunity extends Model
     public function getTzlistOptionsAttribute(){
         return $this->tzlist;
     }
+
+    public function getAgentsByType(){
+        return \App\User::where('agent_type_id', $this->type_id)->where('role_id', 3)->orderBy('name')->get();
+    }
 }

@@ -1,77 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="row">
-    <div class="col-md-4">
-        Full Name: {{ $opportunity->contact_name }}
-        @php
-            $name = explode(' ', trim($opportunity->contact_name));
-            $first_name = $name[0];
-            $last_name = ( array_key_exists( 1, $name ) ) ? $name[1] : "";
-        @endphp
-        <div class="input-group">
-            <input type="text" class="form-control" value="{{ $first_name }}" id="first_name" readonly/>
-            <span class="input-group-btn">
-                <button class="btn btn-default clipboard" type="button" data-clipboard-target="#first_name">Copy</button>
-            </span>
-        </div><!-- /input-group -->
-        <div class="input-group">
-            <input type="text" class="form-control" value="{{ $last_name }}" id="last_name" readonly/>
-            <span class="input-group-btn">
-                <button class="btn btn-default clipboard" type="button" data-clipboard-target="#last_name">Copy</button>
-            </span>
-        </div><!-- /input-group -->
-    </div>
-    <div class="col-md-4">
-        Company Name:
-        <div class="input-group">
-            <input type="text" class="form-control" value="{{ $opportunity->company_name }}" id="company_name" readonly/>
-            <span class="input-group-btn">
-                <button class="btn btn-default clipboard" type="button" data-clipboard-target="#company_name">Copy</button>
-            </span>
-        </div><!-- /input-group -->
-    </div>
-    <div class="col-md-4">
-        Work Email:
-        <div class="input-group">
-            <input type="text" class="form-control" value="{{ $opportunity->contact_email }}" id="contact_email" readonly/>
-            <span class="input-group-btn">
-                <button class="btn btn-default clipboard" type="button" data-clipboard-target="#contact_email">Copy</button>
-            </span>
-        </div><!-- /input-group -->
-    </div>
-</div>
-<div>&nbsp;</div>
-<div class="row">
-    <div class="col-md-4">
-        Phone Number:
-        <div class="input-group">
-            <input type="text" class="form-control" value="{{ $opportunity->contact_phone }}" id="contact_phone" readonly/>
-            <span class="input-group-btn">
-                <button class="btn btn-default clipboard" type="button" data-clipboard-target="#contact_phone">Copy</button>
-            </span>
-        </div><!-- /input-group -->
-    </div>
-    <div class="col-md-4">
-        # of Employees:
-        <div class="input-group">
-            <input type="text" class="form-control" value="{{ $opportunity->employees_number }}" id="employees_number" readonly/>
-            <span class="input-group-btn">
-                <button class="btn btn-default clipboard" type="button" data-clipboard-target="#employees_number">Copy</button>
-            </span>
-        </div><!-- /input-group -->
-    </div>
-    <div class="col-md-4">
-        State(s):
-        <div class="input-group">
-            <input type="text" class="form-control" value="{{ $opportunity->contact_state }}" id="contact_state" readonly/>
-            <span class="input-group-btn">
-                <button class="btn btn-default clipboard" type="button" data-clipboard-target="#contact_state">Copy</button>
-            </span>
-        </div><!-- /input-group -->
-    </div>
-</div>
-<div>&nbsp;</div>
 @if (count($errors) > 0)
     <div class="alert alert-danger">
         <ul>
@@ -81,37 +10,50 @@
         </ul>
     </div>
 @endif
-<form method="post" action="{{ route('opportunity.notify', [ $opportunity->id ]) }}">
+<div class="row">
+    <div class="col-md-4">
+        Full Name: {{ $opportunity->contact_name }}
+    </div>
+    <div class="col-md-4">
+        Company Name: {{ $opportunity->company_name }}
+    </div>
+    <div class="col-md-4">
+        Work Email: {{ $opportunity->contact_email }}
+    </div>
+</div>
+<div>&nbsp;</div>
+<div class="row">
+    <div class="col-md-4">
+        Phone Number: {{ $opportunity->contact_phone }}
+    </div>
+    <div class="col-md-4">
+        # of Employees: {{ $opportunity->employees_number }}
+    </div>
+    <div class="col-md-4">
+        State(s): {{ $opportunity->contact_state }}
+    </div>
+</div>
+<div>&nbsp;</div>
+
+<h2>Setup Appointment</h2>
+
+<h3>Step One <small>Choose an Agent and a Date to see available hours</small></h3>
+<form method="post" action="{{ route('opportunity.check', [ $opportunity->id ]) }}">
 {{ csrf_field() }}
  <div class="row">
     <div class='col-sm-4'>
         <div class="form-group">
-            <input type="hidden" name="agent_id" value="{{ $agent_id }}">
-            <select name="agent_id2" class="form-control" disabled>
-            @foreach($agents as $index => $value)
-                <option value="{{ $index }}"@if($index == $agent_id) selected @endif>{{ $value['name'] }}</option>
-            @endforeach
-            </select>
-            @php
-                //$tzlist = DateTimeZone::listIdentifiers(DateTimeZone::ALL);
-                $tzlist = array();
-                $tzlist['America/New_York']     = 'Eastern Standard Time (EST)';
-                $tzlist['America/Chicago']      = 'Central Standard Time (CST)';
-                $tzlist['America/Denver'] = 'Mountain Standard Time (MST)';
-                $tzlist['America/Los_Angeles'] = 'Pacific Standard Time (PST)';
-                $tzlist['America/Puerto_Rico']  = 'Atlantic Standard Time (AST)';
-                //dd($tzlist);
-            @endphp
-            <select name="timezone" id="timezone" class="form-control select2" required>
-                <option value="">Select a timezone</option>
-            @foreach($tzlist as $index => $value)
-                <option value="{{ $index }}" @if($index == "America/New_York") selected @endif>{{ $value }}</option>
+            <label for="">Agent choose by the system is:</label>
+            <select name="agent_id" class="form-control">
+            @foreach($opportunity->getAgentsByType() as $agent)
+                <option value="{{ $agent->id }}"@if($agent->id == $agent_id) selected @endif>{{ $agent->name }}</option>
             @endforeach
             </select>
         </div>
     </div>
     <div class='col-sm-4'>
         <div class="form-group">
+            <label for="">Date for the meeting:</label>
             <div class='input-group date' id='date'>
                 <input type='text' class="form-control" name="date" />
                 <span class="input-group-addon">
@@ -122,34 +64,25 @@
     </div>
     <div class='col-sm-4'>
         <div class="form-group">
-            <textarea class="form-control" name="notes"></textarea>
+            <label for="">&nbsp;</label>
+            <button class="btn btn-default">Check availability</button>
         </div>
     </div>
 </div>
-<div class="text-right">
-    <a href="./{{ $opportunity->id }}" class="btn btn-primary">Change Agent</a>
-    <button class="btn btn-default">Continue</button>
-</div>
 </form>
 <div>&nbsp;</div>
-<!-- Calendly inline widget begin -->
-<div class="calendly-inline-widget" data-url="https://{{ $agent['calendar'] }}" style="min-width:320px;height:580px;"></div>
-<script type="text/javascript" src="https://calendly.com/assets/external/widget.js"></script>
-<!-- Calendly inline widget end -->
+
 @endsection
 
 @section('bottom_script')
 <script>
 $(document).ready(function(){
-    $("#btn_spb").on('click', function(e){
-        if(confirm('Did you sent calendly form?')) return;
-        else e.preventDefault();
-    });
     $('#date').datetimepicker({
+        format: 'MM/DD/YYYY',
         daysOfWeekDisabled: [0, 6],
         //inline: true,
-        sideBySide: true,
-        stepping: 15,
+        sideBySide: false,
+        //stepping: 15,
         minDate: moment()
     });
 });
