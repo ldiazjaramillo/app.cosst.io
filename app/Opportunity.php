@@ -64,19 +64,19 @@ class Opportunity extends Model
 
     public function getEventDateAttribute(){
         if($this->date){
-            $date = \Carbon\Carbon::parse($this->date)->tz($this->timezone);
-            return $date->toDateTimeString()." ".$this->tzlist[$date->tzName];
+            $date = \Carbon\Carbon::parse($this->date, $this->timezone);
+            return $date->toDateTimeString()." ".$date->tzName;
         }else{
             return "N/A";
         }
     }
 
-    public function getGustoAgentAttribute(){
-        if($this->agent_id){
-            return $this->agents[$this->type_id][$this->agent_id]['name'];
-        }else{
-            return "N/A";
-        }
+    public function getClientAgentAttribute(){
+        if(is_null($this->agent_id)) return "N/A";
+        
+        $user = \App\User::find($this->agent_id);
+        if(is_null($user)) return "N/A";
+        else return $user->name; 
     }
 
     public function getVfAgentAttribute(){

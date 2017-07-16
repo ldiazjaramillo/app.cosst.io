@@ -28,12 +28,13 @@
 @endif
 <form role="form" method="POST" action="{{ route('opportunity.store') }}">
     {{ csrf_field() }}
-    <input name="lead_id" type="hidden" required="required" class="form-control" @if($new_lead) value="{{$new_lead->status}}" @endif />
+    <input name="lead_id" type="hidden" required="required" class="form-control" @if($new_lead) value="{{$new_lead->id}}" @endif />
+    <input name="client_id" type="hidden" required="required" class="form-control" value="{{ session()->get('working_client.id') }}" />
     <div class="row setup-content" id="step-1">
         <div class="col-xs-12">
             <div class="col-md-12">
                 <h3> Step 1</h3>
-                <div class="form-group{{ $errors->has('client_id') ? ' has-error' : '' }}">
+                <div class="form-group{{ $errors->has('zoom_id') ? ' has-error' : '' }}">
                     <label class="control-label">Client ID:</label>
                     @php
                         $cliend_id = "";
@@ -42,10 +43,10 @@
                             else $cliend_id = trim($new_lead->zoom_company_id);
                         }
                     @endphp
-                    <input name="client_id" maxlength="100" type="text" required="required" class="form-control" placeholder="Client ID" value="{{ $cliend_id }}" />
-                    @if ($errors->has('client_id'))
+                    <input name="zoom_id" maxlength="100" type="text" required="required" class="form-control" placeholder="Client ID" value="{{ $cliend_id }}" />
+                    @if ($errors->has('zoom_id'))
                         <span class="help-block">
-                            <strong>{{ $errors->first('client_id') }}</strong>
+                            <strong>{{ $errors->first('zoom_id') }}</strong>
                         </span>
                     @endif
                 </div>

@@ -54,7 +54,8 @@ Route::get('oauth2', function(){
     $client->setApplicationName( env('GOOGLE_CLIENT_APP_NAME') );
     $client->setClientId( env('GOOGLE_CLIENT_ID') );
     $client->setClientSecret( env('GOOGLE_CLIENT_SECRET') );
-    $client->setRedirectUri( 'http://localhost/oauth2' );
+    $app_url = env('APP_URL');
+    $client->setRedirectUri( "$app_url/oauth2" );
     $client->setAccessType( 'offline' );
     $client->setScopes($scopes);
     //dd($code);
@@ -144,16 +145,11 @@ Route::get('summary', 'OpportunitiesController@summary')->name('summary')->middl
 
 Auth::routes();
 
-
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
 });
 
-Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');
-
-
-Route::group(['prefix' => 'admin'], function () {
-    Voyager::routes();
+Route::group(['prefix' => 'client'], function () {
+    Route::get('select/', 'ClientsController@select')->name('client.select');
+    Route::post('select/', 'ClientsController@select_store')->name('client.select.store');
 });

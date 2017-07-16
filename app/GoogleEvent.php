@@ -216,7 +216,8 @@ class GoogleEvent
             'endDate'       => 'end.date',
             'startDateTime' => 'start.dateTime',
             'endDateTime'   => 'end.dateTime',
-            'status'   => 'status',
+            'status'        => 'status',
+            'id'            => 'id',
         ][$name] ?? $name;
     }
 
@@ -231,5 +232,9 @@ class GoogleEvent
         }
 
         return '';
+    }
+
+    public function getId(){
+        return array_get($this->googleEvent, "id");
     }
 }

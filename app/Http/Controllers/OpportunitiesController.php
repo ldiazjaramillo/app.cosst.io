@@ -13,8 +13,23 @@ use \App\GoogleEvent;
 
 class OpportunitiesController extends Controller
 {
+
+    protected $working_client_id=null;
+
+    public function __construct()
+    {
+        $this->working_client_id = session()->get('working_client.id');
+    }
+
+    public function isClientSet(){
+        return  session()->has('working_client');
+    }
     
     public function create(Request $request){
+        if( !$this->isClientSet() ){
+            flash('Please choose a client to work with.')->warning();
+            return redirect("/client/select");
+        }
         if($request->has('new_id')) $new_lead = \App\Lead::find($request->get('new_id'));
         else if($request->has('existing_id')) $new_lead = \App\Lead::find($request->get('existing_id'));
         else if($request->has('new_partner')) $new_lead = \App\Lead::find($request->get('new_partner'));
@@ -54,122 +69,6 @@ class OpportunitiesController extends Controller
         $covered_states = ["WA", "CO","CA","FL","TX","OH","MA","NY","NJ","IL","PA","GA",];
 
         return in_array($state, $covered_states);
-    }
-
-    private function getOpportunityType($employees_number, $state, $client_id){
-        $is_covered = $this->stateHasCover($state);
-        if( $employees_number == '1-2' ){
-            return 1;
-        }else if( $employees_number == '3-9' && !$is_covered ){
-            return 1;
-        }else if($employees_number == '3-9' && $is_covered){
-            return 2;
-        }else if($employees_number == '10+' && !$is_covered){
-            return 3;
-        }else if($employees_number == '10+' && $is_covered){
-            return 2;
-        }
-    }
-
-    private function getRedirectPage($employees_number, $state, $client_id){
-        $is_covered = $this->stateHasCover($state);
-        if( $employees_number == '1-2' ){
-            return "opportunity/spa_sbiz/$client_id";
-        }else if( $employees_number == '3-9' && !$is_covered ){
-            return "opportunity/spa_sbiz/$client_id";
-        }else if($employees_number == '3-9' && $is_covered){
-            return "opportunity/spb_mmfs/$client_id";
-        }else if($employees_number == '10+' && !$is_covered){
-            return "opportunity/spb_mmpr/$client_id";
-        }else if($employees_number == '10+' && $is_covered){
-            return "opportunity/spb_mmfs/$client_id";
-        }
-    }
-
-    public function updateManagerSBIZ($agent){
-        //dd($agent);
-        if($agent->agent_id == 3) $agent->agent_id = 0;
-        else $agent->agent_id = $agent->agent_id + 1;
-        $agent->save();
-    }
-
-    public function updateManagerMMFS($agent){
-        //dd($agent);
-        if($agent->agent_id == 4) $agent->agent_id = 0;
-        else $agent->agent_id = $agent->agent_id + 1;
-        $agent->save();
-    }
-
-    public function updateManagerMMPR($agent){
-        //dd($agent);
-        if($agent->agent_id == 2) $agent->agent_id = 0;
-        else $agent->agent_id = $agent->agent_id + 1;
-        $agent->save();
-    }
-
-    public function updateManagerPartner($agent){
-        //dd($agent);
-        if($agent->agent_id == 3) $agent->agent_id = 0;
-        else $agent->agent_id = $agent->agent_id + 1;
-        $agent->save();
-    }
-
-    public function spa_sbiz($id){
-        $opportunity = \App\Opportunity::find($id);
-        $agents = [
-            0 =>['name'=>'Joey B', 'email'=>'joey.brown@gusto.com', 'calendar'=>'calendly.com/joey-brown'],
-            1 =>['name'=>'Candace S', 'email'=>'candace.sake@gusto.com', 'calendar'=>'calendly.com/candace-sake'],
-            2 =>['name'=>'Rene E', 'email'=>'rene.etter-garrette@gusto.com', 'calendar'=>'calendly.com/rene-gusto'],
-            3 =>['name'=>'Donny T', 'email'=>'donny.tachis@gusto.com', 'calendar'=>'calendly.com/donny-tachis'],
-        ];
-        if(!$opportunity->agent_id){
-            $sbiz = \App\SBIZ::all()->first();
-            $agent_id = $sbiz->agent_id;
-            $this->updateManagerSBIZ($sbiz);
-        }else{
-            $agent_id = $opportunity->agent_id;
-        }
-        $agent = $agents[$agent_id];
-        return view('opportunities.spa_sbiz', compact('opportunity', 'agent', 'agents', 'agent_id'));
-    }
-
-    public function spb_mmfs($id){
-        $opportunity = \App\Opportunity::find($id);
-        $agents = [
-            0=>['name'=>'Brandon Boyle', 'email'=>'brandon.boyle@gusto.com', 'calendar'=>'calendly.com/brandon_gusto'],
-            1=>['name'=>'Michael Reddish', 'email'=>'michael.reddish@gusto.com', 'calendar'=>'calendly.com/michael-reddish'],
-            2=>['name'=>'Chad Benoit', 'email'=>'chad@gusto.com', 'calendar'=>'calendly.com/chad_zp'],
-            3=>['name'=>'Johnny Wells', 'email'=>'johnny.wells@gusto.com', 'calendar'=>'calendly.com/johnnywells'],
-            4=>['name'=>'Kabir Chopra', 'email'=>'kabir.chopra@gusto.com', 'calendar'=>'calendly.com/kabirchopra'],
-        ];
-        if(!$opportunity->agent_id){
-            $mmfs = \App\MMFS::all()->first();
-            $agent_id = $mmfs->agent_id;
-            $this->updateManagerMMFS($mmfs);
-        }else{
-            $agent_id = $opportunity->agent_id;
-        }
-        $agent = $agents[$agent_id];
-        
-        return view('opportunities.spb', compact('opportunity', 'agent', 'agents', 'agent_id'));
-    }
-
-    public function spb_mmpr($client_id){
-        $opportunity = \App\Opportunity::find($client_id);
-        $agents = [
-            0=>['name'=>'Yekta Tehrani', 'email'=>'yekta.tehrani@gusto.com', 'calendar'=>'calendly.com/yekta-tehrani'],
-            1=>['name'=>'Matt Worden', 'email'=>'matt.worden@gusto.com', 'calendar'=>'calendly.com/matt-worden'],
-            2=>['name'=>'Matthew Baker', 'email'=>'matthew.baker@gusto.com', 'calendar'=>'calendly.com/matthewbaker'],
-        ];
-        if(!$opportunity->agent_id){
-            $mmpr = \App\MMPR::all()->first();
-            $agent_id = $mmpr->agent_id;
-            $this->updateManagerMMPR($mmpr);
-        }else{
-            $agent_id = $opportunity->agent_id;
-        }
-        $agent = $agents[$agent_id];
-        return view('opportunities.spb', compact('opportunity', 'agent', 'agents', 'agent_id'));
     }
 
     public function getCurrentAgent($opportunity){
@@ -255,12 +154,12 @@ class OpportunitiesController extends Controller
 
         $event = new GoogleEvent;
         $event->name = 'Jobtarget >> Programmatic Free trial Meet UP';
+        $event->setCalendarId = "primary";
         $event->startDateTime = $startDateTime;
         $event->endDateTime = $startDateTime->copy()->addMinutes($duration);
         $event->addAttendee(['email' => \Auth::user()->email]);
         $event->addAttendee(['email' => $agent->email, 'name'=>$agent->name,'responseStatus'=>'needsAction']);
         $event->save($agent_id);
-
         $opportunity->notes = $notes;
         $opportunity->date = $startDateTime;
         $opportunity->timezone = $timezone;
@@ -482,10 +381,11 @@ class OpportunitiesController extends Controller
 
     public function getNewLeads(Request $request){
         $query = $request->get('q');
+        $client_id = $this->working_client_id;
         $new_opportunities = \DB::select("
             SELECT CONCAT(COALESCE(`first_name`, ''),' ', COALESCE(`last_name`, ''), ' (', COALESCE(`company_name`, '') ,' ) | ', COALESCE(`zoom_id`, '') ) AS text, id
             FROM leads
-            WHERE type=1 and status = 1 and (first_name like '%$query%' OR last_name LIKE '%$query%' OR company_name LIKE '%$query%'
+            WHERE type=1 and status = 1 AND client_id='$client_id' and (first_name like '%$query%' OR last_name LIKE '%$query%' OR company_name LIKE '%$query%'
             OR zoom_id LIKE '%$query%' OR zoom_company_id LIKE '%$query%' OR email LIKE '%$query%')
         ");
         //dd($new_opportunities);
