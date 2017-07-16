@@ -34,4 +34,8 @@ class User extends Authenticatable
     public function agentTypeId(){
         return $this->belongsTo(AgentType::class);
     }
+
+    public function clientId(){
+        return $this->belongsTo(Client::class);
+    }
 }
