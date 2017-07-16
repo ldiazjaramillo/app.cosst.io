@@ -22,6 +22,11 @@ class ClientsController extends Controller
         flash("Client set successfully. Now working with client: $client->name")->success();
         $request->session()->put('working_client.id', $client_id);
         $request->session()->put('working_client.name', $client->name);
+        $request->session()->put('working_client.client_domain', $client->client_domain);
+        $request->session()->put('working_client.slack_url', $client->slack_url);
+        $request->session()->put('working_client.form1_url', $client->form1_url);
+        $request->session()->put('working_client.form2_url', $client->form2_url);
+        $request->session()->put('working_client.google_drive_folder', $client->google_drive_folder);
         return redirect("/");
     }
 }

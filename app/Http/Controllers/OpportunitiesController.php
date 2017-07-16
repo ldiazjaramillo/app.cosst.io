@@ -302,23 +302,6 @@ class OpportunitiesController extends Controller
             $excel->sheet('NEW', function($sheet) use($sbiz) {
                 $sheet->fromModel($sbiz);
             });
-            $mmfs = $opportunities->where('type_id', 2)->where('status', '>', 1);
-            // MMFS sheet
-            $excel->sheet('MMFS', function($sheet) use($mmfs) {
-                $sheet->fromModel($mmfs);
-            });
-            $mmpr = $opportunities->where('type_id', 3)->where('status', '>', 1);
-            // MMPR sheet
-            $excel->sheet('MMPR', function($sheet) use($mmpr) {
-                $sheet->fromModel($mmpr);
-            });
-
-            $partners = $opportunities->where('type_id', 4)->where('status', '>', 1);
-            // partners sheet
-            $excel->sheet('partners', function($sheet) use($partners) {
-                $sheet->fromModel($partners);
-            });
-
         })->store($extension, '/tmp/');
         $storage_path = "/tmp/$filename";
         foreach(Storage::disk('google')->files() as $file) Storage::disk('google')->delete($file);
@@ -336,7 +319,7 @@ class OpportunitiesController extends Controller
         ];
         try{
             $client = new Client(['base_uri' => 'https://hooks.slack.com/services/']);
-            $url = "https://hooks.slack.com/services/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";
+            $url = session()->get('working_client.slack_url');
             //$url = $channels[0]['url'];
             //$url = env('SLACK_URL', false);
             $company = $opportunity->company_name;
@@ -381,7 +364,7 @@ class OpportunitiesController extends Controller
 
     public function getNewLeads(Request $request){
         $query = $request->get('q');
-        $client_id = $this->working_client_id;
+        $client_id = session()->get('working_client.id');
         $new_opportunities = \DB::select("
             SELECT CONCAT(COALESCE(`first_name`, ''),' ', COALESCE(`last_name`, ''), ' (', COALESCE(`company_name`, '') ,' ) | ', COALESCE(`zoom_id`, '') ) AS text, id
             FROM leads
