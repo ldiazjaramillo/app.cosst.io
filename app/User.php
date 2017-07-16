@@ -30,4 +30,8 @@ class User extends Authenticatable
     public function getUsernameAttribute(){
         return explode('@', $this->email)[0];
     }
+
+    public function agentTypeId(){
+        return $this->belongsTo(AgentType::class);
+    }
 }
