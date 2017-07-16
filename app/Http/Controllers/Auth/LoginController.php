@@ -51,6 +51,6 @@ class LoginController extends Controller
     {
         //dd(\Auth::user()->role_id);
         if(\Auth::user()->role_id == 2) return redirect('/client/select');
-        else return redirect('/home');
+        else return redirect('/');
     }
 }

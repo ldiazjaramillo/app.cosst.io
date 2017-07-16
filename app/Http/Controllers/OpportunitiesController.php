@@ -73,11 +73,11 @@ class OpportunitiesController extends Controller
 
     public function getCurrentAgent($opportunity){
         $agents = $opportunity->getAgentsByType();
-        $currentAgent = \App\ManagerAgent::where('type_id', $opportunity->type_id)->where('client_id', $opportunity->clients_id)->first();
+        $currentAgent = \App\ManagerAgent::where('type_id', $opportunity->type_id)->where('client_id', $opportunity->client_id)->first();
         if(is_null($currentAgent)){
             $currentAgent = \App\ManagerAgent::create([
                 'type_id' => $opportunity->type_id,
-                'client_id' => $opportunity->clients_id,
+                'client_id' => $opportunity->client_id,
                 'agent_id' => $agents->first()->id
             ]);
         }else{
@@ -340,7 +340,7 @@ class OpportunitiesController extends Controller
             //$url = $channels[0]['url'];
             //$url = env('SLACK_URL', false);
             $company = $opportunity->company_name;
-            $client_agent = $opportunity->gusto_agent;
+            $client_agent = $opportunity->client_agent;
             $event_date = $opportunity->event_date;
             $vf_agent = $opportunity->vf_agent;
             $message = "A new appointment has been set for $client_agent by $vf_agent with $company on $event_date. Congratulations!";
@@ -373,7 +373,7 @@ class OpportunitiesController extends Controller
         $opportunity = \App\Opportunity::find($id);
         $status_options = $opportunity->status_options;
         $status_id = $opportunity->status;
-        $lead = \App\Lead::where('zoom_id', $opportunity->client_id)->orWhere('zoom_company_id', $opportunity->client_id)->first();
+        $lead = \App\Lead::where('zoom_id', $opportunity->zoom_id)->orWhere('zoom_company_id', $opportunity->zoom_id)->first();
         if($lead) $opportunity->lead_type = $lead->type;
         else $opportunity->lead_type = null;
         return view('opportunities.view', compact('opportunity', 'status_options', 'status_id'));

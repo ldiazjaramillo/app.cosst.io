@@ -153,3 +153,5 @@ Route::group(['prefix' => 'client'], function () {
     Route::get('select/', 'ClientsController@select')->name('client.select');
     Route::post('select/', 'ClientsController@select_store')->name('client.select.store');
 });
+
+Route::get('/outbound/login', 'HomeController@ob_login')->name('outbound.login')->middleware('auth');
