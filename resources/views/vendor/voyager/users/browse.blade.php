@@ -23,7 +23,6 @@
                                     <th>Name</th>
                                     <th>Email</th>
                                     <th>Created At</th>
-                                    <th>Avatar</th>
                                     <th>Role</th>
                                     <th class="actions">Actions</th>
                                 </tr>
@@ -34,9 +33,6 @@
                                     <td>{{ucwords($data->name)}}</td>
                                     <td>{{$data->email}}</td>
                                     <td>{{ \Carbon\Carbon::parse($data->created_at)->format('F jS, Y h:i A') }}</td> 
-                                    <td>
-                                        <img src="@if( strpos($data->avatar, 'http://') === false && strpos($data->avatar, 'https://') === false){{ Voyager::image( $data->avatar ) }}@else{{ $data->avatar }}@endif" style="width:100px">
-                                    </td>
                                     <td>{{ $data->role ? $data->role->display_name : '' }}</td>
                                     <td class="no-sort no-click">
                                         @if (Voyager::can('delete_'.$dataType->name))
