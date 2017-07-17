@@ -44,6 +44,6 @@ class User extends Authenticatable
     }
 
     public function role(){
-        return $this->belongsTo(TCG\Voyager\Models\Role::class);
+        return $this->belongsTo(\TCG\Voyager\Models\Role::class);
     }
 }
