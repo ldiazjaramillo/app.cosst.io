@@ -60,15 +60,6 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="password">Avatar</label>
-                                @if(isset($dataTypeContent->avatar))
-                                    <img src="{{ Voyager::image( $dataTypeContent->avatar ) }}"
-                                         style="width:200px; height:auto; clear:both; display:block; padding:2px; border:1px solid #ddd; margin-bottom:10px;">
-                                @endif
-                                <input type="file" name="avatar">
-                            </div>
-
-                            <div class="form-group">
                                 <label for="role">User Role</label>
                                 <select name="role_id" id="role" class="form-control">
                                     <?php $roles = TCG\Voyager\Models\Role::all(); ?>
@@ -78,8 +69,15 @@
                                 </select>
                             </div>
 
-
-
+                            <div class="form-group">
+                                <label for="client">Client</label>
+                                <select name="client_id" id="client" class="form-control">
+                                    <?php $clients = \App\Client::all(); ?>
+                                    @foreach($clients as $client)
+                                        <option value="{{$client->id}}" @if(isset($dataTypeContent) && $dataTypeContent->client_id == $client->id) selected @endif>{{$client->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div><!-- panel-body -->
 
                         <div class="panel-footer">
