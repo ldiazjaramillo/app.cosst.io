@@ -63,15 +63,20 @@ class GoogleCalendar
     }
 
     public function getFreeHours($date_start=null, $date_end=null){
-        $events = $this->listEvents($date_start, $date_end);
-        $fh_start = Carbon::now()->startOfDay();
-        $fh_end = Carbon::now()->startOfDay();
-        $fh_start->hour = 8;
-        $fh_end->hour = 18;
+        if(!$date_start->isToday() ){
+            $fh_start = Carbon::now()->startOfDay();
+            $fh_end = Carbon::now()->endOfDay();
+            $fh_start->hour = 8;
+        }else{
+            $fh_start = $date_start;
+            $fh_end = $date_start->copy()->endOfDay();
+        }
+        $fh_end->hour = 17;
         $free_hours = [];
         //dd($free_hours);
         //dd($free_hours_time);
         $busy_hours = [];
+        $events = $this->listEvents($date_start, $date_end);
         foreach($events as $event){
             if($event->start->dateTime){
                 $startTime = \Carbon\Carbon::parse($event->start->dateTime);

@@ -75,7 +75,8 @@
 <div class='col-md-12'>
     <div class="form-group text-right">
         <label for="">&nbsp;</label>
-        <button class="btn btn-default">Done</button>
+        <button class="btn btn-default">Continue</button>
+        <a href="/opportunity/new/{{ $opportunity->id }}" class="btn btn-primary">Change Agent</a>
     </div>
 </div>
 </form>

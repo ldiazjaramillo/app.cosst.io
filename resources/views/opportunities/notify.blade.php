@@ -1,9 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-@if(session()->has('working_client.form1_url'))
-<iframe src="{{ session()->get('working_client.form1_url') }}" frameborder="0" width="100%" height="400px"></iframe>
-@endif
 <h1>Congrats!!</h1>
 <h2>Calendar invitations and Slack notification has been sent</h2>
 <h2>Also, Google sheet file has been update it. Take a look at it, <a href="https://drive.google.com/drive/folders/{{ ENV('GOOGLE_DRIVE_FOLDER_ID') }}" target="_blank">Here</a></h2>

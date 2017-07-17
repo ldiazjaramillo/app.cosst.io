@@ -44,7 +44,8 @@
     <div class='col-sm-4'>
         <div class="form-group">
             <label for="">Agent choose by the system is:</label>
-            <select name="agent_id" class="form-control">
+            <input type="hidden" value="{{ $agent_id }}" name="agent_id">
+            <select name="agent_id2" class="form-control" disabled />
             @foreach($opportunity->getAgentsByType() as $agent)
                 <option value="{{ $agent->id }}"@if($agent->id == $agent_id) selected @endif>{{ $agent->name }}</option>
             @endforeach
@@ -64,8 +65,9 @@
     </div>
     <div class='col-sm-4'>
         <div class="form-group">
-            <label for="">&nbsp;</label>
+            <br/>
             <button class="btn btn-default">Check availability</button>
+            <a href="/opportunity/new/{{ $opportunity->id }}" class="btn btn-primary">Change Agent</a>
         </div>
     </div>
 </div>

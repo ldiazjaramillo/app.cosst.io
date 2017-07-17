@@ -122,12 +122,16 @@ class OpportunitiesController extends Controller
         $agent = \App\User::find($agent_id);
         $date = $request->get('date');
         $date_start = Carbon::parse($date)->startOfDay();
+        if($date_start->isToday()) $date_start->hour = date('H');
+        //$date_start->minute = date('i');
         $google = new \App\GoogleClient($agent_id);
         $service = new Google_Service_Calendar( $google->getClient() );
         $timezone = $service->calendars->get('primary')->getTimeZone();
+        if($date_start->isToday()) $date_start->tz($timezone);
+        //dd( $date_start );
         //dd( $freeBusy->getBusy() );
         $Calendar = new \App\GoogleCalendar($service);
-        $freeHours = $Calendar->getFreeHours($date_start->copy()->startOfDay(), $date_start->copy()->endOfDay() );
+        $freeHours = $Calendar->getFreeHours($date_start, $date_start->copy()->endOfDay() );
         return view( 'opportunities.check_agent', compact('freeHours', 'opportunity', 'agent', 'date', 'timezone') );
         //dd($freeHours);
     }
@@ -166,7 +170,8 @@ class OpportunitiesController extends Controller
         $opportunity->status = 2;
         $opportunity->agent_id = $agent_id;
         $opportunity->save();
-        return $this->notify($opportunity->id);
+        if( session()->has('working_client.form1_url') ) return view('opportunities.client_form', compact('opportunity'));
+        else return $this->notify($opportunity->id);
 
         $Date = \Carbon\Carbon::parse($request->get('date'), $timezone)->timezone('UTC');
         $DateTimezone = \Carbon\Carbon::parse($request->get('date'), $timezone);
@@ -225,67 +230,10 @@ class OpportunitiesController extends Controller
         }catch (\Exception $e){
             return $this->notify($opportunity->id);
         }
+        dd( session()->has('working_client.form1_url') );
+        if( session()->has('working_client.form1_url') ) return view('opportunities.client_form', compact('opportunity'));
+        else return $this->notify($opportunity->id);
 
-        return $this->notify($opportunity->id);
-
-        Mail::send('emails.calendar_invite', ['data'=>$data], function ($message) use ($data, $current_agent) {
-            $time = time();
-            $filename = "/tmp/invite_$time.ics";
-            $meeting_duration = (1800); // half hour
-            $meetingstamp = $data['start_date'];
-            $dtstart = $data['dtstart'];
-            $dtend = $data['dtend'];
-            $todaystamp = date('Ymd\THis\Z');
-            $uid = date('Ymd').'T'.date('His').'-'.rand().'@gusto.com';
-            $description = strip_tags($data['description']);
-            $location = "gusto.com";
-            $title_invite = $data['title'];
-            //$organizer = "CN=".$current_agent['name'].":mailto:".$current_agent['email'];
-            $organizer = "CN=Ethan Bloomfield:mailto:ethan@mygusto.com";
-
-            // ICS
-            $mail[0] = "BEGIN:VCALENDAR";
-            $mail[1] = "PRODID:-//Google Inc//Google Calendar 70.9054//EN";
-            $mail[2] = "VERSION:2.0";
-            $mail[3] = "CALSCALE:GREGORIAN";
-            $mail[4] = "METHOD:REQUEST";
-            $mail[5] = "BEGIN:VEVENT";
-            $mail[6] = "DTSTART;TZID=".$data['timezone'].":" . $dtstart;
-            $mail[7] = "DTEND;TZID=".$data['timezone'].":" . $dtend;
-            $mail[8] = "DTSTAMP;TZID=".$data['timezone'].":" . $todaystamp;
-            $mail[9] = "UID:" . $uid;
-            $mail[10] = "ORGANIZER;" . $organizer;
-            $agent_mail = $current_agent['email'];
-            $mail[11] = "ATTENDEE;CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=ACCEPTED;RSVP=TRUE;CN=$agent_mail;X-NUM-GUESTS=0:mailto:$agent_mail";
-            $mail[12] = "ATTENDEE;CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE;CN=".$data['organizer_name'].";X-NUM-GUESTS=1:mailto:".$data['organizer_email'];
-            $mail[13] = "CREATED:" . $todaystamp;
-            $mail[14] = "DESCRIPTION:" . $description;
-            $mail[15] = "LAST-MODIFIED:" . $todaystamp;
-            $mail[16] = "LOCATION:" . $location;
-            $mail[17] = "SEQUENCE:0";
-            $mail[18] = "STATUS:CONFIRMED";
-            $mail[19] = "SUMMARY:" . $title_invite;
-            $mail[20] = "TRANSP:OPAQUE";
-            $mail[21] = "END:VEVENT";
-            $mail[22] = "END:VCALENDAR";
-
-            $mail = implode("\r\n", $mail);
-            header("text/calendar");
-            file_put_contents($filename, $mail);
-            $username = \Auth::user()->username;
-            $message->subject("Invitation");
-            $message->from("$username@mygusto.com");
-            if(env('APP_ENV') == "local"){
-                $message->to(['luis@vitalfew.io', 'ethan@mygusto.com']);
-            }else{
-                $message->to([ $current_agent['email'], $data['client_email'] ]);
-                $message->cc('ethan@mygusto.com', 'Ethan');
-                $message->bcc("$username@mygusto.com", \Auth::user()->name);
-            }
-            
-            $message->attach($filename, array('mime' => "text/calendar"));
-        });
-        return $this->notify($opportunity->id);
     }
 
     public function notify($id){
