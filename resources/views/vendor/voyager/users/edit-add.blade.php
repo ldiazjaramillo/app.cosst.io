@@ -81,6 +81,17 @@
                             </div>
 
                             <div class="form-group">
+                                <label for="agent_type">Agent Type</label>
+                                <select name="agent_type_id" id="agent_type" class="form-control">
+                                    <option value="">Select</option>
+                                    <?php $agent_types = \App\AgentType::all(); ?>
+                                    @foreach($agent_types as $agent_type)
+                                        <option value="{{$agent_type->id}}" @if(isset($dataTypeContent) && $dataTypeContent->agent_type_id == $agent_type->id) selected @endif>{{$agent_type->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="form-group">
                                 <label for="ob_password">Outbound Password</label>
                                 <small>Only for VF Sales Rep</small>
                                 <input type="text" class="form-control" name="ob_password"
