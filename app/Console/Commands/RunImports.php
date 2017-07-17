@@ -48,23 +48,33 @@ class RunImports extends Command
             $has_header = $file->ignore_first;
             $columns = explode(",", $file->columns);
             $columns[] = 'client_id';
+            //dd($columns);
             $file_path = storage_path("app/public/$file->file");
             $client_id = $file->client_id;
+            $model = "\App\\$file->model";
             $this->info("Reading file: $file_path \n");
-            $excelFile = Excel::load($file_path, function($reader) use ($has_header, $columns, $client_id) {
-                if(!$has_header) $reader->noHeading();
-                $csv_rows = $reader->get();
-                $this->info("Number of rows: ". count($csv_rows)."\n");
-                foreach($csv_rows as $row){
-                    $items = $row->toArray();
-                    $items[] = $client_id;
-                    //dd($items);
-                    $new_lead = array_combine( $columns, $items );
-                    $lead = \App\Lead::create($new_lead);
-                    $this->info("New lead created. Id: $lead->id \n");
-                    //dd( $lead );
-                }
-            });
+            \DB::beginTransaction();
+            try{
+                $excelFile = Excel::load($file_path, function($reader) use ($has_header, $columns, $client_id, $model) {
+                    if(!$has_header) $reader->noHeading();
+                    $csv_rows = $reader->get();
+                    $this->info("Number of rows: ". count($csv_rows)."\n");
+                    foreach($csv_rows as $row){
+                        $items = $row->toArray();
+                        $items[] = $client_id;
+                        //dd($items);
+                        $new_lead = array_combine( $columns, $items );
+                        $lead = $model::create($new_lead);
+                        $this->info("New lead created. Id: $lead->id \n");
+                        //dd( $lead );
+                    }
+                });
+                $file->status=2;
+                $file->save();
+                \DB::commit();
+            }catch (\Exception $e) {
+                \DB::rollback();
+            }
         }
     }
 }
