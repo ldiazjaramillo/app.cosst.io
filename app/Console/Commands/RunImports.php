@@ -74,7 +74,9 @@ class RunImports extends Command
                 $file->save();
                 \DB::commit();
             }catch (\Exception $e) {
+                $this->error("Error occured: ".$e->getMessage()."\n");
                 \DB::rollback();
+                $this->info("Rollback called \n");
             }
         }
     }
