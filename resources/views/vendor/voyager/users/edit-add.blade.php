@@ -72,11 +72,20 @@
                             <div class="form-group">
                                 <label for="client">Client</label>
                                 <select name="client_id" id="client" class="form-control">
+                                    <option value="">Select</option>
                                     <?php $clients = \App\Client::all(); ?>
                                     @foreach($clients as $client)
                                         <option value="{{$client->id}}" @if(isset($dataTypeContent) && $dataTypeContent->client_id == $client->id) selected @endif>{{$client->name}}</option>
                                     @endforeach
                                 </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ob_password">Outbound Password</label>
+                                <small>Only for VF Sales Rep</small>
+                                <input type="text" class="form-control" name="ob_password"
+                                       placeholder="Outbound Password" id="ob_password"
+                                       value="@if(isset($dataTypeContent->ob_password)){{ old('ob_password', $dataTypeContent->ob_password) }}@else{{old('ob_password')}}@endif">
                             </div>
                         </div><!-- panel-body -->
 
