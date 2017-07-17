@@ -38,4 +38,12 @@ class User extends Authenticatable
     public function clientId(){
         return $this->belongsTo(Client::class);
     }
+
+    public function client(){
+        return $this->belongsTo(Client::class);
+    }
+
+    public function role(){
+        return $this->belongsTo(TCG\Voyager\Models\Role::class);
+    }
 }

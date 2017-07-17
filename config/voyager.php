@@ -143,10 +143,10 @@ return [
             'image' => '/images/widget-backgrounds/02.png',
         ],
         [
-            'name'  => 'Post',
-            'icon'  => 'voyager-news',
-            'model' => TCG\Voyager\Models\Post::class,
-            'url'   => 'admin/posts',
+            'name'  => 'Client',
+            'icon'  => 'voyager-company',
+            'model' => \App\Client::class,
+            'url'   => 'admin/clients',
             'image' => '/images/widget-backgrounds/03.png',
         ],
         [

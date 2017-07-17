@@ -19,7 +19,7 @@
         <div class="collapse navbar-collapse" id="app-navbar-collapse">
             <!-- Left Side Of Navbar -->
             <ul class="nav navbar-nav">
-
+                <li><a href="#">Sales Rep</a></li>
             </ul>
 
             <!-- Right Side Of Navbar -->
@@ -29,14 +29,8 @@
                     <li><a href="{{ route('login') }}">Login</a></li>
                     <li><a href="{{ route('register') }}">Register</a></li>
                 @else
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                            Reports <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="{{ route('opportunity.reports.page') }}">Search by date</a></li>
-                            <li><a href="{{ route('opportunity.reports.today') }}">Today Events</a></li>
-                        </ul>
+                    <li>
+                        <a href="/settings/calendar">Set Calendar Permissions</a>
                     </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">

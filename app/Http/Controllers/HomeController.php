@@ -23,7 +23,9 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $user = \Auth::user();
+        if($user->role_id == 3) return view('client_sales_rep');
+        else return view('home');
     }
 
     public function ob_login(){

@@ -24,6 +24,7 @@
                                     <th>Email</th>
                                     <th>Created At</th>
                                     <th>Role</th>
+                                    <th>Client</th>
                                     <th class="actions">Actions</th>
                                 </tr>
                             </thead>
@@ -34,6 +35,7 @@
                                     <td>{{$data->email}}</td>
                                     <td>{{ \Carbon\Carbon::parse($data->created_at)->format('F jS, Y h:i A') }}</td> 
                                     <td>{{ $data->role ? $data->role->display_name : '' }}</td>
+                                    <td>{{ $data->client ? $data->client->name : '' }}</td>
                                     <td class="no-sort no-click">
                                         @if (Voyager::can('delete_'.$dataType->name))
                                             <div class="btn-sm btn-danger pull-right delete" data-id="{{ $data->id }}" id="delete-{{ $data->id }}">
