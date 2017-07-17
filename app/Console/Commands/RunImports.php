@@ -51,11 +51,12 @@ class RunImports extends Command
             //dd($columns);
             $file_path = storage_path("app/public/$file->file");
             $client_id = $file->client_id;
+            $model_name = $file->model;
             $model = "\App\\$file->model";
             $this->info("Reading file: $file_path \n");
             \DB::beginTransaction();
             try{
-                $excelFile = Excel::load($file_path, function($reader) use ($has_header, $columns, $client_id, $model) {
+                $excelFile = Excel::load($file_path, function($reader) use ($has_header, $columns, $client_id, $model, $model_name) {
                     if(!$has_header) $reader->noHeading();
                     $csv_rows = $reader->get();
                     $this->info("Number of rows: ". count($csv_rows)."\n");
@@ -65,7 +66,7 @@ class RunImports extends Command
                         //dd($items);
                         $new_lead = array_combine( $columns, $items );
                         $lead = $model::create($new_lead);
-                        $this->info("New lead created. Id: $lead->id \n");
+                        $this->info("New $model_name created. Id: $lead->id \n");
                         //dd( $lead );
                     }
                 });
