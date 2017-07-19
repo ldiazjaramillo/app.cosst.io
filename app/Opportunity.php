@@ -109,7 +109,7 @@ class Opportunity extends Model
 
     public function getAgentsByType(){
         $client_id = session()->get('working_client.id');
-        return \App\User::where('agent_type_id', $this->type_id)->where('role_id', 3)->where('client_id', $client_id)->orderBy('name')->get();
+        return \App\User::wherewhere('role_id', 3)->where('client_id', $client_id)->orderBy('name')->get();
     }
 
     public function getCreationDateAttribute(){
