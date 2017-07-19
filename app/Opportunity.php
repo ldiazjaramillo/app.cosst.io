@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use \Carbon\Carbon;
 
 class Opportunity extends Model
 {
@@ -45,9 +46,9 @@ class Opportunity extends Model
 
     public function getEventTimeAttribute(){
         if($this->date){
-            $date = \Carbon\Carbon::parse($this->date)->tz($this->timezone);
-            if($date->isToday()) return "Today at ".$date->format("h:i A")." ".$this->tzlist[$date->tzName];
-            else return $date->toDayDateTimeString()." ".$this->tzlist[$date->tzName];
+            $date = \Carbon\Carbon::parse($this->date, $this->timezone);
+            if($date->isToday()) return "Today at ".$date->format("h:i A")." ".$date->tzName;
+            else return $date->toDayDateTimeString()." ".$date->tzName;
         }else{
             return "N/A";
         }
@@ -55,8 +56,8 @@ class Opportunity extends Model
 
     public function getTodayTimeAttribute(){
         if($this->date){
-            $date = \Carbon\Carbon::parse($this->date)->tz($this->timezone);
-            return $date->format("h:i A")." ".$this->tzlist[$date->tzName];
+            $date = \Carbon\Carbon::parse($this->date, $this->timezone);
+            return $date->format("h:i A")." ".$date->tzName;
         }else{
             return "N/A";
         }
@@ -107,6 +108,11 @@ class Opportunity extends Model
     }
 
     public function getAgentsByType(){
-        return \App\User::where('agent_type_id', $this->type_id)->where('role_id', 3)->orderBy('name')->get();
+        $client_id = session()->get('working_client.id');
+        return \App\User::where('agent_type_id', $this->type_id)->where('role_id', 3)->where('client_id', $client_id)->orderBy('name')->get();
+    }
+
+    public function getCreationDateAttribute(){
+        return Carbon::parse($this->created_at)->tz('America/New_York');
     }
 }

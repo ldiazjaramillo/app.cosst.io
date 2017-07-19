@@ -157,18 +157,32 @@ class OpportunitiesController extends Controller
         $startDateTime = Carbon::parse($date." ".$time, $timezone);
 
         $event = new GoogleEvent;
+        $event->agent_id = $agent_id;
         $event->name = 'Jobtarget >> Programmatic Free trial Meet UP';
         $event->setCalendarId = "primary";
+        $event->location = "Will call $opportunity->contact_name at $opportunity->contact_phone ($opportunity->contact_email)";
         $event->startDateTime = $startDateTime;
         $event->endDateTime = $startDateTime->copy()->addMinutes($duration);
+        $event->sendNotifications = true;
+        $event->visibility="default";
+        $event->id = uniqid();
+        $name = explode(' ', trim($opportunity->contact_name));
+        $first_name = $name[0];
+        $event->description = "$opportunity->company_name \n
+            Contact Name: $opportunity->contact_name \n
+            Phone: $opportunity->contact_phone \n
+            Number of Employees: $opportunity->employees_number \n
+            Note: $first_name please click accept so $opportunity->client_agent knows that you will be available at the agreed upon time. Thank you!";
         $event->addAttendee(['email' => \Auth::user()->email]);
         $event->addAttendee(['email' => $agent->email, 'name'=>$agent->name,'responseStatus'=>'needsAction']);
         $event->save($agent_id);
+        //dd($event);
         $opportunity->notes = $notes;
         $opportunity->date = $startDateTime;
         $opportunity->timezone = $timezone;
         $opportunity->status = 2;
         $opportunity->agent_id = $agent_id;
+        $opportunity->event_id = $event->id;
         $opportunity->save();
         if( session()->has('working_client.form1_url') ) return view('opportunities.client_form', compact('opportunity'));
         else return $this->notify($opportunity->id);

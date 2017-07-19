@@ -15,4 +15,12 @@ class Lead extends Model
     public function getComboNameAttribute(){
         return $this->full_name."(".$this->company_name.")";
     }
+
+    public function clientId(){
+        return $this->belongsTo(Client::class);
+    }
+
+    public function userId(){
+        return $this->belongsTo(User::class);
+    }
 }

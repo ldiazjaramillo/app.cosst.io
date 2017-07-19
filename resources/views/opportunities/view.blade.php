@@ -32,9 +32,9 @@ $options = [0=>'No', 1=>'Yes'];
             @php $types = [null=>"N/A", 1=>"Cold Source", 2=>"Existing Source", 3=>"Account outreach"] @endphp
             <li class="list-group-item"><strong>Lead Type: </strong>{{ $types[$opportunity->lead_type] }}</li>
             <li class="list-group-item"><strong>VitalFew Agent: </strong>{{ $opportunity->vf_agent }}</li>
-            <li class="list-group-item"><strong>Creation Date: </strong>{{ $opportunity->created_at }}</li>
+            <li class="list-group-item"><strong>Creation Date: </strong>{{ $opportunity->creation_date }}</li>
             <li class="list-group-item"><strong>Invitation Date: </strong>{{ $opportunity->event_date }}  <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#invite_modal">Change Date</button></li>
-            <li class="list-group-item"><strong>Gusto Agent: </strong>{{ $opportunity->client_agent }}</li>
+            <li class="list-group-item"><strong>{{ session()->get('working_client.name') }} Agent: </strong>{{ $opportunity->client_agent }}</li>
         </ul>
 
         <div class="panel-body">
@@ -118,7 +118,7 @@ $options = [0=>'No', 1=>'Yes'];
                     <div class="form-group">
                         <label for="">Date and Time</label>
                         <div class='input-group date' id='update_date'>
-                            <input type='text' class="form-control" name="date" @if($opportunity->date) value="{{ \Carbon\Carbon::parse($opportunity->date, 'UTC')->tz($opportunity->timezone)->format('m/d/Y h:i A') }}" @endif />
+                            <input type='text' class="form-control" name="date" @if($opportunity->date) value="{{ \Carbon\Carbon::parse($opportunity->date, $opportunity->timezone)->format('m/d/Y h:i A') }}" @endif />
                             <span class="input-group-addon">
                                 <span class="glyphicon glyphicon-calendar"></span>
                             </span>
@@ -176,7 +176,7 @@ $(document).ready(function () {
         //inline: true,
         sideBySide: true,
         stepping: 15,
-        minDate: moment(),
+        //minDate: moment(),
         useCurrent: false,
     });
 });

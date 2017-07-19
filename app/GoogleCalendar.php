@@ -69,6 +69,7 @@ class GoogleCalendar
             $fh_start->hour = 8;
         }else{
             $fh_start = $date_start;
+            $date_start->addHours(2);
             $fh_end = $date_start->copy()->endOfDay();
         }
         $fh_end->hour = 17;

@@ -18,6 +18,8 @@ class GoogleEvent
 
     protected $attendees;
 
+    protected $agent_id;
+
     public static function createFromGoogleCalendarEvent(Google_Service_Calendar_Event $googleEvent, $calendarId="primary")
     {
         $event = new static();
@@ -87,9 +89,16 @@ class GoogleEvent
         array_set($this->googleEvent, $name, $value);
     }
 
-    public function exists(): bool
+    public function exists($agent_id): bool
     {
-        return $this->id != '';
+        if( is_null($this->id) || $this->id == '' ) return false;
+        try{
+            $event = $this->find($this->id, $agent_id);
+            if($event) return true;
+            else return false;
+        }catch(\Exception $e){
+            return false;
+        }
     }
 
     public function isAllDayEvent(): bool
@@ -131,9 +140,9 @@ class GoogleEvent
      *
      * @return \Codegis\GoogleCalendar\Event
      */
-    public static function find($eventId, $calendarId = "primary"): GoogleEvent
+    public static function find($eventId, $agent_id=null, $calendarId = "primary"): GoogleEvent
     {
-        $googleCalendar = static::getGoogleCalendar($calendarId);
+        $googleCalendar = static::getGoogleCalendar($calendarId, $agent_id);
 
         $googleEvent = $googleCalendar->getEvent($eventId);
 
@@ -142,7 +151,7 @@ class GoogleEvent
 
     public function save($agent_id = null, $method = null): GoogleEvent
     {
-        $method = $method ?? ($this->exists() ? 'updateEvent' : 'insertEvent');
+        $method = $method ?? ($this->exists($agent_id) ? 'updateEvent' : 'insertEvent');
 
         $googleCalendar = $this->getGoogleCalendar($this->calendarId, $agent_id);
 

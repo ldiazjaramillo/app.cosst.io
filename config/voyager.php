@@ -140,7 +140,7 @@ return [
             'icon'  => 'voyager-group',
             'model' => TCG\Voyager\Models\User::class,
             'url'   => 'admin/users',
-            'image' => '/images/widget-backgrounds/02.png',
+            'image' => '/images/widget-backgrounds/03.png',
         ],
         [
             'name'  => 'Client',
@@ -192,8 +192,8 @@ return [
 
         'widgets' => [
             'TCG\\Voyager\\Widgets\\UserDimmer',
-            'TCG\\Voyager\\Widgets\\PostDimmer',
-            'TCG\\Voyager\\Widgets\\PageDimmer',
+            'App\Widgets\LeadDimmer',
+            'App\Widgets\ClientDimmer',
         ],
 
     ],
