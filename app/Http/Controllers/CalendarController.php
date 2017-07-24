@@ -80,7 +80,7 @@ class CalendarController extends Controller
     public function invite_add_attendee(Request $request, $event_id){
         $opportunity = \App\Opportunity::where('event_id', $event_id)->first();
         $event = GoogleEvent::find($event_id, $opportunity->agent_id);
-        $event->name = "$opportunity->client->name meeting";
+        $event->name = $opportunity->client->name." meeting";
         $event->addAttendee([
             'displayName'=>$request->get('name'),
             'email' => $request->get('email'),
