@@ -159,7 +159,7 @@ class GoogleEvent
 
         $this->googleEvent->setAttendees($this->attendees);
 
-        $googleEvent = $googleCalendar->$method($this);
+        $googleEvent = $googleCalendar->$method($this, array("sendNotifications"=>true) );
 
         return static::createFromGoogleCalendarEvent($googleEvent, $googleCalendar->getCalendarId());
     }

@@ -85,6 +85,7 @@ class CalendarController extends Controller
             'email' => $request->get('email'),
             'responseStatus'=>$request->get('status')
         ]);
+        //dd($event->reminders);
         $event->save($opportunity->agent_id);
         flash("Attendee added")->success();
         return redirect(route('calendar.event_view', [$event->id]));

@@ -129,8 +129,8 @@ class GoogleCalendar
         if ($event instanceof GoogleEvent) {
             $event = $event->googleEvent;
         }
-
-        return $this->calendarService->events->insert($this->calendarId, $event);
+        $optionaArguments = array("sendNotifications"=>true);
+        return $this->calendarService->events->insert($this->calendarId, $event, $optionaArguments);
     }
 
     /**
@@ -143,8 +143,8 @@ class GoogleCalendar
         if ($event instanceof GoogleEvent) {
             $event = $event->googleEvent;
         }
-
-        return $this->calendarService->events->update($this->calendarId, $event->id, $event);
+        $optionaArguments = array("sendNotifications"=>true);
+        return $this->calendarService->events->update($this->calendarId, $event->id, $event, $optionaArguments);
     }
 
     /**
