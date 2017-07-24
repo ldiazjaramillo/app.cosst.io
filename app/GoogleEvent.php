@@ -28,6 +28,8 @@ class GoogleEvent
 
         $event->calendarId = $calendarId;
 
+        $event->attendees = $googleEvent->getAttendees();
+
         return $event;
     }
 

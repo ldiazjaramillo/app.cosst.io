@@ -73,6 +73,7 @@ class OpportunitiesController extends Controller
 
     public function getCurrentAgent($opportunity){
         $agents = $opportunity->getAgentsByType();
+        //dd($agents);
         $currentAgent = \App\ManagerAgent::where('type_id', $opportunity->type_id)->where('client_id', $opportunity->client_id)->first();
         if(is_null($currentAgent)){
             $currentAgent = \App\ManagerAgent::create([

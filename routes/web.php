@@ -140,6 +140,8 @@ Route::group(['prefix' => 'calendar', 'middleware' => 'auth'], function () {
     Route::get('/delete/{event_id}', 'CalendarController@delete')->name('calendar.delete');
     Route::get('/update/{event_id}', 'CalendarController@update')->name('calendar.update');
     Route::get('/create', 'CalendarController@create')->name('calendar.create');
+    Route::get('/event/{event_id}', 'CalendarController@view_invite')->name('calendar.event_view');
+    Route::post('/event/add_attendee/{event_id}', 'CalendarController@invite_add_attendee')->name('calendar.invite.add_attendee');
 });
 
 Route::get('summary', 'OpportunitiesController@summary')->name('summary')->middleware('auth');
