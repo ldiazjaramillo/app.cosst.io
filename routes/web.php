@@ -127,6 +127,7 @@ Route::group(['prefix' => 'opportunity', 'middleware' => 'auth'], function () {
     Route::post('status/update/{opportunity_id}', 'OpportunitiesController@status_update')->name('opportunity.status.store');
     Route::post('comments/update/{opportunity_id}', 'OpportunitiesController@comments_update')->name('opportunity.comments.store');
     Route::post('invite/update/{opportunity_id}', 'OpportunitiesController@invite_update')->name('opportunity.invite.update');
+    Route::post('agent/update/{opportunity_id}', 'OpportunitiesController@agent_update')->name('opportunity.agent.store');
 });
 
 Route::group(['prefix' => 'settings', 'middleware' => 'auth'], function () {

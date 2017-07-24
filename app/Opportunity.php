@@ -44,6 +44,10 @@ class Opportunity extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function client(){
+        return $this->belongsTo(Client::class);
+    }
+
     public function getEventTimeAttribute(){
         if($this->date){
             $date = \Carbon\Carbon::parse($this->date, $this->timezone);
@@ -99,8 +103,7 @@ class Opportunity extends Model
     }
 
     public function getAgentsOptionsAttribute(){
-        if($this->type_id) return $this->agents[$this->type_id];
-        else return [];
+        return \App\User::where('role_id', 3)->where('client_id', $this->client_id)->orderBy('name')->get()->toArray();
     }
 
     public function getTzlistOptionsAttribute(){

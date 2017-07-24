@@ -158,7 +158,7 @@ class OpportunitiesController extends Controller
 
         $event = new GoogleEvent;
         $event->agent_id = $agent_id;
-        $event->name = 'Jobtarget >> Programmatic Free trial Meet UP';
+        $event->name = $opportunity->client->name.' meeting';
         $event->setCalendarId = "primary";
         $event->location = "Will call $opportunity->contact_name at $opportunity->contact_phone ($opportunity->contact_email)";
         $event->startDateTime = $startDateTime;
@@ -175,6 +175,7 @@ class OpportunitiesController extends Controller
             Note: $first_name please click accept so $opportunity->client_agent knows that you will be available at the agreed upon time. Thank you!";
         $event->addAttendee(['email' => \Auth::user()->email]);
         $event->addAttendee(['email' => $agent->email, 'name'=>$agent->name,'responseStatus'=>'needsAction']);
+        $event->addAttendee(['email' => $opportunity->contact_email, 'name'=>$opportunity->contact_name, 'responseStatus'=>'needsAction']);
         $event->save($agent_id);
         //dd($event);
         $opportunity->notes = $notes;
@@ -321,6 +322,8 @@ class OpportunitiesController extends Controller
         $lead = \App\Lead::where('zoom_id', $opportunity->zoom_id)->orWhere('zoom_company_id', $opportunity->zoom_id)->first();
         if($lead) $opportunity->lead_type = $lead->type;
         else $opportunity->lead_type = null;
+        $agents = $opportunity->agents_options;
+        //dd($agents);
         return view('opportunities.view', compact('opportunity', 'status_options', 'status_id'));
     }
 

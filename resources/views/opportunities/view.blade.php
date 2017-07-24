@@ -33,8 +33,8 @@ $options = [0=>'No', 1=>'Yes'];
             <li class="list-group-item"><strong>Lead Type: </strong>{{ $types[$opportunity->lead_type] }}</li>
             <li class="list-group-item"><strong>VitalFew Agent: </strong>{{ $opportunity->vf_agent }}</li>
             <li class="list-group-item"><strong>Creation Date: </strong>{{ $opportunity->creation_date }}</li>
-            <li class="list-group-item"><strong>Invitation Date: </strong>{{ $opportunity->event_date }}  <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#invite_modal">Change Date</button></li>
-            <li class="list-group-item"><strong>{{ session()->get('working_client.name') }} Agent: </strong>{{ $opportunity->client_agent }}</li>
+            <li class="list-group-item"><strong>Invitation Date: </strong>{{ $opportunity->event_date }} <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#invite_modal">Change Date</button></li>
+            <li class="list-group-item"><strong>{{ $opportunity->client->name }} Agent: </strong>{{ $opportunity->client_agent }} <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#agent_modal">Change Agent</button></li>
         </ul>
 
         <div class="panel-body">
@@ -61,7 +61,7 @@ $options = [0=>'No', 1=>'Yes'];
     </div>
 
 </div>
-<!-- Small modal -->
+<!-- Status modal -->
 <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" id="status_modal">
   <div class="modal-dialog modal-sm" role="document">
     <div class="modal-content">
@@ -69,6 +69,27 @@ $options = [0=>'No', 1=>'Yes'];
         {{ csrf_field() }}
         <div class="modal-body">
             <select name="status" id="status_id" class="form-control">
+                @foreach($status_options as $value => $name)
+                    <option value="{{ $value }}" @if($value == $status_id) selected @endif>{{ $name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary">Update</button>
+        </div>
+    </form>
+    </div>
+  </div>
+</div>
+
+<!-- Change agent modal -->
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="Change Agent" id="agent_modal">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+    <form action="{{ route('opportunity.agent.store', [$opportunity->id]) }}" method="POST">
+        {{ csrf_field() }}
+        <div class="modal-body">
+            <select name="status" id="agent_id" class="form-control">
                 @foreach($status_options as $value => $name)
                     <option value="{{ $value }}" @if($value == $status_id) selected @endif>{{ $name }}</option>
                 @endforeach
