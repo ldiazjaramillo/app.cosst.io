@@ -173,7 +173,7 @@ class OpportunitiesController extends Controller
             Contact Name: $opportunity->contact_name \n
             Phone: $opportunity->contact_phone \n
             Number of Employees: $opportunity->employees_number \n
-            Note: $first_name please click accept so $opportunity->client_agent knows that you will be available at the agreed upon time. Thank you!";
+            Note: $first_name please click accept so $agent->name knows that you will be available at the agreed upon time. Thank you!";
         $event->addAttendee(['email' => \Auth::user()->email]);
         $event->addAttendee(['email' => $agent->email, 'displayName'=>$agent->name,'responseStatus'=>'needsAction']);
         $event->addAttendee(['email' => $opportunity->contact_email, 'displayName'=>$opportunity->contact_name, 'responseStatus'=>'needsAction']);
