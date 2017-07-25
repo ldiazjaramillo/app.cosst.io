@@ -165,6 +165,6 @@ class GoogleCalendar
     }
 
     public function getTimeZone(){
-        return $this->calendarService->getTimeZone();
+        return $this->calendarService->calendars->get($this->calendarId)->timeZone;
     }
 }

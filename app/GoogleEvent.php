@@ -16,17 +16,25 @@ class GoogleEvent
     /** @var int */
     protected $calendarId;
 
+    protected $timeZone;
+
     protected $attendees;
 
     protected $agent_id;
 
-    public static function createFromGoogleCalendarEvent(Google_Service_Calendar_Event $googleEvent, $calendarId="primary")
+    public static function createFromGoogleCalendarEvent(Google_Service_Calendar_Event $googleEvent, $calendarId="primary", $agent_id=null)
     {
         $event = new static();
 
         $event->googleEvent = $googleEvent;
 
         $event->calendarId = $calendarId;
+
+        $event->id = $googleEvent->getId();
+
+        $event->agent_id = $agent_id;
+
+        $event->timeZone = static::getGoogleCalendar($calendarId, $agent_id)->getTimeZone();
 
         $event->attendees = $googleEvent->getAttendees();
 
@@ -50,6 +58,8 @@ class GoogleEvent
     {
         $this->attendees = [];
         $this->googleEvent = new Google_Service_Calendar_Event();
+        $this->agent_id = null;
+        $this->timeZone = null;
     }
 
     /**
@@ -63,6 +73,10 @@ class GoogleEvent
 
         if ($name === 'sortDate') {
             return $this->getSortDate();
+        }
+
+        if ($name === 'timeZone') {
+            return $this->timeZone;
         }
 
         $value = array_get($this->googleEvent, $name);
@@ -120,7 +134,8 @@ class GoogleEvent
         Carbon $startDateTime = null,
         Carbon $endDateTime = null,
         array $queryParameters = [],
-        string $calendarId = null
+        string $calendarId = null,
+        integer $agent_id = null
     ): Collection {
         $googleCalendar = static::getGoogleCalendar($calendarId);
 
@@ -128,7 +143,7 @@ class GoogleEvent
 
         return collect($googleEvents)
             ->map(function (Google_Service_Calendar_Event $event) use ($calendarId) {
-                return static::createFromGoogleCalendarEvent($event, $calendarId);
+                return static::createFromGoogleCalendarEvent($event, $calendarId, $agent_id);
             })
             ->sortBy(function (Event $event) {
                 return $event->sortDate;
@@ -148,7 +163,7 @@ class GoogleEvent
 
         $googleEvent = $googleCalendar->getEvent($eventId);
 
-        return static::createFromGoogleCalendarEvent($googleEvent, $calendarId);
+        return static::createFromGoogleCalendarEvent($googleEvent, $calendarId, $agent_id);
     }
 
     public function save($agent_id = null, $method = null): GoogleEvent
@@ -161,7 +176,7 @@ class GoogleEvent
 
         $googleEvent = $googleCalendar->$method($this, array("sendNotifications"=>true) );
 
-        return static::createFromGoogleCalendarEvent($googleEvent, $googleCalendar->getCalendarId());
+        return static::createFromGoogleCalendarEvent($googleEvent, $googleCalendar->getCalendarId(), $agent_id);
     }
 
     /**

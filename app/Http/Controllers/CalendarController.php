@@ -88,7 +88,7 @@ class CalendarController extends Controller
         ]);
         //dd($event->reminders);
         $event->save($opportunity->agent_id);
-        flash("Attendee added")->success();
+        flash("New attendee added")->success();
         return redirect(route('calendar.event_view', [$event->id]));
     }
 }
