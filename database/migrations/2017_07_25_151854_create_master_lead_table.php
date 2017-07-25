@@ -20,8 +20,8 @@ class CreateMasterLeadTable extends Migration
             $table->string('last_name', 80)->nullable();
             $table->string('middle_name', 40)->nullable();
             $table->string('salutation', 20)->nullable();
-            $table->string('suffix', 10)->nullable();
-            $table->string('job_title', 140)->nullable();
+            $table->string('suffix', 140)->nullable();
+            $table->string('job_title', 280)->nullable();
             $table->string('company')->nullable();
             $table->string('in_person_registration')->nullable();
             $table->string('live_stream_registration')->nullable();

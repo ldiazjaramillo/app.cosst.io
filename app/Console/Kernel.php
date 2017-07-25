@@ -15,6 +15,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         'App\Console\Commands\RestoreClientsID',
         'App\Console\Commands\RunImports',
+        'App\Console\Commands\MasterLeadImports',
     ];
 
     /**
