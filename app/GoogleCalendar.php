@@ -155,8 +155,8 @@ class GoogleCalendar
         if ($eventId instanceof Event) {
             $eventId = $eventId->id;
         }
-
-        $this->calendarService->events->delete($this->calendarId, $eventId);
+        $optionaArguments = array("sendNotifications"=>true);
+        $this->calendarService->events->delete($this->calendarId, $eventId, $optionaArguments);
     }
 
     public function getService(): Google_Service_Calendar

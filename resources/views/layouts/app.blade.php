@@ -28,6 +28,7 @@
 <body>
     <div id="app">
     @php $user = \Auth::user(); @endphp
+    @if($user)
         @if($user->role_id==1)
             @include('menus.admin')
         @elseif($user->role_id==2)
@@ -35,14 +36,13 @@
         @else
             @include('menus.common')
         @endif
+    @endif
         <div class="container">
             @include('flash::message')
         </div>
         <div class="container" id="container">
             @yield('content')
         </div>
-        
-        
     </div>
 
     <!-- Scripts -->

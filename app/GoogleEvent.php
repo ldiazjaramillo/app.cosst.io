@@ -168,6 +168,8 @@ class GoogleEvent
 
     public function save($agent_id = null, $method = null): GoogleEvent
     {
+        if(is_null($agent_id)) $agent_id = $this->agent_id;
+
         $method = $method ?? ($this->exists($agent_id) ? 'updateEvent' : 'insertEvent');
 
         $googleCalendar = $this->getGoogleCalendar($this->calendarId, $agent_id);
@@ -184,7 +186,7 @@ class GoogleEvent
      */
     public function delete(string $eventId = null)
     {
-        $this->getGoogleCalendar($this->calendarId)->deleteEvent($eventId ?? $this->id);
+        $this->getGoogleCalendar($this->calendarId, $this->agent_id)->deleteEvent($eventId ?? $this->id);
     }
 
     /**
@@ -262,5 +264,9 @@ class GoogleEvent
 
     public function getId(){
         return array_get($this->googleEvent, "id");
+    }
+
+    public function getAgentId(){
+        return $this->agent_id;
     }
 }

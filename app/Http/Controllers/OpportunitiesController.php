@@ -73,6 +73,7 @@ class OpportunitiesController extends Controller
 
     public function getCurrentAgent($opportunity){
         $agents = $opportunity->getAgentsByType();
+        if(!$agents) return null;
         //dd($agents);
         $currentAgent = \App\ManagerAgent::where('type_id', $opportunity->type_id)->where('client_id', $opportunity->client_id)->first();
         if(is_null($currentAgent)){
@@ -109,6 +110,10 @@ class OpportunitiesController extends Controller
         $agents = $opportunity->getAgentsByType();
         //dd($agents);
         $agent_id = $this->getCurrentAgent($opportunity);
+        if(!$agent_id){
+            flash('No agents has been setup. Please notify the administrator.')->warning();
+            return view('opportunities.new_client', compact('opportunity'));
+        }
         return view('opportunities.new_client', compact('opportunity', 'agent_id'));
     }
 
@@ -176,7 +181,7 @@ class OpportunitiesController extends Controller
             Note: $first_name please click accept so $agent->name knows that you will be available at the agreed upon time. Thank you!";
         $event->addAttendee(['email' => \Auth::user()->email]);
         $event->addAttendee(['email' => $agent->email, 'displayName'=>$agent->name,'responseStatus'=>'needsAction']);
-        $event->addAttendee(['email' => $opportunity->contact_email, 'displayName'=>$opportunity->contact_name, 'responseStatus'=>'needsAction']);
+        $event->addAttendee(['email' => $opportunity->contact_email, 'displayName'=>$opportunity->contact_name, 'responseStatus'=>'accepted']);
         $event->save($agent_id);
         //dd($event);
         $opportunity->notes = $notes;

@@ -2,6 +2,6 @@
 
 @section('content')
 <h1>We're sorry but...</h1>
-<h2>The client id was not found. We could not continue the notification proccess.</h2>
+<h2>The page you're trying ot access is not allowed.</h2>
 {{ url()->current() }}
 @endsection

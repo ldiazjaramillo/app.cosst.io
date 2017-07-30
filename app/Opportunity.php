@@ -112,6 +112,7 @@ class Opportunity extends Model
 
     public function getAgentsByType(){
         $client_id = session()->get('working_client.id');
+        if(is_null($client_id)) $client_id = $this->client_id;
         return \App\User::where('role_id', 3)->where('client_id', $client_id)->orderBy('name')->get();
     }
 

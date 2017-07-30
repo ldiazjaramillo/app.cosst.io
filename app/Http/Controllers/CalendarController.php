@@ -56,14 +56,9 @@ class CalendarController extends Controller
 
     public function view_invite($event_id){
         $opportunity = \App\Opportunity::where('event_id', $event_id)->first();
+        $agents = $opportunity->getAgentsByType();
         $event = GoogleEvent::find($event_id, $opportunity->agent_id);
-        return view('calendar.events.view', compact('event'));
-        dd($event);
-        $event->name = "New Event updated";
-        $event->startDateTime = \Carbon\Carbon::now('EST')->addDays(3);
-        $event->endDateTime = \Carbon\Carbon::now('EST')->addDays(3)->addMinutes(30);
-        $event->save();
-        dd($opportunity);
+        return view('calendar.events.view', compact('event', 'opportunity', 'agents'));
     }
 
     public function add_attendees($event_id){
@@ -82,7 +77,7 @@ class CalendarController extends Controller
         $event = GoogleEvent::find($event_id, $opportunity->agent_id);
         $event->name = $opportunity->client->name." meeting";
         $event->addAttendee([
-            'displayName'=>$request->get('name'),
+            'displayName'=>$request->get('name'),   
             'email' => $request->get('email'),
             'responseStatus'=>$request->get('status')
         ]);
@@ -90,5 +85,33 @@ class CalendarController extends Controller
         $event->save($opportunity->agent_id);
         flash("New attendee added")->success();
         return redirect(route('calendar.event_view', [$event->id]));
+    }
+
+    public function invite_delete(Request $request, $event_id){
+        try{
+            $opportunity = \App\Opportunity::where('event_id', $event_id)->first();
+            $event = GoogleEvent::find($event_id, $opportunity->agent_id);
+            $event->delete();
+            flash("Event deleted")->success();
+            $opportunity->status = 6;
+            $opportunity->save();
+            return redirect(route('opportunity.view', [$opportunity->id]));
+        }catch(Exception $e){
+            flash( $e.getMessage() )->error();
+            return redirect(route('calendar.event_view', [$event_id]));
+        }
+    }
+
+    public function invite_update_dates(Request $request, $event_id){
+        $date = $request->get('date');
+        $opportunity = \App\Opportunity::where('event_id', $event_id)->first();
+        $event = GoogleEvent::find($event_id, $opportunity->agent_id);
+        $startDateTime = Carbon::parse($date, $event->timeZone);
+        $event->startDateTime = $startDateTime;
+        $event->endDateTime = $startDateTime->copy()->addMinutes(30);
+        $event->save();
+        flash("Event date updated")->success();
+        return redirect(route('calendar.event_view', [$event_id]));
+        dd($request->all());
     }
 }
