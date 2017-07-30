@@ -73,7 +73,7 @@ class OpportunitiesController extends Controller
 
     public function getCurrentAgent($opportunity){
         $agents = $opportunity->getAgentsByType();
-        if(!$agents) return null;
+        if( !$agents->count() ) return null;
         //dd($agents);
         $currentAgent = \App\ManagerAgent::where('type_id', $opportunity->type_id)->where('client_id', $opportunity->client_id)->first();
         if(is_null($currentAgent)){
@@ -112,7 +112,7 @@ class OpportunitiesController extends Controller
         $agent_id = $this->getCurrentAgent($opportunity);
         if(!$agent_id){
             flash('No agents has been setup. Please notify the administrator.')->warning();
-            return view('opportunities.new_client', compact('opportunity'));
+            return view('opportunities.new_client', compact('opportunity', 'agent_id'));
         }
         return view('opportunities.new_client', compact('opportunity', 'agent_id'));
     }
