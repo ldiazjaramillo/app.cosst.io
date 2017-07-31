@@ -154,9 +154,17 @@ Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
 });
 
-Route::group(['prefix' => 'client'], function () {
+Route::group(['prefix' => 'client', 'middleware' => 'auth'], function () {
     Route::get('select/', 'ClientsController@select')->name('client.select');
     Route::post('select/', 'ClientsController@select_store')->name('client.select.store');
+});
+
+Route::group(['prefix' => 'survey', 'middleware' => 'auth'], function () {
+    Route::get('new', 'SurveyController@new')->name('survey.new');
+    Route::get('create/{lead_id}', 'SurveyController@create')->name('survey.create');
+    Route::get('create/', 'SurveyController@create')->name('survey.create');
+    Route::get('get/survey/leads', 'SurveyController@getSurveyLeads')->name('get.survey.leads');
+    Route::post('create/', 'SurveyController@store')->name('survey.store');
 });
 
 Route::get('/outbound/login', 'HomeController@ob_login')->name('outbound.login')->middleware('auth');
