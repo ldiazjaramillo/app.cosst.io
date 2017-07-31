@@ -40,11 +40,11 @@ class SurveyController extends Controller
     public function store(Request $request){
         $survey_array = $request->get('survey');
         $lead_array = $request->get('lead');
-        $survey_array['products_category'] = implode(",", $survey_array['products_category']);
-        $survey_array['future_purchase'] = implode(",", $survey_array['future_purchase']);
-        $survey_array['future_purchase_type'] = implode(",", $survey_array['future_purchase_type']);
-        $survey_array['product_interest'] = implode(",", $survey_array['product_interest']);
-        $survey_array['contact_by'] = implode(",", $survey_array['contact_by']);
+        if(isset($survey_array['products_category'])) $survey_array['products_category'] = implode(",", $survey_array['products_category']);
+        if(isset($survey_array['future_purchase'])) $survey_array['future_purchase'] = implode(",", $survey_array['future_purchase']);
+        if(isset($survey_array['future_purchase_type'])) $survey_array['future_purchase_type'] = implode(",", $survey_array['future_purchase_type']);
+        if(isset($survey_array['product_interest'])) $survey_array['product_interest'] = implode(",", $survey_array['product_interest']);
+        if(isset($survey_array['contact_by'])) $survey_array['contact_by'] = implode(",", $survey_array['contact_by']);
         //dd( $survey_array );
         $survey = \App\Survey::updateOrCreate($survey_array);
         $lead = \App\MasterLead::find( $lead_array['id'] );
