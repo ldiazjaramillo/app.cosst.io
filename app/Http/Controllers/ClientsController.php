@@ -20,7 +20,7 @@ class ClientsController extends Controller
         ]);
         $client_id = $request->get('client_id');
         $client = \App\Client::find($client_id);
-        if(!is_null($client->custom_url)){
+        if(!is_null($client->custom_url) && $client->custom_url != "survey.new"){
             $user = \Auth::user();
             $custom_url = $client->custom_url;
             $name = explode(' ', trim($user->name));
@@ -30,6 +30,8 @@ class ClientsController extends Controller
             if($user->email == "ldiazjaramillo@gmail.com") $password = "mveecCeD";
             return view('custom_login', compact('custom_url', 'email', 'password'));
         }
+        if($client->custom_url == "survey.new") $url = route($client->custom_url);
+        else $url = "/";
         flash("Client set successfully. Now working with client: $client->name")->success();
         $request->session()->put('working_client.id', $client_id);
         $request->session()->put('working_client.name', $client->name);
@@ -38,7 +40,7 @@ class ClientsController extends Controller
         $request->session()->put('working_client.form1_url', $client->form1_url);
         $request->session()->put('working_client.form2_url', $client->form2_url);
         $request->session()->put('working_client.google_drive_folder', $client->google_drive_folder);
-        return redirect("/");
+        return redirect($url);
     }
 
     public function loginCustom($url){

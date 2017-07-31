@@ -1,11 +1,63 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+$products_category = [
+    0=>"None",
+    1=>"ATS",
+    2=>"Job Boards/Postings/Advertising",
+    3=>"Ad Agency",
+    4=>"Recruitment Agency",
+    5=>"Other Advertising",
+    6=>"Other Technology",
+];
+$future_purchase = [
+    0=>"None",
+    1=>"ATS",
+    2=>"Ad Agency",
+    3=>"Niche Job Postings",
+    4=>"General Job boards",
+    5=>"Regional Job boards",
+    6=>"Aggregators",
+    7=>"Distirbution Solutions",
+    8=>"Programmatic Advertising Solutions",
+    9=>"Pay per applicant",
+    10=>"Recruitment Services/Agency/Exec Search",
+    11=>"OFCCP Compliance",
+    12=>"Social Recruiting",
+    13=>"Mobile Recruiting",
+    14=>"Other",
+];
+$future_purchase_type = [
+    0=>"None",
+    1=>"HealthCare",
+    2=>"Finance",
+    3=>"Sales",
+    4=>"Tech",
+    5=>"Other",
+];
+
+$product_interest = [
+    1=>"PPC Advertising",
+    2=>"PPA Advertising",
+    3=>"Programmatic ad buying",
+    4=>"Mobile Solutions",
+];
+
+$contact_by = [
+    1=>"Phone call",
+    2=>"Email",
+    3=>"SMS",
+    4=>"Social message/connection",
+    5=>"Other",
+];
+@endphp
 <h3>Lead Info</h3>
 <form role="form" method="POST" action="{{ route('survey.store') }}">
     {{ csrf_field() }}
     <input name="lead[id]" type="hidden" @if($lead) value="{{$lead->id}}" @endif />
     <input name="survey[lead_id]" type="hidden" @if($lead) value="{{$lead->id}}" @endif />
+    <input name="survey[client_id]" type="hidden" value="{{ session()->get('working_client.id') }}" />
 <div class="row">
     <div class="col-md-3">
         <div class="form-group{{ $errors->has('lead[first_name]') ? ' has-error' : '' }}">
@@ -137,7 +189,7 @@
     <div class="col-md-3">
         <div class="form-group{{ $errors->has('lead[email_address]') ? ' has-error' : '' }}">
             <label class="control-label">Email address:</label>
-            <input name="lead[email_address]" maxlength="100" type="text" class="form-control" placeholder="Job title hierarchy level" @if($lead) value="{{$lead->email_address}}" @else value="{{old('lead[email_address]')}}" @endif />
+            <input name="lead[email_address]" maxlength="100" type="text" class="form-control" placeholder="Job title hierarchy level" @if($lead) value="{{$lead->email_address}}" @else value="{{old('lead[email_address]')}}" @endif required />
             @if ($errors->has('lead[email_address]'))
                 <span class="help-block">
                     <strong>{{ $errors->first('lead[email_address]') }}</strong>
@@ -388,16 +440,15 @@
 <div class="row">
     <div class="col-md-4">
         <div class="form-group{{ $errors->has('survey[products_category]') ? ' has-error' : '' }}">
-            <label class="control-label">Which of the following products are you responsible for making decisions about purchasing? </label>
-            <select name="survey[products_category]" id="products_category" class="form-control">
-                <option value="0">None</option>
-                <option value="1">ATS</option>
-                <option value="2">Job Boards/Postings/Advertising</option>
-                <option value="3">Ad Agency</option>
-                <option value="4">Recruitment Agency</option>
-                <option value="5">Other Advertising</option>
-                <option value="6">Other Technology</option>
-            </select>
+            <label class="control-label">1. Which of the following products are you responsible for making decisions about purchasing? </label>
+            @foreach($products_category as $value => $name)
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="survey[products_category][]" class="checkbox_products_category" value="{{ $value }}"> {{ $name }}
+                    </label>
+                </div>
+            @endforeach
+            Other: <input type="text" name="survey[products_category_other]" class="form-control" disabled />
             @if ($errors->has('survey[products_category]'))
                 <span class="help-block">
                     <strong>{{ $errors->first('survey[products_category]') }}</strong>
@@ -407,24 +458,15 @@
     </div>
     <div class="col-md-4">
         <div class="form-group{{ $errors->has('survey[future_purchase]') ? ' has-error' : '' }}">
-            <label class="control-label">Which of the following do you and your company plan on purchasing in the next 3 months?</label>
-            <select name="survey[future_purchase]" id="future_purchase" class="form-control">
-                <option value="">None</option>
-                <option value="1">ATS</option>
-                <option value="2">Ad Agency</option>
-                <option value="3">Niche Job Postings </option>
-                <option value="4">General Job boards</option>
-                <option value="5">Regional Job boards</option>
-                <option value="6">Aggregators</option>
-                <option value="7">Distirbution Solutions</option>
-                <option value="8">Programmatic Advertising Solutions</option>
-                <option value="9">Pay per applicant </option>
-                <option value="10">Recruitment Services/Agency/Exec Search</option>
-                <option value="11">OFCCP Compliance</option>
-                <option value="12">Social Recruiting</option>
-                <option value="13">Mobile Recruiting</option>
-                <option value="14">Other</option>
-            </select>
+            <label class="control-label">2. Which of the following do you and your company plan on purchasing in the next 3 months?</label>
+            @foreach($future_purchase as $value => $name)
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="survey[future_purchase][]" class="checkbox_future_purchase" value="{{ $value }}"> {{ $name }}
+                    </label>
+                </div>
+            @endforeach
+            Other: <input type="text" name="survey[future_purchase_other]" class="form-control" disabled />
             @if ($errors->has('survey[future_purchase]'))
                 <span class="help-block">
                     <strong>{{ $errors->first('survey[future_purchase]') }}</strong>
@@ -434,15 +476,15 @@
     </div>
     <div class="col-md-4">
         <div class="form-group{{ $errors->has('survey[future_purchase_type]') ? ' has-error' : '' }}">
-            <label class="control-label"><br/>Type</label>
-            <select name="survey[future_purchase_type]" id="future_purchase_type" class="form-control">
-                <option value="">None</option>
-                <option value="1">HealthCare</option>
-                <option value="2">Finance</option>
-                <option value="3">Sales</option>
-                <option value="4">Tech</option>
-                <option value="5">Other</option>
-            </select>
+            <label class="control-label">Type</label>
+            @foreach($future_purchase_type as $value => $name)
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="survey[future_purchase_type][]" class="checkbox_future_purchase_type" value="{{ $value }}"> {{ $name }}
+                    </label>
+                </div>
+            @endforeach
+            Other: <input type="text" name="survey[future_purchase_type_other]" class="form-control" disabled />
             @if ($errors->has('survey[future_purchase_type]'))
                 <span class="help-block">
                     <strong>{{ $errors->first('survey[future_purchase_type]') }}</strong>
@@ -455,14 +497,14 @@
 <div class="row">
     <div class="col-md-4">
         <div class="form-group{{ $errors->has('survey[product_interest]') ? ' has-error' : '' }}">
-            <label class="control-label">Are you interested in learning about any of the following product/services:</label>
-            <select name="survey[product_interest]" id="product_interest" class="form-control">
-                <option value="">Select</option>
-                <option value="1">PPC Advertising</option>
-                <option value="2">PPA Advertising</option>
-                <option value="3">Programmatic ad buying</option>
-                <option value="4">Mobile Solutions</option>
-            </select>
+            <label class="control-label">3. Are you interested in learning about any of the following product/services?</label>
+            @foreach($product_interest as $value => $name)
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="survey[product_interest][]" class="checkbox_product_interest" value="{{ $value }}"> {{ $name }}
+                    </label>
+                </div>
+            @endforeach
             @if ($errors->has('survey[product_interest]'))
                 <span class="help-block">
                     <strong>{{ $errors->first('survey[product_interest]') }}</strong>
@@ -472,7 +514,7 @@
     </div>
     <div class="col-md-4">
         <div class="form-group{{ $errors->has('survey[client_needs]') ? ' has-error' : '' }}">
-            <label class="control-label">Do you have specific needs at this time that a member might be able to help you with:</label>
+            <label class="control-label">4. Do you have specific needs at this time that a member might be able to help you with:</label>
             <textarea name="survey[client_needs]" class="form-control" id="survey[client_needs]" cols="30" rows="5"></textarea>
             @if ($errors->has('survey[client_needs]'))
                 <span class="help-block">
@@ -483,7 +525,7 @@
     </div>
     <div class="col-md-4">
         <div class="form-group{{ $errors->has('survey[client_product_introduce]') ? ' has-error' : '' }}">
-            <label class="control-label">Is there anything we can tell members about the best way to introduce their products to you:</label>
+            <label class="control-label">5. Is there anything we can tell members about the best way to introduce their products to you?</label>
             <textarea name="survey[client_product_introduce]" class="form-control" id="survey[client_product_introduce]" cols="30" rows="5"></textarea>
             @if ($errors->has('survey[client_product_introduce]'))
                 <span class="help-block">
@@ -497,15 +539,15 @@
 <div class="row">
     <div class="col-md-4">
         <div class="form-group{{ $errors->has('survey[contact_by]') ? ' has-error' : '' }}">
-            <label class="control-label">How do you like people to contact you?</label>
-            <select name="survey[contact_by]" id="contact_by" class="form-control">
-                <option value="">Select</option>
-                <option value="1">Phone call</option>
-                <option value="2">Email</option>
-                <option value="3">SMS</option>
-                <option value="4">Social message/connection</option>
-                <option value="5">Other</option>
-            </select>
+            <label class="control-label">6. How do you like people to contact you?</label>
+            @foreach($contact_by as $value => $name)
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="survey[contact_by][]" class="checkbox_contact_by" value="{{ $value }}"> {{ $name }}
+                    </label>
+                </div>
+            @endforeach
+            Other: <input type="text" name="survey[contact_by_other]" class="form-control" disabled />
             @if ($errors->has('survey[contact_by]'))
                 <span class="help-block">
                     <strong>{{ $errors->first('survey[contact_by]') }}</strong>
@@ -515,7 +557,7 @@
     </div>
     <div class="col-md-4">
         <div class="form-group{{ $errors->has('survey[season]') ? ' has-error' : '' }}">
-            <label class="control-label">Is there a "season" that you are most likely to consider a new vendor?</label>
+            <label class="control-label">7. Is there a "season" that you are most likely to consider a new vendor?</label>
             <textarea name="survey[season]" class="form-control" id="survey[season]" cols="30" rows="5"></textarea>
             @if ($errors->has('survey[season]'))
                 <span class="help-block">
@@ -526,7 +568,7 @@
     </div>
     <div class="col-md-4">
         <div class="form-group{{ $errors->has('survey[favorite_vendors]') ? ' has-error' : '' }}">
-            <label class="control-label">Do you have some favorite vendors in TAtech?</label>
+            <label class="control-label">8. Do you have some favorite vendors in TAtech?</label>
             <textarea name="survey[favorite_vendors]" class="form-control" id="survey[favorite_vendors]" cols="30" rows="5"></textarea>
             @if ($errors->has('survey[favorite_vendors]'))
                 <span class="help-block">
@@ -542,4 +584,68 @@
     </div>
 </div>
 </form>
+@endsection
+
+@section('bottom_script')
+<script>
+$(document).ready(function () {
+    $('input[name="survey[products_category][]"]').change(function(){
+        if(this.value == 0) {
+            if(this.checked){
+                $('input[name="survey[products_category_other]"]').prop('disabled', true);
+                $('input[name="survey[products_category][]"]').prop('checked', false);
+                $('input[name="survey[products_category][]"]').prop('disabled', true);
+                this.checked = true;
+                this.disabled = false;
+            }else{
+                $('input[name="survey[products_category_other]"]').prop('disabled', true);
+                $('input[name="survey[products_category][]"]').prop('checked', false);
+                $('input[name="survey[products_category][]"]').prop('disabled', false);
+            }
+        }
+        
+        if( this.value == 6 || this.value == 5 ) $('input[name="survey[products_category_other]"]').prop('disabled', !this.checked);
+    });
+
+    $('input[name="survey[future_purchase][]"]').change(function(){
+        if(this.value == 0) {
+            if(this.checked){
+                $('input[name="survey[future_purchase_other]"]').prop('disabled', true);
+                $('input[name="survey[future_purchase][]"]').prop('checked', false);
+                $('input[name="survey[future_purchase][]"]').prop('disabled', true);
+                this.checked = true;
+                this.disabled = false;
+            }else{
+                $('input[name="survey[future_purchase_other]"]').prop('disabled', true);
+                $('input[name="survey[future_purchase][]"]').prop('checked', false);
+                $('input[name="survey[future_purchase][]"]').prop('disabled', false);
+            }
+        }
+        
+        if( this.value == 14 ) $('input[name="survey[future_purchase_other]"]').prop('disabled', !this.checked);
+    });
+
+    $('input[name="survey[future_purchase_type][]"]').change(function(){
+        if(this.value == 0) {
+            if(this.checked){
+                $('input[name="survey[future_purchase_type_other]"]').prop('disabled', true);
+                $('input[name="survey[future_purchase_type][]"]').prop('checked', false);
+                $('input[name="survey[future_purchase_type][]"]').prop('disabled', true);
+                this.checked = true;
+                this.disabled = false;
+            }else{
+                $('input[name="survey[future_purchase_type_other]"]').prop('disabled', true);
+                $('input[name="survey[future_purchase_type][]"]').prop('checked', false);
+                $('input[name="survey[future_purchase_type][]"]').prop('disabled', false);
+            }
+        }
+        
+        if( this.value == 5 ) $('input[name="survey[future_purchase_type_other]"]').prop('disabled', !this.checked);
+    });
+
+    $('input[name="survey[contact_by][]"]').change(function(){        
+        if( this.value == 5 ) $('input[name="survey[contact_by_other]"]').prop('disabled', !this.checked);
+    });
+});
+</script>
 @endsection

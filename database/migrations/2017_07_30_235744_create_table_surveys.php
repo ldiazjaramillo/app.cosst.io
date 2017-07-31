@@ -16,13 +16,23 @@ class CreateTableSurveys extends Migration
         Schema::create('surveys', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('lead_id')->nullable();
-            $table->integer('products_category')->default(0)->nullable();
-            $table->integer('future_purchase')->default(0)->nullable();
-            $table->integer('future_purchase_type')->default(0)->nullable();
-            $table->integer('product_interest')->default(0)->nullable();
+
+            $table->string('products_category')->default(0)->nullable();
+            $table->string('products_category_other')->nullable();
+            
+            $table->string('future_purchase')->default(0)->nullable();
+            $table->string('future_purchase_other')->nullable();
+
+            $table->string('future_purchase_type')->default(0)->nullable();
+            $table->string('future_purchase_type_other')->nullable();
+
+            $table->string('product_interest')->default(0)->nullable();
             $table->text('client_needs')->nullable();
             $table->text('client_product_introduce')->nullable();
-            $table->integer('contact_by')->default(0)->nullable();
+            
+            $table->string('contact_by')->nullable();
+            $table->string('contact_by_other')->nullable();
+            
             $table->text('season')->nullable();
             $table->text('favorite_vendors')->nullable();
             $table->integer('client_id')->nullable();
